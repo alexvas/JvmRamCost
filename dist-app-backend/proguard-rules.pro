@@ -132,3 +132,21 @@
 # Exclude JNDI resolver (not needed, causes issues with java.naming)
 -assumenosideeffects class io.grpc.internal.JndiResourceResolverFactory { *; }
 -assumenosideeffects class io.grpc.internal.JndiResourceResolverFactory$* { *; }
+
+# JNA (Java Native Access) - required for Windows platform support
+-keep class com.sun.jna.** { *; }
+-keep class com.sun.jna.platform.** { *; }
+-keep interface com.sun.jna.Library { *; }
+-keep interface com.sun.jna.Callback { *; }
+-keepclassmembers class com.sun.jna.** { *; }
+-keepclassmembers class com.sun.jna.platform.** { *; }
+# Keep native methods in JNA
+-keepclasseswithmembernames class com.sun.jna.Native {
+    native <methods>;
+    static <methods>;
+}
+# Keep all methods in Kernel32 and related Windows API classes
+-keep class com.sun.jna.platform.win32.Kernel32 { *; }
+-keep class com.sun.jna.platform.win32.WinDef { *; }
+-keep class com.sun.jna.platform.win32.WinNT { *; }
+-keep class com.sun.jna.platform.win32.** { *; }
