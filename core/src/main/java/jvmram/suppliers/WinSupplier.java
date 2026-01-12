@@ -146,7 +146,10 @@ class WinSupplier extends AbstractDataSupplier<WinData> {
             } finally {
                 // CloseHandle(hProcess)
                 try {
-                    CLOSE_HANDLE.invokeExact(hProcess);
+                    boolean closed = (boolean) CLOSE_HANDLE.invokeExact(hProcess);
+                    if (!closed) {
+                        LOG.warn("CloseHandle returned false for process handle");
+                    }
                 } catch (Throwable e) {
                     LOG.warn("Failed to close process handle", e);
                 }
