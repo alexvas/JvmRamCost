@@ -1,8 +1,7 @@
 [versions]
-jdk = "17"
+jdk = "25"
 jvmram = "1.0.3"
 slf4j = "2.0.17"
-jna = "5.16.0"
 
 protobuf = "3.25.8"
 grpc = "1.78.0"
@@ -12,9 +11,6 @@ slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 
 jspecify = "org.jspecify:jspecify:1.0.0"
-
-jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
-jna-platform = { module = "net.java.dev.jna:jna-platform", version.ref = "jna" }
 
 grpc-bom = { module = "io.grpc:grpc-bom", version.ref = "grpc" }
 

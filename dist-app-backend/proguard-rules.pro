@@ -104,6 +104,12 @@
     public static void main(java.lang.String[]);
 }
 
+# Foreign Function & Memory API (Project Panama) - required for WinSupplier
+-keep class java.lang.foreign.** { *; }
+-keep class java.lang.invoke.MethodHandle { *; }
+-dontwarn java.lang.foreign.**
+-dontwarn java.lang.invoke.MethodHandle
+
 # Protobuf generated classes (use reflection)
 -keep class jvmram.proto.** { *; }
 -keep class com.google.protobuf.** { *; }
@@ -138,54 +144,3 @@
 -assumenosideeffects class io.grpc.internal.JndiResourceResolverFactory { *; }
 -assumenosideeffects class io.grpc.internal.JndiResourceResolverFactory$* { *; }
 
-# JNA (Java Native Access) - required for Windows platform support
-# Keep core JNA classes (but not platform.* which is handled separately)
--keep class com.sun.jna.* { *; }
--keep class com.sun.jna.ptr.* { *; }
--keep class com.sun.jna.win32.* { *; }
--keep interface com.sun.jna.Library { *; }
--keep interface com.sun.jna.Callback { *; }
--keepclassmembers class com.sun.jna.* { *; }
-# Keep native methods in JNA
--keepclasseswithmembernames class com.sun.jna.Native {
-    native <methods>;
-    static <methods>;
-}
-
-# Keep Windows API classes - only what's actually used
--keep class com.sun.jna.platform.win32.Kernel32 { *; }
--keep class com.sun.jna.platform.win32.Kernel32$* { *; }
--keep class com.sun.jna.platform.win32.WinNT { *; }
--keep class com.sun.jna.platform.win32.WinNT$* { *; }
--keep class com.sun.jna.platform.win32.BaseTSD { *; }
--keep class com.sun.jna.platform.win32.BaseTSD$* { *; }
-# WinDef - keep only used inner classes (DWORD, ULONGLONG), not RECT
--keep class com.sun.jna.platform.win32.WinDef { *; }
--keep class com.sun.jna.platform.win32.WinDef$DWORD { *; }
--keep class com.sun.jna.platform.win32.WinDef$DWORDLONG { *; }
--keep class com.sun.jna.platform.win32.WinDef$ULONGLONG { *; }
--keep class com.sun.jna.platform.win32.WinDef$ULONG { *; }
--keep class com.sun.jna.platform.win32.WinDef$LONG { *; }
--keep class com.sun.jna.platform.win32.WinDef$WORD { *; }
--keep class com.sun.jna.platform.win32.WinDef$BOOL { *; }
-
-# Exclude JNA platform classes that depend on AWT/Swing
-# Use -dontwarn to suppress warnings about missing AWT/Swing methods
--dontwarn com.sun.jna.platform.WindowUtils
--dontwarn com.sun.jna.platform.WindowUtils$**
--dontwarn com.sun.jna.platform.DesktopWindow
--dontwarn com.sun.jna.platform.KeyboardUtils
--dontwarn com.sun.jna.platform.KeyboardUtils$**
--dontwarn com.sun.jna.platform.RasterRangesUtils
--dontwarn com.sun.jna.platform.RasterRangesUtils$**
--dontwarn com.sun.jna.platform.win32.GDI32Util
--dontwarn com.sun.jna.platform.win32.GDI32Util$**
--dontwarn com.sun.jna.Native$AWT
--dontwarn com.sun.jna.Native$AWT$**
-
-# Suppress warnings for AWT/Swing classes (not available in headless environment)
--dontwarn java.awt.**
--dontwarn javax.swing.**
--dontwarn java.awt.event.**
--dontwarn java.awt.image.**
--dontwarn java.awt.geom.**

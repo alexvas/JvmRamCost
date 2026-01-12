@@ -44,19 +44,6 @@ tasks.register('fatJar', Jar) {
     exclude 'com/google/common/eventbus/**'
     exclude 'com/google/common/cache/**'
     exclude 'com/google/protobuf/util/**'
-    exclude 'com/sun/jna/platform/dnd/**'
-    
-    // JNA classes that depend on java.desktop (AWT/Swing)
-    exclude 'com/sun/jna/Native$AWT.class'
-    exclude 'com/sun/jna/platform/DesktopWindow.class'
-    exclude 'com/sun/jna/platform/KeyboardUtils.class'
-    exclude 'com/sun/jna/platform/KeyboardUtils$*.class'
-    exclude 'com/sun/jna/platform/RasterRangesUtils.class'
-    exclude 'com/sun/jna/platform/RasterRangesUtils$*.class'
-    exclude 'com/sun/jna/platform/WindowUtils.class'
-    exclude 'com/sun/jna/platform/WindowUtils$*.class'
-    exclude 'com/sun/jna/platform/win32/GDI32Util.class'
-    exclude 'com/sun/jna/platform/win32/GDI32Util$*.class'
     
     // gRPC JNDI resolver (требует java.naming, не нужен)
     exclude 'io/grpc/internal/JndiResourceResolverFactory*'
@@ -180,7 +167,7 @@ tasks.register('jpackageMin', Exec) {
                 '--copyright', '2026 Alexander Vasilev',
                 '--type', 'app-image',
                 '--dest', outputDir.absolutePath,
-                // Explicit modules without java.desktop (JNA references AWT but doesn't require it at runtime)
+                // Explicit modules without java.desktop
                 '--add-modules', 'java.base,java.logging,java.management,jdk.attach,jdk.unsupported'
         ]
     }
