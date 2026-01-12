@@ -134,19 +134,43 @@
 -assumenosideeffects class io.grpc.internal.JndiResourceResolverFactory$* { *; }
 
 # JNA (Java Native Access) - required for Windows platform support
+# Keep core JNA classes (excluding AWT/Swing dependencies)
 -keep class com.sun.jna.** { *; }
--keep class com.sun.jna.platform.** { *; }
 -keep interface com.sun.jna.Library { *; }
 -keep interface com.sun.jna.Callback { *; }
 -keepclassmembers class com.sun.jna.** { *; }
--keepclassmembers class com.sun.jna.platform.** { *; }
-# Keep native methods in JNA
+# Keep native methods in JNA (but exclude AWT-related)
 -keepclasseswithmembernames class com.sun.jna.Native {
     native <methods>;
     static <methods>;
 }
-# Keep all methods in Kernel32 and related Windows API classes
+# Exclude AWT-related class in Native
+-assumenosideeffects class com.sun.jna.Native$AWT { *; }
+
+# Keep Windows API classes (Kernel32, WinDef, WinNT, etc.)
 -keep class com.sun.jna.platform.win32.Kernel32 { *; }
 -keep class com.sun.jna.platform.win32.WinDef { *; }
 -keep class com.sun.jna.platform.win32.WinNT { *; }
+-keep class com.sun.jna.platform.win32.Psapi { *; }
 -keep class com.sun.jna.platform.win32.** { *; }
+
+# Exclude JNA platform classes that depend on AWT/Swing
+# Use -dontwarn to suppress warnings about missing AWT/Swing methods
+-dontwarn com.sun.jna.platform.WindowUtils
+-dontwarn com.sun.jna.platform.WindowUtils$**
+-dontwarn com.sun.jna.platform.DesktopWindow
+-dontwarn com.sun.jna.platform.KeyboardUtils
+-dontwarn com.sun.jna.platform.KeyboardUtils$**
+-dontwarn com.sun.jna.platform.RasterRangesUtils
+-dontwarn com.sun.jna.platform.RasterRangesUtils$**
+-dontwarn com.sun.jna.platform.win32.GDI32Util
+-dontwarn com.sun.jna.platform.win32.GDI32Util$**
+-dontwarn com.sun.jna.Native$AWT
+-dontwarn com.sun.jna.Native$AWT$**
+
+# Suppress warnings for AWT/Swing classes (not available in headless environment)
+-dontwarn java.awt.**
+-dontwarn javax.swing.**
+-dontwarn java.awt.event.**
+-dontwarn java.awt.image.**
+-dontwarn java.awt.geom.**

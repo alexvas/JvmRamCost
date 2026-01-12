@@ -126,8 +126,6 @@ tasks.register('proguardMinify', JavaExec) {
                 "-outjars ${outJarFile.absolutePath}\n" +
                 "-libraryjars ${javaHome}/jmods/java.base.jmod(!**.jar;!module-info.class)\n" +
                 "-libraryjars ${javaHome}/jmods/java.logging.jmod(!**.jar;!module-info.class)\n" +
-                "-libraryjars ${javaHome}/jmods/java.xml.jmod(!**.jar;!module-info.class)\n" +
-                "-libraryjars ${javaHome}/jmods/java.desktop.jmod(!**.jar;!module-info.class)\n" +
                 "-libraryjars ${javaHome}/jmods/java.management.jmod(!**.jar;!module-info.class)\n" +
                 "-libraryjars ${javaHome}/jmods/java.naming.jmod(!**.jar;!module-info.class)\n" +
                 "-libraryjars ${javaHome}/jmods/java.security.jgss.jmod(!**.jar;!module-info.class)\n" +
