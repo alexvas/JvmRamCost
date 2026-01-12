@@ -1,6 +1,9 @@
 # Disable obfuscation - keep original package and class names
 -dontobfuscate
 
+# Disable optimizations that break constructors (remove super() calls)
+-optimizations !field/*,!method/*,!code/*
+
 -dontwarn javax.lang.model.element.Modifier
 
 # Note: We intentionally don't add the flags we'd need to make Enums work.
@@ -97,7 +100,9 @@
 }
 
 # Entry point
--keep class jvmram.dist.Main { *; }
+-keep class jvmram.dist.Main {
+    public static void main(java.lang.String[]);
+}
 
 # Protobuf generated classes (use reflection)
 -keep class jvmram.proto.** { *; }
