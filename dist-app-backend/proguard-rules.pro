@@ -1,8 +1,8 @@
 # Disable obfuscation - keep original package and class names
 -dontobfuscate
 
-# Disable optimizations that break constructors (remove super() calls)
--optimizations !field/*,!method/*,!code/*
+# Disable optimization (only shrinking is needed)
+-dontoptimize
 
 -dontwarn javax.lang.model.element.Modifier
 
@@ -139,25 +139,35 @@
 -assumenosideeffects class io.grpc.internal.JndiResourceResolverFactory$* { *; }
 
 # JNA (Java Native Access) - required for Windows platform support
-# Keep core JNA classes (excluding AWT/Swing dependencies)
--keep class com.sun.jna.** { *; }
+# Keep core JNA classes (but not platform.* which is handled separately)
+-keep class com.sun.jna.* { *; }
+-keep class com.sun.jna.ptr.* { *; }
+-keep class com.sun.jna.win32.* { *; }
 -keep interface com.sun.jna.Library { *; }
 -keep interface com.sun.jna.Callback { *; }
--keepclassmembers class com.sun.jna.** { *; }
-# Keep native methods in JNA (but exclude AWT-related)
+-keepclassmembers class com.sun.jna.* { *; }
+# Keep native methods in JNA
 -keepclasseswithmembernames class com.sun.jna.Native {
     native <methods>;
     static <methods>;
 }
-# Exclude AWT-related class in Native
--assumenosideeffects class com.sun.jna.Native$AWT { *; }
 
-# Keep Windows API classes (Kernel32, WinDef, WinNT, etc.)
+# Keep Windows API classes - only what's actually used
 -keep class com.sun.jna.platform.win32.Kernel32 { *; }
--keep class com.sun.jna.platform.win32.WinDef { *; }
+-keep class com.sun.jna.platform.win32.Kernel32$* { *; }
 -keep class com.sun.jna.platform.win32.WinNT { *; }
--keep class com.sun.jna.platform.win32.Psapi { *; }
--keep class com.sun.jna.platform.win32.** { *; }
+-keep class com.sun.jna.platform.win32.WinNT$* { *; }
+-keep class com.sun.jna.platform.win32.BaseTSD { *; }
+-keep class com.sun.jna.platform.win32.BaseTSD$* { *; }
+# WinDef - keep only used inner classes (DWORD, ULONGLONG), not RECT
+-keep class com.sun.jna.platform.win32.WinDef { *; }
+-keep class com.sun.jna.platform.win32.WinDef$DWORD { *; }
+-keep class com.sun.jna.platform.win32.WinDef$DWORDLONG { *; }
+-keep class com.sun.jna.platform.win32.WinDef$ULONGLONG { *; }
+-keep class com.sun.jna.platform.win32.WinDef$ULONG { *; }
+-keep class com.sun.jna.platform.win32.WinDef$LONG { *; }
+-keep class com.sun.jna.platform.win32.WinDef$WORD { *; }
+-keep class com.sun.jna.platform.win32.WinDef$BOOL { *; }
 
 # Exclude JNA platform classes that depend on AWT/Swing
 # Use -dontwarn to suppress warnings about missing AWT/Swing methods
