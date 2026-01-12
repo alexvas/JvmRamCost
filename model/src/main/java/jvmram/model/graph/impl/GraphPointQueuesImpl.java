@@ -25,7 +25,7 @@ public class GraphPointQueuesImpl implements GraphPointQueuesWritable {
     }
 
     @Override
-    public List<GraphPoint> add(long pid, MetricType metricType, GraphPoint graphPoint) {
+    public List<GraphPoint> add(int pid, MetricType metricType, GraphPoint graphPoint) {
 
         var bytes = graphPoint.bytes();
         if (bytes < 0) {

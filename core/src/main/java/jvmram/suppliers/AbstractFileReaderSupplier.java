@@ -16,7 +16,7 @@ abstract class AbstractFileReaderSupplier<T extends HardwareData> extends Abstra
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final Path filePath;
 
-    AbstractFileReaderSupplier(long pid, Path filePath) {
+    AbstractFileReaderSupplier(int pid, Path filePath) {
         super(pid);
         this.filePath = filePath;
     }

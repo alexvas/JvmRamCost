@@ -23,7 +23,7 @@ class WinSupplier extends AbstractDataSupplier<WinData> {
         boolean GetProcessMemoryInfo(WinNT.HANDLE hProcess, ProcessMemoryCountersEx2 ppsmemCounters, int cb);
     }
 
-    WinSupplier(long pid) {
+    WinSupplier(int pid) {
         super(pid);
         if (Config.os != WINDOWS) {
             LOG.error("The supplier is intended for use in Windows OS only");

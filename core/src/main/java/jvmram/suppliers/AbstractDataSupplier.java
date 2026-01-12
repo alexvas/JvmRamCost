@@ -10,13 +10,13 @@ import java.time.Instant;
 
 abstract class AbstractDataSupplier<T extends HardwareData> implements HardwareDataSupplier<T> {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    final long pid;
+    final int pid;
 
     private boolean initialized;
     private Instant lastPollInstant;
     private T stored;
 
-    AbstractDataSupplier(long pid) {
+    AbstractDataSupplier(int pid) {
         this.pid = pid;
     }
 

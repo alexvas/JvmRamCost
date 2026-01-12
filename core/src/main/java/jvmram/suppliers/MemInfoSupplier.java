@@ -16,7 +16,7 @@ class MemInfoSupplier extends AbstractFileReaderSupplier<MemInfoData> {
 
     private static final String VM_RSS_PREFIX = "VmRSS:";
 
-    MemInfoSupplier(long pid) {
+    MemInfoSupplier(int pid) {
         super(
                 pid,
                 Path.of("/proc", String.valueOf(pid), "status")

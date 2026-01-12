@@ -18,7 +18,7 @@ public interface GraphPointQueuesWritable extends GraphPointQueues {
      * @param metricType - тип памяти
      * @param graphPoint - числовое значение (время / количество потребляемых байт)
      */
-    List<GraphPoint> add(long pid, MetricType metricType, GraphPoint graphPoint);
+    List<GraphPoint> add(int pid, MetricType metricType, GraphPoint graphPoint);
 
     void handleExceed(Collection<GraphPoint> exceeds);
 

@@ -15,7 +15,7 @@ public class JmxServiceImpl implements JmxService {
     }
 
     @Override
-    public void gc(long pid) {
+    public void gc(int pid) {
         var bean = JmxBeanFactory.getInstance().getMemoryMxBean(pid);
 
         if (bean == null) {

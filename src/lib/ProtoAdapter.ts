@@ -13,32 +13,6 @@ import { listen } from "@tauri-apps/api/event";
 import type { ProcInfo } from "./ProcHandle";
 import { MetricType } from "./GraphStore";
 
-/**
- * Рекурсивно преобразует все BigInt значения в объекте в строки.
- * Это необходимо для сериализации объектов с BigInt через JSON.stringify.
- */
-function bigIntToString<T>(value: T): any {
-    if (typeof value === "bigint") {
-        return BigInt(Number.MIN_SAFE_INTEGER) <= value && value <= BigInt(Number.MAX_SAFE_INTEGER)
-            ? Number(value)
-            : value.toString();
-    }
-    if (value === null || value === undefined) {
-        return value;
-    }
-    if (Array.isArray(value)) {
-        return value.map(bigIntToString);
-    }
-    if (typeof value === "object") {
-        const result: any = {};
-        for (const [key, val] of Object.entries(value)) {
-            result[key] = bigIntToString(val);
-        }
-        return result;
-    }
-    return value;
-}
-
 /** Преобразование из protobuf MetricType в наш MetricType */
 function fromProtoMetricType(protoType: ProtoMetricType): MetricType {
     if (protoType === ProtoMetricType.UNRECOGNIZED) {
@@ -64,10 +38,9 @@ export async function setInvisible(mt: MetricType) {
     await invoke("set_invisible", { request });
 }
 
-export async function triggerGc(pid: bigint) {
+export async function triggerGc(pid: number) {
     const request = Pid.create({ pid: pid });
-    const serializableRequest = bigIntToString(request);
-    await invoke("trigger_gc", { request: serializableRequest });
+    await invoke("trigger_gc", { request });
 }
 
 export async function getApplicableMetrics() {
@@ -84,20 +57,20 @@ function covertMoment(moment: Timestamp): number {
 }
 
 export async function listenGraphQueues(
-    listener: (pid: bigint, metricType: MetricType, moment: number, bytes: bigint) => void
+    listener: (pid: number, metricType: MetricType, moment: number, kilobytes: number) => void
 ) {
 
     const unlisten = await listen<GraphQueues>("graph-queues-updated", (event) => {
-        const pid = BigInt(event.payload.pid);
+        const pid = event.payload.pid;
         event.payload.queues.forEach((queue) => {
             const metricType = fromProtoMetricType(queue.metric_type);
             queue.points.forEach((protoPoint) => {
                 const moment = covertMoment(protoPoint.moment!);
-                const bytes = BigInt(protoPoint.bytes);
-                if (bytes < 0n) {
-                    console.error(`Bytes in GraphPoint pid ${pid}, metric type ${metricType} must be positive: ${bytes}`);
+                const kilobytes = protoPoint.kilobytes;
+                if (kilobytes < 0) {
+                    console.error(`Kilobytes in GraphPoint pid ${pid}, metric type ${metricType} must be positive: ${kilobytes}`);
                 } else {
-                    listener(pid, metricType, moment, bytes);
+                    listener(pid, metricType, moment, kilobytes);
                 }
             });
         });
@@ -105,19 +78,17 @@ export async function listenGraphQueues(
     return unlisten;
 }
 
-export async function listenJvmProcessList(listener: (procInfoMap: Map<bigint, ProcInfo>) => void) {
+export async function listenJvmProcessList(listener: (procInfoMap: Map<number, ProcInfo>) => void) {
 
     const unlisten = await listen<JvmProcessListResponse>("available-jvm-processes-updated", (event) => {
         const sortedProcesses = [...event.payload.infos].sort((a, b) => {
-            const pidA = typeof a.pid === "bigint" ? a.pid : BigInt(a.pid);
-            const pidB = typeof b.pid === "bigint" ? b.pid : BigInt(b.pid);
-            if (pidA < pidB) return -1;
-            if (pidA > pidB) return 1;
+            if (a.pid < b.pid) return -1;
+            if (a.pid > b.pid) return 1;
             return 0;
         });
         const availableJvmProcesses = new Map(
             sortedProcesses.map((proc) => {
-                const pid = BigInt(proc.pid);
+                const pid = proc.pid;
                 return [pid, proc];
             }),
         );

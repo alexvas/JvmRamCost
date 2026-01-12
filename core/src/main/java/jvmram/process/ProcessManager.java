@@ -25,5 +25,5 @@ public interface ProcessManager {
      * @param pid - родительский PID, относительно которого строится список потомков
      * @return список потомков.
      */
-    List<Long> getProcessDescendantIds(long pid);
+    List<Integer> getProcessDescendantIds(int pid);
 }

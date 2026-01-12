@@ -15,8 +15,8 @@
   import GraphPlot from "./GraphPlot.svelte";
   import { triggerGc } from "$lib/ProtoAdapter";
   let pidStr = $derived(page.params.pid);
-  let pid = $derived(pidStr ? BigInt(pidStr) : null);
-  const getAvailableJvmProcesses = getContext<() => Map<bigint, ProcInfo>>(
+  let pid = $derived(pidStr ? Number(pidStr) : null);
+  const getAvailableJvmProcesses = getContext<() => Map<number, ProcInfo>>(
     "availableJvmProcesses",
   )!;
   import { graphStore } from "$lib/GraphStore";

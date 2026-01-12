@@ -13,14 +13,14 @@ public interface JmxBeanFactory {
      * @return данные о памяти или null в случае ошибки получения данных
      */
     @Nullable
-    MemoryMXBean getMemoryMxBean(long pid);
+    MemoryMXBean getMemoryMxBean(int pid);
 
     /**
      * Разрываем JMX-соединение с процессом
      *
      * @param pid процесса
      */
-    void disconnect(long pid);
+    void disconnect(int pid);
 
     static JmxBeanFactory getInstance() {
         return JmxBeanFactoryImpl.INSTANCE;

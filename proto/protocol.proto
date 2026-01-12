@@ -30,11 +30,11 @@ service AppBackend {
 }
 
 message Pid {
-  int64 pid = 1;
+  int32 pid = 1;
 }
 
 message ProcInfo {
-  int64 pid = 1;
+  int32 pid = 1;
   string display_name = 2;
 }
 
@@ -47,7 +47,7 @@ message JvmProcessListResponse {
 }
 
 message File {
-  int64 pid = 1;
+  int32 pid = 1;
   string file_name = 2;
 }
 
@@ -65,7 +65,7 @@ enum MetricType {
 
 message GraphPoint {
   google.protobuf.Timestamp moment = 1;
-  int64 bytes = 2;
+  int32 kilobytes = 2;
 }
 
 message GraphQueue {
@@ -74,7 +74,7 @@ message GraphQueue {
 }
 
 message GraphQueues {
-  int64 pid = 1;
+  int32 pid = 1;
   repeated GraphQueue queues = 2;
 }
 

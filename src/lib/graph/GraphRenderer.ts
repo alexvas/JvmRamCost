@@ -333,7 +333,7 @@ export class GraphRenderer {
         for (const graph of graphs) {
             if (graph.points.length === 0) continue;
             const lastPoint = graph.points[graph.points.length - 1];
-            const y = lastPoint.kb;
+            const y = lastPoint.kilobytes;
             const label = formatBytesLabel(y, 2);
             const metricType = graph.metricType;
             const metricColorMeta = this.metricColors[metricType];
@@ -372,7 +372,7 @@ export class GraphRenderer {
      */
     renderGraphPath(
         metricType: number,
-        points: Array<{ moment: number; kb: number }>,
+        points: Array<{ moment: number; kilobytes: number }>,
         minMoment: number,
         maxKb: number,
     ): string {
@@ -382,7 +382,7 @@ export class GraphRenderer {
         const d = points
             .map((point, i) => {
                 const x = point.moment - minMoment;
-                const y = maxKb - point.kb;
+                const y = maxKb - point.kilobytes;
                 return `${i === 0 ? 'M' : 'L'} ${x},${y}`;
             })
             .join(' ');

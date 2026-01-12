@@ -5,21 +5,18 @@ import jvmram.conf.Config;
 import jvmram.controller.GraphController;
 import jvmram.controller.GraphRenderer;
 import jvmram.controller.ProcessController;
-import jvmram.model.graph.GraphPoint;
 import jvmram.metrics.MetricsFactory;
-import jvmram.model.graph.GraphPointQueues;
+import jvmram.model.graph.GraphPoint;
 import jvmram.model.graph.GraphPointQueuesWritable;
-import jvmram.visibility.MetricVisibility;
 import jvmram.model.metrics.MetricType;
+import jvmram.visibility.MetricVisibility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static java.util.Collections.synchronizedList;
 import static jvmram.controller.impl.Utils.callActionOrGetRidOfListener;
@@ -42,7 +39,7 @@ public class GraphControllerImpl implements GraphController {
         followingPids.forEach(this::update);
     }
 
-    private void update(long pid) {
+    private void update(Integer pid) {
         LOG.trace("updating pid {}", pid);
         var metrics = metricsFactory.getOrCreateMetrics(pid, Config.os);
 

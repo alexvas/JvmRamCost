@@ -1,4 +1,4 @@
 export interface ProcInfo {
-    pid: bigint;
+    pid: number;
     display_name: string;
 }

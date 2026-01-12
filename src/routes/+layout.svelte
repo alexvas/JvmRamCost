@@ -27,8 +27,8 @@
   import type { ProcInfo } from "$lib/ProcHandle";
 
   let { children } = $props();
-  let followingPids = $state<bigint[]>([]);
-  let availableJvmProcesses = $state<Map<bigint, ProcInfo>>(new Map());
+  let followingPids = $state<number[]>([]);
+  let availableJvmProcesses = $state<Map<number, ProcInfo>>(new Map());
 
   setContext("followingPids", () => followingPids);
   setContext("availableJvmProcesses", () => availableJvmProcesses);

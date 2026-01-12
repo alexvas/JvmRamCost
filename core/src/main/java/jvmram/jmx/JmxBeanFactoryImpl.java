@@ -18,14 +18,14 @@ class JmxBeanFactoryImpl implements JmxBeanFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final Map<Long, MemoryMXBean> memoryMxBeans = new ConcurrentHashMap<>();
-    private final Map<Long, JMXConnector> jmxConnectors = new ConcurrentHashMap<>();
+    private final Map<Integer, MemoryMXBean> memoryMxBeans = new ConcurrentHashMap<>();
+    private final Map<Integer, JMXConnector> jmxConnectors = new ConcurrentHashMap<>();
 
     private JmxBeanFactoryImpl() {
     }
 
     @Override
-    public @Nullable MemoryMXBean getMemoryMxBean(long pid) {
+    public @Nullable MemoryMXBean getMemoryMxBean(int pid) {
         // Возвращаем кэшированный bean, если он есть
         if (memoryMxBeans.containsKey(pid)) {
             return memoryMxBeans.get(pid);
@@ -83,7 +83,7 @@ class JmxBeanFactoryImpl implements JmxBeanFactory {
     }
 
     @Override
-    public void disconnect(long pid) {
+    public void disconnect(int pid) {
         var jmxConnector = jmxConnectors.remove(pid);
         if (jmxConnector != null) {
             try {

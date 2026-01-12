@@ -9,7 +9,7 @@ public interface JmxService {
      *
      * @param pid кому провести GC
      */
-    void gc(long pid);
+    void gc(int pid);
 
     void createHeapDump(String filepath);
 

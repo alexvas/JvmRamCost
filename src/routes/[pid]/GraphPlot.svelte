@@ -13,7 +13,7 @@
   import { Debouncer } from "$lib/Debouncer";
   import { getContext } from "svelte";
 
-  let { pid }: { pid: bigint } = $props();
+  let { pid }: { pid: number } = $props();
   let containerElement: HTMLDivElement | null = $state(null);
   let containerWidth = $state(1);
   let containerHeight = $state(1);

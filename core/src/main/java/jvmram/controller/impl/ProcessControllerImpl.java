@@ -17,8 +17,8 @@ public class ProcessControllerImpl implements ProcessController {
 
     private boolean includeChildrenProcesses = false;
 
-    private final Collection<Long> explicitlyFollowingPids = new TreeSet<>();
-    private final Map<Long, Collection<Long>> descendantPids = new HashMap<>();
+    private final Collection<Integer> explicitlyFollowingPids = new TreeSet<>();
+    private final Map<Integer, Collection<Integer>> descendantPids = new HashMap<>();
 
     private final ProcessManager processManager = ProcessManager.getInstance();
 
@@ -44,15 +44,15 @@ public class ProcessControllerImpl implements ProcessController {
     }
 
     @Override
-    public Collection<Long> getExplicitlyFollowingPids() {
+    public Collection<Integer> getExplicitlyFollowingPids() {
         return guarded.read(() -> explicitlyFollowingPids);
     }
 
     @Override
-    public Collection<Long> getPidsWithDescendants() {
+    public Collection<Integer> getPidsWithDescendants() {
         return guarded.read(() -> {
-                    List<Long> output = new ArrayList<>();
-                    for (long pid : explicitlyFollowingPids) {
+                    List<Integer> output = new ArrayList<>();
+                    for (Integer pid : explicitlyFollowingPids) {
                         output.add(pid);
                         output.addAll(descendantPids.getOrDefault(pid, List.of()));
                     }
@@ -62,7 +62,7 @@ public class ProcessControllerImpl implements ProcessController {
     }
 
     @Override
-    public void setCurrentlySelectedPids(Collection<Long> pids) {
+    public void setCurrentlySelectedPids(Collection<Integer> pids) {
         guarded.write(() -> {
             var pidsGone = new HashSet<>(explicitlyFollowingPids);
             pidsGone.removeAll(pids);
@@ -71,12 +71,12 @@ public class ProcessControllerImpl implements ProcessController {
         });
     }
 
-    private void doUnfollowPid(long pid) {
+    private void doUnfollowPid(Integer pid) {
         explicitlyFollowingPids.remove(pid);
         descendantPids.remove(pid);
     }
 
-    private void doFollowPid(long pid) {
+    private void doFollowPid(Integer pid) {
         explicitlyFollowingPids.add(pid);
         if (!includeChildrenProcesses) {
             return;

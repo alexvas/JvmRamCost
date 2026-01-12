@@ -14,7 +14,7 @@ import static jvmram.model.metrics.Os.LINUX;
 class SmapsSupplier extends AbstractFileReaderSupplier<SmapsData> {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    SmapsSupplier(long pid) {
+    SmapsSupplier(int pid) {
         super(
                 pid,
                 Path.of("/proc", String.valueOf(pid), "smaps_rollup")

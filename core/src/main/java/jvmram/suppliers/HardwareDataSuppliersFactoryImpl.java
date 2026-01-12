@@ -12,11 +12,11 @@ class HardwareDataSuppliersFactoryImpl implements HardwareDataSuppliersFactory {
     private HardwareDataSuppliersFactoryImpl() {
     }
 
-    private final Map<Long, Map<Class<? extends AbstractDataSupplier<?>>, AbstractDataSupplier<?>>> suppliers = new ConcurrentHashMap<>();
+    private final Map<Integer, Map<Class<? extends AbstractDataSupplier<?>>, AbstractDataSupplier<?>>> suppliers = new ConcurrentHashMap<>();
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends HardwareData> HardwareDataSupplier<T> getOrCreateSupplier(long pid, MetricType metricType) {
+    public <T extends HardwareData> HardwareDataSupplier<T> getOrCreateSupplier(int pid, MetricType metricType) {
         return (AbstractDataSupplier<T>) suppliers.computeIfAbsent(
                 pid,
                 ignored -> new HashMap<>()
@@ -35,7 +35,7 @@ class HardwareDataSuppliersFactoryImpl implements HardwareDataSuppliersFactory {
         };
     }
 
-    private AbstractDataSupplier<?> doCreateSupplier(long pid, MetricType type) {
+    private AbstractDataSupplier<?> doCreateSupplier(int pid, MetricType type) {
         return switch (type) {
             case RSS -> new MemInfoSupplier(pid);
             case PSS, USS -> new SmapsSupplier(pid);

@@ -18,7 +18,7 @@ import static jvmram.model.metrics.MetricType.*;
 
 public class MetricsFactoryImpl implements MetricsFactory {
 
-    private final Map<Long, Map<MetricType, RamMetric>> metrics = new ConcurrentHashMap<>();
+    private final Map<Integer, Map<MetricType, RamMetric>> metrics = new ConcurrentHashMap<>();
 
     private final HardwareDataSuppliersFactory suppliersFactory = HardwareDataSuppliersFactory.getInstance();
 
@@ -26,11 +26,11 @@ public class MetricsFactoryImpl implements MetricsFactory {
     }
 
     @Override
-    public Map<MetricType, RamMetric> getOrCreateMetrics(long pid, Os os) {
+    public Map<MetricType, RamMetric> getOrCreateMetrics(Integer pid, Os os) {
         return metrics.computeIfAbsent(pid, ignored -> createMetricMap(pid, os));
     }
 
-    private Map<MetricType, RamMetric> createMetricMap(long pid, Os os) {
+    private Map<MetricType, RamMetric> createMetricMap(int pid, Os os) {
         var osSpecific = switch (os) {
             case LINUX -> Map.of(
                     RSS, createMetrics(pid, RSS, MemInfoData::rss),
@@ -53,7 +53,7 @@ public class MetricsFactoryImpl implements MetricsFactory {
         return output;
     }
 
-    private <T extends HardwareData> RamMetric createMetrics(long pid, MetricType type, Function<T, Long> converter) {
+    private <T extends HardwareData> RamMetric createMetrics(int pid, MetricType type, Function<T, Long> converter) {
         HardwareDataSupplier<T> supplier = suppliersFactory.getOrCreateSupplier(pid, type);
         return new BaseMetric<>(supplier, DEV_POLL_INTERVALS.get(type), converter);
     }

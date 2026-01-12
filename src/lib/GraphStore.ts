@@ -16,17 +16,16 @@ const SIZE_LIMIT = 10_000;
 
 export interface GraphKey {
   type: MetricType;
-  pid: bigint;
+  pid: number;
 }
 
 export interface GraphPoint {
   moment: number;
-  kb: number;
-  originalBytes: bigint;
+  kilobytes: number;
 }
 
 export interface MetricGraph {
-  pid: bigint;
+  pid: number;
   metricType: MetricType;
   points: GraphPoint[];
 }
@@ -49,14 +48,14 @@ export interface ProcessMinMax {
 export class GraphStore {
 
   /** pid -> ProcessData */
-  private prosessData = new Map<bigint, ProcessDatum>();
+  private prosessData = new Map<number, ProcessDatum>();
 
-  hasGraphDataForProcess(pid: bigint): boolean {
+  hasGraphDataForProcess(pid: number): boolean {
     return (this.prosessData.get(pid)?.timestamps?.size ?? 0) > 0;
   }
 
   /** Все графики для конкретного процесса */
-  getGraphs(pid: bigint): MetricGraph[] {
+  getGraphs(pid: number): MetricGraph[] {
     const processData = this.prosessData.get(pid);
     if (!processData) return [];
 
@@ -66,12 +65,12 @@ export class GraphStore {
   }
 
   /** Получить min/max для конкретного процесса */
-  getProcessMinMax(pid: bigint): ProcessMinMax | null {
+  getProcessMinMax(pid: number): ProcessMinMax | null {
     return this.prosessData.get(pid)?.minMax ?? null;
   }
 
   /** Удалить все данные для конкретного процесса */
-  deleteProcess(pid: bigint): boolean {
+  deleteProcess(pid: number): boolean {
     return this.prosessData.delete(pid);
   }
 
@@ -82,7 +81,7 @@ export class GraphStore {
 
 
   /** Добавить точки для метрики процесса */
-  put(pid: bigint, metricType: MetricType, moment: number, bytes: bigint): void {
+  put(pid: number, metricType: MetricType, moment: number, kilobytes: number): void {
 
     let processDatum = this.prosessData.get(pid);
     if (!processDatum) {
@@ -114,11 +113,8 @@ export class GraphStore {
       return;
     }
     timestamps!.add(moment);
-    const kbBigInt = bytes / 1024n;
-    // работает до 2 терабайт
-    const kb = Math.round(Number(kbBigInt));
 
-    points.push({ moment: moment, kb: kb, originalBytes: bytes });
+    points.push({ moment: moment, kilobytes: kilobytes });
 
     let minMax = processDatum.minMax;
     // Обновляем min/max по времени для процесса
@@ -130,8 +126,8 @@ export class GraphStore {
     }
 
     // Обновляем max bytes для процесса
-    if (minMax.maxKb < kb) {
-      minMax.maxKb = kb;
+    if (minMax.maxKb < kilobytes) {
+      minMax.maxKb = kilobytes;
     }
 
     // Trim если превышен лимит
@@ -149,8 +145,8 @@ export class GraphStore {
     let removed = points.splice(0, toRemoveCount);
     removed.forEach(point => {
       timestamps.delete(point.moment);
-      if (maxRemovedKb < point.kb) {
-        maxRemovedKb = point.kb;
+      if (maxRemovedKb < point.kilobytes) {
+        maxRemovedKb = point.kilobytes;
       }
     });
 
@@ -181,8 +177,8 @@ export class GraphStore {
     let maxKb = -1;
     for (const points of processData.points.values()) {
       for (const point of points) {
-        if (maxKb < point.kb) {
-          maxKb = point.kb;
+        if (maxKb < point.kilobytes) {
+          maxKb = point.kilobytes;
         }
       }
     }

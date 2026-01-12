@@ -6,12 +6,16 @@ import jvmram.model.graph.GraphPoint;
 import jvmram.process.JvmProcessInfo;
 import jvmram.proto.*;
 import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 
 import static jvmram.model.metrics.MetricType.*;
 
 class Converter {
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static ProcInfo convert2Grpc(JvmProcessInfo input) {
         return ProcInfo.newBuilder()
@@ -33,8 +37,17 @@ class Converter {
 
     static jvmram.proto.GraphPoint convert2Grpc(GraphPoint input) {
         var moment = input.moment();
+        int kilobytes = Integer.MAX_VALUE;
+        long bytes = input.bytes();
+        long kb = Math.round(bytes / 1024.0);
+        try {
+            kilobytes = (int) kb;
+        } catch (Exception e) {
+            LOG.warn("Kilobyte value too large: {}", kb);
+        }
+
         return jvmram.proto.GraphPoint.newBuilder()
-                .setBytes(input.bytes())
+                .setKilobytes(kilobytes)
                 .setMoment(
                         Timestamp.newBuilder()
                                 .setSeconds(moment.getEpochSecond())
@@ -44,13 +57,13 @@ class Converter {
                 .build();
     }
 
-    static PidList convert2Grpc(Collection<Long> pids) {
+    static PidList convert2Grpc(Collection<Integer> pids) {
         return PidList.newBuilder()
                 .addAllPids(pids.stream().map(Converter::convert2Grpc).toList())
                 .build();
     }
 
-    static Pid convert2Grpc(Long input) {
+    static Pid convert2Grpc(Integer input) {
         return Pid.newBuilder().setPid(input).build();
     }
 
@@ -83,7 +96,7 @@ class Converter {
         };
     }
 
-    static Long fromGrpc(Pid pid) {
+    static Integer fromGrpc(Pid pid) {
         return pid.getPid();
     }
 

@@ -28,17 +28,17 @@
 <script lang="ts">
   import { getContext } from "svelte";
 
-  const getAvailableJvmProcesses = getContext<() => Map<bigint, ProcInfo>>(
+  const getAvailableJvmProcesses = getContext<() => Map<number, ProcInfo>>(
     "availableJvmProcesses",
   )!;
   let availableJvmProcesses = $derived(getAvailableJvmProcesses());
-  const getFollowingPids = getContext<() => bigint[]>("followingPids")!;
+  const getFollowingPids = getContext<() => number[]>("followingPids")!;
   let followingPids = $derived(getFollowingPids());
 
   import { invoke } from "@tauri-apps/api/core";
   import type { ProcInfo } from "$lib/ProcHandle";
 
-  async function followPids(pids: bigint[]) {
+  async function followPids(pids: number[]) {
     const request = {
       pids: pids.map((pid) => ({ pid: Number(pid) })),
     };

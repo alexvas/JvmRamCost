@@ -25,7 +25,7 @@ public interface ProcessController {
      *
      * @return список отслеживаемых процессов
      */
-    Collection<Long> getExplicitlyFollowingPids();
+    Collection<Integer> getExplicitlyFollowingPids();
 
     /**
      * Получить список процессов, за которыми поручено следить
@@ -33,13 +33,13 @@ public interface ProcessController {
      *
      * @return список отслеживаемых процессов
      */
-    Collection<Long> getPidsWithDescendants();
+    Collection<Integer> getPidsWithDescendants();
 
     void refreshAvailableJvmProcesses();
 
     void addAvailableJvmProcessesListener(Consumer<Collection<JvmProcessInfo>> onProcessInfoChanged);
 
-    void setCurrentlySelectedPids(Collection<Long> pids);
+    void setCurrentlySelectedPids(Collection<Integer> pids);
 
     static ProcessController getInstance() {
         return ProcessControllerImpl.INSTANCE;

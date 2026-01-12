@@ -5,7 +5,7 @@
 /** Точка на графике */
 export interface GraphPoint {
     moment: number;
-    kb: number;
+    kilobytes: number;
 }
 
 /** Данные одного графика (одной метрики) */

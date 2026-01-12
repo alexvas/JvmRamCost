@@ -16,7 +16,7 @@ class JmxSupplier extends AbstractDataSupplier<JmxData> {
 
     private final MemoryMXBean memoryMxBean;
     
-    JmxSupplier(long pid) {
+    JmxSupplier(int pid) {
         super(pid);
         this.memoryMxBean = JmxBeanFactory.getInstance().getMemoryMxBean(pid);
         if (this.memoryMxBean != null) {
