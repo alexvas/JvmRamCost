@@ -47,6 +47,17 @@ export interface GraphConfigResolved {
     prefersDark: boolean;
 }
 
+export interface CurrentValue {
+    metricType: number;
+    label: string;
+    title: string;
+    kilobytes: number;
+}
+
+export interface CurrentValues {
+    items: CurrentValue[];
+}
+
 /** Линия сетки */
 export interface GridLine {
     positionInDataUnits: number;

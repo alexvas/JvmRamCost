@@ -11,6 +11,8 @@ import type {
     MetricNameMap,
     GraphData,
     ProcessMinMax,
+    CurrentValues,
+    CurrentValue,
 } from './types';
 
 import {
@@ -326,20 +328,31 @@ export class GraphRenderer {
         return /*svg*/`<rect class="generic-frame" x="${xStart}" y="${yStart}" width="${this.config.rightCurrentValueWidth}" height="${transform.graphAreaHeight}"/>`;
     }
 
-    renderCurrentValues(transform: GraphTransform, graphs: Iterable<GraphData>): string {
-        const xStart = transform.graphAreaWidth + transform.translateX + 2 * this.config.rightCurrentValuePadding;
-        let yLine = transform.translateY + this.config.rightCurrentValuePadding;
-        const lines: string[] = [];
+    calculateCurrentValues(graphs: Iterable<GraphData>): CurrentValues {
+        const currentValuesArray: CurrentValue[] = [];
         for (const graph of graphs) {
             if (graph.points.length === 0) continue;
             const lastPoint = graph.points[graph.points.length - 1];
-            const y = lastPoint.kilobytes;
-            const label = formatBytesLabel(y, 2);
             const metricType = graph.metricType;
-            const metricColorMeta = this.metricColors[metricType];
+            const kilobytes = lastPoint.kilobytes;
+            const label = formatBytesLabel(kilobytes, 2);
+            const title = this.metricNames[metricType] || `Metric${metricType}`;
+            currentValuesArray.push({ metricType, label, title, kilobytes });
+        }
+        const currentValues: CurrentValues = {
+            items: currentValuesArray.sort((a, b) => b.kilobytes - a.kilobytes),
+        };
+        return currentValues;
+    }
+
+    renderCurrentValues(transform: GraphTransform, currentValues: CurrentValues): string {
+        const xStart = transform.graphAreaWidth + transform.translateX + 2 * this.config.rightCurrentValuePadding;
+        let yLine = transform.translateY + this.config.rightCurrentValuePadding;
+        const lines: string[] = [];
+        for (const currentValue of currentValues.items) {
+            const metricColorMeta = this.metricColors[currentValue.metricType];
             const metricColor = metricColorMeta[this.config.prefersDark ? 'color_dark' : 'color_light'];
-            lines.push(/*svg*/`<square x="${xStart}" y="${y}" width="10" height="10" fill="${metricColor}"/>`);
-            lines.push(/*svg*/`<text class="current-value" x="${xStart + 15}" y="${yLine}" text-anchor="middle" dominant-baseline="hanging" fill="${metricColor}">${label}</text>`);
+            lines.push(/*svg*/`<text class="current-value" x="${xStart + 15}" y="${yLine}" text-anchor="middle" dominant-baseline="hanging" fill="${metricColor}"><title>${currentValue.title}</title>${currentValue.label}</text>`);
             yLine += 20;
         }
         return lines.join('\n');
@@ -454,8 +467,8 @@ export class GraphRenderer {
         const xLabels = this.renderXLabels(verticalLines, transform);
         const yLabels = this.renderYLabels(horizontalLines, transform);
         const currentValueFrame = this.renderCurrentValueFrame(transform);
-        const currentValues = this.renderCurrentValues(transform, graphs);
-
+        const currentVals = this.calculateCurrentValues(graphs);
+        const currentValues = this.renderCurrentValues(transform, currentVals);
         return /*svg*/`<svg class="graph-plot" viewBox="${viewBox}" preserveAspectRatio="none">
   ${styles}
   <!-- Группа трансформаций для графика -->
