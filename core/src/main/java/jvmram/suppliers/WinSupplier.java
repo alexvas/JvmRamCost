@@ -91,12 +91,12 @@ class WinSupplier extends AbstractDataSupplier<WinData> {
     @Nullable WinData doGetData() {
         try (Arena arena = Arena.ofConfined()) {
             // OpenProcess(dwDesiredAccess, bInheritHandle, dwProcessId)
-            MemorySegment hProcess;
+            final MemorySegment hProcess;
             try {
                 hProcess = (MemorySegment) OPEN_PROCESS.invokeExact(
                         PROCESS_QUERY_INFORMATION | PROCESS_VM_READ,
                         false,
-                        (int) pid
+                        pid
                 );
             } catch (Throwable e) {
                 LOG.warn("Failed to open process handle for pid {}", pid, e);
@@ -117,7 +117,7 @@ class WinSupplier extends AbstractDataSupplier<WinData> {
                 pmc.set(JAVA_INT, 0, size);
 
                 // GetProcessMemoryInfo(hProcess, ppsmemCounters, cb)
-                boolean success;
+                final boolean success;
                 try {
                     success = (boolean) GET_PROCESS_MEMORY_INFO.invokeExact(hProcess, pmc, size);
                 } catch (Throwable e) {

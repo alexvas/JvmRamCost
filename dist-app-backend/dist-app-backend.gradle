@@ -19,7 +19,7 @@ dependencies {
 // 
 application {
     mainModule = 'jvmram.app.backend.dist'
-    mainClass  = 'jvmram.dist.Main'
+    mainClass  = 'jvmram.dist.JvmRamCost'
 }
 
 dependencies {

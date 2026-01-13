@@ -100,7 +100,7 @@
 }
 
 # Entry point
--keep class jvmram.dist.Main {
+-keep class jvmram.dist.JvmRamCost {
     public static void main(java.lang.String[]);
 }
 

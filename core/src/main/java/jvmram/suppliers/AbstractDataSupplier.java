@@ -31,7 +31,7 @@ abstract class AbstractDataSupplier<T extends HardwareData> implements HardwareD
         try {
             stored = doGetData();
         } catch (Exception e) {
-            LOG.error("Error getting data for pid {}", pid);
+            LOG.error("Error getting data for pid {}", pid, e);
             stored = null;
         }
     }
