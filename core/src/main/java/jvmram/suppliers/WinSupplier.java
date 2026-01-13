@@ -130,13 +130,13 @@ class WinSupplier extends AbstractDataSupplier<WinData> {
                     var workingSetSizeHandle = PMC_EX2_LAYOUT.varHandle(
                             MemoryLayout.PathElement.groupElement("WorkingSetSize")
                     );
-                    long workingSetSize = (long) workingSetSizeHandle.get(pmc);
+                    long workingSetSize = (long) workingSetSizeHandle.get(pmc, 0L);
                     
                     // Extract PrivateUsage using var handle
                     var privateUsageHandle = PMC_EX2_LAYOUT.varHandle(
                             MemoryLayout.PathElement.groupElement("PrivateUsage")
                     );
-                    long privateUsage = (long) privateUsageHandle.get(pmc);
+                    long privateUsage = (long) privateUsageHandle.get(pmc, 0L);
 
                     return new WinData(workingSetSize, privateUsage);
                 } else {
