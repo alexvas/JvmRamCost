@@ -16,14 +16,15 @@ public class JmxServiceImpl implements JmxService {
 
     @Override
     public void gc(int pid) {
-        var bean = JmxBeanFactory.getInstance().getMemoryMxBean(pid);
+        var datum = JmxBeanFactory.getInstance().getMxDatum(pid);
 
-        if (bean == null) {
-            LOG.info("No JMX bean for process {}, the one might be already closed", pid);
+        if (datum == null) {
+            LOG.info("No JMX datum for process {}, the one might be already closed", pid);
             return;
         }
+
         try {
-            bean.gc();
+            datum.memory().gc();
         } catch (Exception e) {
             LOG.info("Failed to gc pid {}: {}", pid, e.getMessage());
         }

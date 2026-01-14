@@ -2,18 +2,16 @@ package jvmram.jmx;
 
 import org.jspecify.annotations.Nullable;
 
-import java.lang.management.MemoryMXBean;
-
 public interface JmxBeanFactory {
 
     /**
-     * Возвращаем JMX handle для получения данных о памяти JVM-процесса.
+     * Возвращаем JMX handle для получения данных о JVM-процессе.
      *
      * @param pid процесса
-     * @return данные о памяти или null в случае ошибки получения данных
+     * @return данные о нём или null в случае ошибки получения данных
      */
     @Nullable
-    MemoryMXBean getMemoryMxBean(int pid);
+    MxDatum getMxDatum(int pid);
 
     /**
      * Разрываем JMX-соединение с процессом

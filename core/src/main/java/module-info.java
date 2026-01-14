@@ -4,6 +4,7 @@ module jvmram.core {
     requires static org.jspecify;
     requires org.slf4j;
     requires jvmram.model;
+    requires jdk.management;
 
     exports jvmram.conf;
     exports jvmram.metrics;
