@@ -64,7 +64,8 @@ enum MetricType {
 }
 
 message GraphPoint {
-  google.protobuf.Timestamp moment = 1;
+  /* время в десятых долях секунды с момента старта приложения */
+  int32 zehntel  = 1;
   int32 kilobytes = 2;
 }
 
@@ -75,7 +76,9 @@ message GraphQueue {
 
 message GraphQueues {
   int32 pid = 1;
-  repeated GraphQueue queues = 2;
+  /* момент старта приложения */
+  google.protobuf.Timestamp appStart = 2;
+  repeated GraphQueue queues = 3;
 }
 
 message ApplicableMetricsResponse {

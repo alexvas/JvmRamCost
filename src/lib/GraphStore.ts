@@ -1,3 +1,5 @@
+import { Temporal } from '@js-temporal/polyfill';
+
 /** Собственный enum для типов метрик (без UNRECOGNIZED) */
 export enum MetricType {
   RSS = 0,
@@ -50,6 +52,8 @@ export class GraphStore {
   /** pid -> ProcessData */
   private prosessData = new Map<number, ProcessDatum>();
 
+  private appStart = Temporal.Now.instant();
+
   hasGraphDataForProcess(pid: number): boolean {
     return (this.prosessData.get(pid)?.timestamps?.size ?? 0) > 0;
   }
@@ -79,9 +83,12 @@ export class GraphStore {
     this.prosessData.clear();
   }
 
+  setAppStart(appStart: Temporal.Instant): void {
+    this.appStart = appStart;
+  }
 
   /** Добавить точки для метрики процесса */
-  put(pid: number, metricType: MetricType, moment: number, kilobytes: number): void {
+  put(pid: number, metricType: MetricType, zehntel: number, kilobytes: number): void {
 
     let processDatum = this.prosessData.get(pid);
     if (!processDatum) {
@@ -109,20 +116,20 @@ export class GraphStore {
     }
 
     // Если такой момент уже есть — пропускаем
-    if (timestamps!.has(moment)) {
+    if (timestamps!.has(zehntel)) {
       return;
     }
-    timestamps!.add(moment);
+    timestamps!.add(zehntel);
 
-    points.push({ moment: moment, kilobytes: kilobytes });
+    points.push({ moment: zehntel, kilobytes: kilobytes });
 
     let minMax = processDatum.minMax;
     // Обновляем min/max по времени для процесса
-    if (minMax.minMoment > moment) {
-      minMax.minMoment = moment;
+    if (minMax.minMoment > zehntel) {
+      minMax.minMoment = zehntel;
     }
-    if (minMax.maxMoment < moment) {
-      minMax.maxMoment = moment;
+    if (minMax.maxMoment < zehntel) {
+      minMax.maxMoment = zehntel;
     }
 
     // Обновляем max bytes для процесса

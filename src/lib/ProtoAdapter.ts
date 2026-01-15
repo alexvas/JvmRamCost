@@ -12,6 +12,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import type { ProcInfo } from "./ProcHandle";
 import { MetricType } from "./GraphStore";
+import { Temporal } from "@js-temporal/polyfill";
 
 /** Преобразование из protobuf MetricType в наш MetricType */
 function fromProtoMetricType(protoType: ProtoMetricType): MetricType {
@@ -51,13 +52,15 @@ export async function getApplicableMetrics() {
     return response.types.map(fromProtoMetricType);
 }
 
-function covertMoment(moment: Timestamp): number {
-    const deciSeconds = Number(moment.seconds) * 10 + Math.round((moment.nanos ?? 0) / 100_000_000);
-    return deciSeconds;
+function covertMoment(moment: Timestamp): BigInt {
+    const epochMillis = BigInt(moment.seconds) * 1000n + BigInt(Math.round((moment.nanos ?? 0) / 1_000_000));
+    return epochMillis;
 }
 
+let appStart: Temporal.Instant | null = null;
+
 export async function listenGraphQueues(
-    listener: (pid: number, metricType: MetricType, moment: number, kilobytes: number) => void
+    listener: (appStart: Temporal.Instant, pid: number, metricType: MetricType, zehntel: number, kilobytes: number) => void
 ) {
 
     const unlisten = await listen<GraphQueues>("graph-queues-updated", (event) => {
@@ -65,12 +68,18 @@ export async function listenGraphQueues(
         event.payload.queues.forEach((queue) => {
             const metricType = fromProtoMetricType(queue.metric_type);
             queue.points.forEach((protoPoint) => {
-                const moment = covertMoment(protoPoint.moment!);
+                const zehntel = protoPoint.zehntel;
                 const kilobytes = protoPoint.kilobytes;
                 if (kilobytes < 0) {
                     console.error(`Kilobytes in GraphPoint pid ${pid}, metric type ${metricType} must be positive: ${kilobytes}`);
                 } else {
-                    listener(pid, metricType, moment, kilobytes);
+                    if (appStart == null) {
+                        const appStartSeconds = Number(event.payload.appStart?.seconds ?? 0);
+                        const appStartNanos = Number(event.payload.appStart?.nanos ?? 0);
+                        const nanos = BigInt(appStartSeconds) * 1_000_000_000n + BigInt(appStartNanos);
+                        appStart = Temporal.Instant.fromEpochNanoseconds(nanos);
+                    }
+                    listener(appStart!, pid, metricType, zehntel, kilobytes);
                 }
             });
         });

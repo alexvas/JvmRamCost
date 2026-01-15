@@ -67,7 +67,11 @@ class JvmRamBackendImpl extends AppBackendGrpc.AppBackendImplBase {
                                 .setPid(pid)
                                 .addAllQueues(
                                         keys.stream()
-                                                .map(k -> convert2Grpc(k, queues.getPoints(k)))
+                                                .map(k -> convert2Grpc(
+                                                        k,
+                                                        queues.getApplicationStart(),
+                                                        queues.getPoints(k))
+                                                )
                                                 .toList()
                                 ).build();
                         responseObserver.onNext(resp);

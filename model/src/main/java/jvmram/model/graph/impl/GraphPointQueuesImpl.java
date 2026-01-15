@@ -21,6 +21,8 @@ public class GraphPointQueuesImpl implements GraphPointQueuesWritable {
 
     private final Map<GraphKey, Deque<GraphPoint>> data = new ConcurrentHashMap<>();
 
+    private final Instant applicationStart = Instant.now();
+
     private GraphPointQueuesImpl() {
     }
 
@@ -74,6 +76,11 @@ public class GraphPointQueuesImpl implements GraphPointQueuesWritable {
     @Override
     public Collection<GraphPoint> getPoints(GraphKey key) {
         return data.get(key);
+    }
+
+    @Override
+    public Instant getApplicationStart() {
+        return applicationStart;
     }
 
     public static final GraphPointQueuesImpl INSTANCE = new GraphPointQueuesImpl();

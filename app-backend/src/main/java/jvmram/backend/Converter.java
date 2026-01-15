@@ -10,7 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.time.Instant;
 import java.util.Collection;
+import java.util.Objects;
 
 import static jvmram.model.metrics.MetricType.*;
 
@@ -24,18 +26,19 @@ class Converter {
                 .build();
     }
 
-    static GraphQueue convert2Grpc(GraphKey k, Collection<GraphPoint> points) {
+    static GraphQueue convert2Grpc(GraphKey k, Instant startMoment, Collection<GraphPoint> points) {
         return GraphQueue.newBuilder()
                 .setMetricType(convert2Grpc(k.type()))
                 .addAllPoints(
                         points.stream()
-                                .map(Converter::convert2Grpc)
+                                .map(it -> convert2Grpc(startMoment, it))
+                                .filter(Objects::nonNull)
                                 .toList()
                 )
                 .build();
     }
 
-    static jvmram.proto.GraphPoint convert2Grpc(GraphPoint input) {
+    static jvmram.proto.@Nullable GraphPoint convert2Grpc(Instant startMoment, GraphPoint input) {
         var moment = input.moment();
         int kilobytes = Integer.MAX_VALUE;
         long bytes = input.bytes();
@@ -44,16 +47,19 @@ class Converter {
             kilobytes = (int) kb;
         } catch (Exception e) {
             LOG.warn("Kilobyte value too large: {}", kb);
+            return null;
         }
+        long measurementMillis = input.moment().toEpochMilli();
+        long startMillis = startMoment.toEpochMilli();
+        if (measurementMillis < startMillis) {
+            return null;
+        }
+        int deltaMillis = (int) (measurementMillis - startMillis);
+        int zehntel = (int) Math.round(deltaMillis / 100.0);
 
         return jvmram.proto.GraphPoint.newBuilder()
                 .setKilobytes(kilobytes)
-                .setMoment(
-                        Timestamp.newBuilder()
-                                .setSeconds(moment.getEpochSecond())
-                                .setNanos(moment.getNano())
-                                .build()
-                )
+                .setZehntel(zehntel)
                 .build();
     }
 

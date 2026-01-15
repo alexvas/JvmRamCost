@@ -1,5 +1,6 @@
 package jvmram.model.graph;
 
+import java.time.Instant;
 import java.util.Collection;
 
 public interface GraphPointQueues {
@@ -18,4 +19,10 @@ public interface GraphPointQueues {
      * @return очередь
      */
     Collection<GraphPoint> getPoints(GraphKey key);
+
+    /**
+     * Показывает момент, когда стартовало приложение.
+     * @return момент старта приложения
+     */
+    Instant getApplicationStart();
 }

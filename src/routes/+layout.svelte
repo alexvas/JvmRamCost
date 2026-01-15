@@ -25,6 +25,7 @@
   import { page } from "$app/state";
   import { listenGraphQueues, listenJvmProcessList } from "$lib/ProtoAdapter";
   import type { ProcInfo } from "$lib/ProcHandle";
+  import { graphStore } from "$lib/GraphStore";
 
   let { children } = $props();
   let followingPids = $state<number[]>([]);
@@ -39,10 +40,10 @@
 
   let graphVersion = $state(0);
   setContext("graphVersion", () => graphVersion);
-  import { graphStore } from "$lib/GraphStore";
 
-  listenGraphQueues((pid, metricType, moment, bytes) => {
-    graphStore.put(pid, metricType, moment, bytes);
+  listenGraphQueues((appStart, pid, metricType, zehntel, bytes) => {
+    graphStore.setAppStart(appStart);
+    graphStore.put(pid, metricType, zehntel, bytes);
     graphVersion++;
   });
 
