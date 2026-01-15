@@ -288,9 +288,9 @@ export class GraphRenderer {
       }
       .gc-marks {
         stroke: green;
-        stroke-width: 0.3;
+        stroke-width: 0.9;
         vector-effect: non-scaling-stroke;
-        opacity: 0.3;
+        opacity: 0.7;
         fill: none;
       }
       .grid-label-x,
