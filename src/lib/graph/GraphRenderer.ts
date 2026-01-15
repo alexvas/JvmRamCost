@@ -368,7 +368,7 @@ export class GraphRenderer {
     renderVerticalGridLines(lines: GridLine[], dataHeight: number): string {
         if (lines.length === 0) return '';
         const d = lines
-            .map((line) => `M ${line.positionInDataUnits},0 L ${line.positionInDataUnits},${dataHeight}`)
+            .map((line) => `M ${line.positionInDataUnits} 0 L ${line.positionInDataUnits} ${dataHeight}`)
             .join(' ');
         return /*svg*/`<path class="grid-lines" d="${d}"/>`;
     }
@@ -379,7 +379,7 @@ export class GraphRenderer {
     renderHorizontalGridLines(lines: GridLine[], dataWidth: number): string {
         if (lines.length === 0) return '';
         const d = lines
-            .map((line) => `M 0,${line.positionInDataUnits} L ${dataWidth},${line.positionInDataUnits}`)
+            .map((line) => `M 0 ${line.positionInDataUnits} L ${dataWidth} ${line.positionInDataUnits}`)
             .join(' ');
         return /*svg*/`<path class="grid-lines" d="${d}"/>`;
     }
@@ -392,7 +392,7 @@ export class GraphRenderer {
         if (gcMarks.length === 0) return '';
         console.log('gcMarks', gcMarks);
         const d = gcMarks
-            .map((gcMark) => `M ${gcMark},0 L ${gcMark},${dataHeight}`)
+            .map((gcMark) => `M ${gcMark} 0 L ${gcMark} ${dataHeight}`)
             .join(' ');
         return /*svg*/`<path class="gc-marks" d="${d}"/>`;
     }
