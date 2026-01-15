@@ -4,9 +4,9 @@
   "version": "1.0.4",
   "identifier": "jvmram",
   "build": {
-    "beforeDevCommand": "yarn dev",
+    "beforeDevCommand": "yarn proto:gen && yarn dev",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "yarn build",
+    "beforeBuildCommand": "yarn proto:gen && yarn build",
     "frontendDist": "../frontend-dist"
   },
   "app": {
