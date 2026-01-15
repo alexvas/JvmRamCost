@@ -30,9 +30,13 @@
   function trigger_gc() {
     if (!pid) return;
     console.log("trigger_gc", pid);
-    triggerGc(pid).catch((error) => {
-      console.error("trigger_gc error", error);
-    });
+    triggerGc(pid)
+      .then(() => {
+        graphStore.addGcMark(pid);
+      })
+      .catch((error) => {
+        console.error("trigger_gc error", error);
+      });
   }
 </script>
 

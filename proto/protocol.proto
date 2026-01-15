@@ -77,7 +77,7 @@ message GraphQueue {
 message GraphQueues {
   int32 pid = 1;
   /* момент старта приложения */
-  google.protobuf.Timestamp appStart = 2;
+  google.protobuf.Timestamp app_start = 2;
   repeated GraphQueue queues = 3;
 }
 

@@ -39,17 +39,17 @@ class Converter {
     }
 
     static jvmram.proto.@Nullable GraphPoint convert2Grpc(Instant startMoment, GraphPoint input) {
-        var moment = input.moment();
-        int kilobytes = Integer.MAX_VALUE;
         long bytes = input.bytes();
         long kb = Math.round(bytes / 1024.0);
+        final int kilobytes;
         try {
             kilobytes = (int) kb;
         } catch (Exception e) {
             LOG.warn("Kilobyte value too large: {}", kb);
             return null;
         }
-        long measurementMillis = input.moment().toEpochMilli();
+        var moment = input.moment();
+        long measurementMillis = moment.toEpochMilli();
         long startMillis = startMoment.toEpochMilli();
         if (measurementMillis < startMillis) {
             return null;

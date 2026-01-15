@@ -11,10 +11,9 @@
  */
 export function formatTimeLabel(
   tick: number,
-  minTime: number,
   interval: number,
 ): string {
-  const relativeTenthsOfSecond = tick - minTime;
+  const relativeTenthsOfSecond = tick;
   const seconds = Math.floor(relativeTenthsOfSecond / 10);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);

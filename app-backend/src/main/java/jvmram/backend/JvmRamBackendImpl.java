@@ -1,6 +1,7 @@
 package jvmram.backend;
 
 import com.google.protobuf.Empty;
+import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import jvmram.conf.Config;
 import jvmram.controller.GraphController;
@@ -65,18 +66,23 @@ class JvmRamBackendImpl extends AppBackendGrpc.AppBackendImplBase {
                     .forEach((pid, keys) -> {
                         var resp = GraphQueues.newBuilder()
                                 .setPid(pid)
+                                .setAppStart(getAppStart())
                                 .addAllQueues(
                                         keys.stream()
-                                                .map(k -> convert2Grpc(
-                                                        k,
-                                                        queues.getApplicationStart(),
-                                                        queues.getPoints(k))
-                                                )
+                                                .map(this::convert)
                                                 .toList()
                                 ).build();
                         responseObserver.onNext(resp);
                     });
         });
+    }
+
+    private Timestamp getAppStart() {
+        var appStart = queues.getApplicationStart();
+        return Timestamp.newBuilder()
+                .setSeconds(appStart.getEpochSecond())
+                .setNanos(appStart.getNano())
+                .build();
     }
 
     @Override
@@ -176,5 +182,11 @@ class JvmRamBackendImpl extends AppBackendGrpc.AppBackendImplBase {
     private static void fireEmptyResponse(StreamObserver<Empty> responseObserver) {
         responseObserver.onNext(EMPTY);
         responseObserver.onCompleted();
+    }
+
+    private GraphQueue convert(GraphKey k) {
+        var start = queues.getApplicationStart();
+        var points = queues.getPoints(k);
+        return convert2Grpc(k, start, points);
     }
 }

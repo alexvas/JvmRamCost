@@ -81,7 +81,8 @@
       return /*svg*/ `<svg class="graph-plot"></svg>`;
     }
     const graphs = graphStore.getGraphs(pid);
-    return renderer.renderToString(processMinMax, graphs);
+    const gcMarks = graphStore.getGcMarks(pid);
+    return renderer.renderToString(processMinMax, graphs, gcMarks);
   });
 </script>
 

@@ -16,7 +16,6 @@ export interface GraphData {
 
 /** Min/max значения для процесса */
 export interface ProcessMinMax {
-    minMoment: number;
     maxMoment: number;
     maxKb: number;
 }

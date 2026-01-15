@@ -38,6 +38,7 @@ interface ProcessDatum {
   points: Map<MetricType, GraphPoint[]>;
   timestamps: Map<MetricType, Set<number>>;
   minMax: ProcessMinMax;
+  gcMarks: number[];
 }
 
 export interface ProcessMinMax {
@@ -73,6 +74,10 @@ export class GraphStore {
     return this.prosessData.get(pid)?.minMax ?? null;
   }
 
+  getGcMarks(pid: number): number[] {
+    return this.prosessData.get(pid)?.gcMarks ?? [];
+  }
+
   /** Удалить все данные для конкретного процесса */
   deleteProcess(pid: number): boolean {
     return this.prosessData.delete(pid);
@@ -102,6 +107,7 @@ export class GraphStore {
         points: new Map(),
         timestamps: new Map(),
         minMax: minMax,
+        gcMarks: [],
       };
       this.prosessData.set(pid, processDatum);
     }
@@ -139,6 +145,19 @@ export class GraphStore {
 
     // Trim если превышен лимит
     this.trimIfNeeded(processDatum, points, timestamps!);
+  }
+
+  addGcMark(pid: number): void {
+    const processDatum = this.prosessData.get(pid);
+    if (!processDatum) {
+      return;
+    }
+    const nowMillis = Temporal.Now.instant().epochMilliseconds;
+    const appStartMillis = this.appStart.epochMilliseconds;
+    const gcMarkMillis = nowMillis - appStartMillis;
+    const gcMarkZehntel = Math.round(gcMarkMillis / 100);
+    console.log("start", appStartMillis, "now", nowMillis, 'gcMarkZehntel', gcMarkZehntel);
+    processDatum.gcMarks.push(gcMarkZehntel);
   }
 
   private trimIfNeeded(processDatum: ProcessDatum, points: GraphPoint[], timestamps: Set<number>): void {
