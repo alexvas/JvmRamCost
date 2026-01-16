@@ -122,14 +122,10 @@ tasks.register('proguardMinify', JavaExec) {
         tempRulesFile.parentFile.mkdirs()
         def content = rulesFile.text + "\n\n" +
                 "-injars ${fatJar.archiveFile.get().asFile.absolutePath}\n" +
-                "-outjars ${outJarFile.absolutePath}\n" +
-                "-libraryjars ${javaHome}/jmods/java.base.jmod(!**.jar;!module-info.class)\n" +
-                "-libraryjars ${javaHome}/jmods/java.logging.jmod(!**.jar;!module-info.class)\n" +
-                "-libraryjars ${javaHome}/jmods/java.management.jmod(!**.jar;!module-info.class)\n" +
-                "-libraryjars ${javaHome}/jmods/java.naming.jmod(!**.jar;!module-info.class)\n" +
-                "-libraryjars ${javaHome}/jmods/java.security.jgss.jmod(!**.jar;!module-info.class)\n" +
-                "-libraryjars ${javaHome}/jmods/jdk.attach.jmod(!**.jar;!module-info.class)\n" +
-                "-libraryjars ${javaHome}/jmods/jdk.unsupported.jmod(!**.jar;!module-info.class)\n"
+                "-outjars ${outJarFile.absolutePath}\n"
+        ["java.base", "java.logging", "java.management", "jdk.attach", "jdk.unsupported"].forEach {
+            content += "-libraryjars ${javaHome}/jmods/${it}.jmod(!**.jar;!module-info.class)\n"
+        }
 
         tempRulesFile.text = content
         args = ['@' + tempRulesFile.absolutePath]
@@ -155,6 +151,15 @@ tasks.register('jpackageMin', Exec) {
 
         def libsDir = file("${buildDir}/minified")
 
+        def modules = [
+            "java.base", 
+            "java.logging", 
+            "java.management.rmi", // для удалённого вызова методов
+            "jdk.attach", // для удалённого подключения к другим JVM
+            "jdk.management", // для Heap Dump
+            "jdk.unsupported", // использование Unsafe API 
+        ]
+
         commandLine = [
                 jpackageExe.absolutePath,
                 '--input', libsDir.absolutePath,
@@ -167,8 +172,8 @@ tasks.register('jpackageMin', Exec) {
                 '--copyright', '2026 Alexander Vasilev',
                 '--type', 'app-image',
                 '--dest', outputDir.absolutePath,
-                // Explicit modules without java.desktop
-                '--add-modules', 'java.base,java.logging,java.management,jdk.attach,jdk.unsupported'
+                // Explicit modules
+                '--add-modules', modules.join(',')
         ]
     }
 }
