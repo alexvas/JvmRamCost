@@ -56,7 +56,7 @@ fn find_java() -> Result<std::path::PathBuf, String> {
             return Ok("java".into());
         }
     }
-    
+
     // Пробуем $JAVA_HOME/bin/java
     if let Ok(java_home) = std::env::var("JAVA_HOME") {
         let java_path = std::path::PathBuf::from(java_home).join("bin/java");
@@ -64,23 +64,29 @@ fn find_java() -> Result<std::path::PathBuf, String> {
             return Ok(java_path);
         }
     }
-    
+
     Err("Java не найдена. Установите Java или задайте JAVA_HOME".into())
 }
 
 fn start_backend(app: &tauri::App) -> Result<std::process::Child, String> {
     let java = find_java()?;
-    let resource_path = app.path().resource_dir()
+    let resource_path = app
+        .path()
+        .resource_dir()
         .map_err(|e| format!("Не удалось получить путь к ресурсам: {}", e))?
         .join("jvm-ram-cost.jar");
-    
+
     if !resource_path.exists() {
         return Err(format!("JAR файл не найден: {:?}", resource_path));
     }
-    
+
     let mut cmd = std::process::Command::new(java);
-    cmd.arg("-jar").arg(&resource_path);
-    
+    cmd.arg("-Xms10m")
+        .arg("-Xmx100m")
+        .arg("-XX:MaxDirectMemorySize=50m")
+        .arg("--enable-native-access=ALL-UNNAMED")
+        .arg("-jar")
+        .arg(&resource_path);
     // На Unix: создаём новую process group, чтобы можно было убить все дочерние процессы
     #[cfg(unix)]
     {
@@ -92,7 +98,7 @@ fn start_backend(app: &tauri::App) -> Result<std::process::Child, String> {
             });
         }
     }
-    
+
     cmd.spawn()
         .map_err(|e| format!("Не удалось запустить бэкенд: {}", e))
 }
@@ -228,10 +234,7 @@ async fn set_following_pids(
 }
 
 #[tauri::command]
-async fn trigger_gc(
-    state: State<'_, Arc<AppState>>,
-    request: Jmvram::Pid,
-) -> Result<(), Error> {
+async fn trigger_gc(state: State<'_, Arc<AppState>>, request: Jmvram::Pid) -> Result<(), Error> {
     let mut client = get_client(&state).await;
     client.trigger_gc(request).await?;
     Ok(())
@@ -241,12 +244,9 @@ use tauri::{AppHandle, Emitter};
 
 use crate::google::protobuf::Empty;
 
-async fn listen_available_jvm_processes_updated(
-    app: AppHandle,
-    state: Arc<AppState>,
-) {
+async fn listen_available_jvm_processes_updated(app: AppHandle, state: Arc<AppState>) {
     let mut retry_delay = std::time::Duration::from_millis(INITIAL_RETRY_DELAY_MS);
-    
+
     loop {
         match try_listen_jvm_processes(&app, &state).await {
             Ok(()) => {
@@ -254,37 +254,35 @@ async fn listen_available_jvm_processes_updated(
                 retry_delay = std::time::Duration::from_millis(INITIAL_RETRY_DELAY_MS);
             }
             Err(e) => {
-                eprintln!("gRPC error (jvm_processes): {}, retry in {:?}", e, retry_delay);
+                eprintln!(
+                    "gRPC error (jvm_processes): {}, retry in {:?}",
+                    e, retry_delay
+                );
             }
         }
         tokio::time::sleep(retry_delay).await;
         retry_delay = std::cmp::min(
             retry_delay * 2,
-            std::time::Duration::from_millis(MAX_RETRY_DELAY_MS)
+            std::time::Duration::from_millis(MAX_RETRY_DELAY_MS),
         );
     }
 }
 
-async fn try_listen_jvm_processes(
-    app: &AppHandle,
-    state: &Arc<AppState>,
-) -> Result<(), Error> {
+async fn try_listen_jvm_processes(app: &AppHandle, state: &Arc<AppState>) -> Result<(), Error> {
     let mut client = state.get_client().await;
     let response = client.listen_jvm_process_list(Empty::default()).await?;
     let mut stream = response.into_inner();
-    
+
     while let Some(response) = stream.message().await? {
-        app.emit("available-jvm-processes-updated", &response).unwrap();
+        app.emit("available-jvm-processes-updated", &response)
+            .unwrap();
     }
     Ok(())
 }
 
-async fn listen_graph_queues(
-    app: AppHandle,
-    state: Arc<AppState>,
-) {
+async fn listen_graph_queues(app: AppHandle, state: Arc<AppState>) {
     let mut retry_delay = std::time::Duration::from_millis(INITIAL_RETRY_DELAY_MS);
-    
+
     loop {
         match try_listen_graph_queues(&app, &state).await {
             Ok(()) => {
@@ -292,25 +290,25 @@ async fn listen_graph_queues(
                 retry_delay = std::time::Duration::from_millis(INITIAL_RETRY_DELAY_MS);
             }
             Err(e) => {
-                eprintln!("gRPC error (graph_queues): {}, retry in {:?}", e, retry_delay);
+                eprintln!(
+                    "gRPC error (graph_queues): {}, retry in {:?}",
+                    e, retry_delay
+                );
             }
         }
         tokio::time::sleep(retry_delay).await;
         retry_delay = std::cmp::min(
             retry_delay * 2,
-            std::time::Duration::from_millis(MAX_RETRY_DELAY_MS)
+            std::time::Duration::from_millis(MAX_RETRY_DELAY_MS),
         );
     }
 }
 
-async fn try_listen_graph_queues(
-    app: &AppHandle,
-    state: &Arc<AppState>,
-) -> Result<(), Error> {
+async fn try_listen_graph_queues(app: &AppHandle, state: &Arc<AppState>) -> Result<(), Error> {
     let mut client = state.get_client().await;
     let response = client.listen_graph_queues(Empty::default()).await?;
     let mut stream = response.into_inner();
-    
+
     while let Some(response) = stream.message().await? {
         app.emit("graph-queues-updated", &response).unwrap();
     }
@@ -337,9 +335,6 @@ pub fn run() {
             app.manage(state.clone());
 
             let state2 = state.clone();
-
-
-
 
             let app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
