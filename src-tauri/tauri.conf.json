@@ -13,8 +13,8 @@
     "windows": [
       {
         "title": "jvm-ram-cost",
-        "width": 1800,
-        "height": 1200
+        "width": 3000,
+        "height": 2000
       }
     ],
     "security": {
