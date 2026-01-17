@@ -4,12 +4,11 @@
     "linux": {
       "deb": {
         "files": {
-          "../README.md": "docs/README.md",
-          "../dist-app-backend/build/jpackage/jvm-ram-cost": "backend"
+          "/usr/share/jvm-ram-cost-standalone/docs/README.md": "../README.md",
+          "/usr/share/jvm-ram-cost-standalone/backend/": "../dist-app-backend/build/jpackage/jvm-ram-cost/"
         }
       }
     },
-    "resources": {
-    }
-  }  
+    "resources": {}
+  }
 }
