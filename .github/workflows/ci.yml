@@ -41,7 +41,7 @@ jobs:
       - name: zip jpackage output
         run: |
           cd dist-app-backend/build/jpackage
-          zip -r ../../../../jvm-ram-cost-jpackage.zip jvm-ram-cost
+          zip -r ../../../jvm-ram-cost-jpackage.zip jvm-ram-cost
 
       - name: Upload jpackage artifact
         uses: actions/upload-artifact@v4
