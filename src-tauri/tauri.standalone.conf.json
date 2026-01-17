@@ -5,7 +5,8 @@
       "deb": {
         "files": {
           "/usr/share/jvm-ram-cost-standalone/docs/README.md": "../README.md",
-          "/usr/share/jvm-ram-cost-standalone/backend/": "../dist-app-backend/build/jpackage/jvm-ram-cost/"
+          "/usr/share/jvm-ram-cost-standalone/backend/bin/": "../dist-app-backend/build/jpackage/jvm-ram-cost/bin/",
+          "/usr/share/jvm-ram-cost-standalone/backend/lib/": "../dist-app-backend/build/jpackage/jvm-ram-cost/lib/"
         }
       }
     },
