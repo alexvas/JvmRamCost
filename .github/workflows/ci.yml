@@ -39,7 +39,9 @@ jobs:
         run: ./gradlew jpackageMin
 
       - name: zip jpackage output
-        run: zip -r jvm-ram-cost-jpackage.zip dist-app-backend/build/jpackage/jvm-ram-cost
+        run: |
+          cd dist-app-backend/build/jpackage
+          zip -r ../../../../jvm-ram-cost-jpackage.zip jvm-ram-cost
 
       - name: Upload jpackage artifact
         uses: actions/upload-artifact@v4
@@ -72,8 +74,8 @@ jobs:
       
       - name: Unzip jpackage artifact
         run: |
-          mkdir -p ./dist-app-backend/build/jpackage/jvm-ram-cost
-          unzip ./jvm-ram-cost-jpackage.zip -d ./dist-app-backend/build/jpackage/jvm-ram-cost/
+          mkdir -p ./dist-app-backend/build/jpackage
+          unzip ./jvm-ram-cost-jpackage.zip -d ./dist-app-backend/build/jpackage/
           echo "jpackage unzipped:"
           ls -la ./dist-app-backend/build/jpackage/jvm-ram-cost/
 
