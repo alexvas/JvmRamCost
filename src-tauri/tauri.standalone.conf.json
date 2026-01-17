@@ -1,8 +1,15 @@
 {
   "productName": "jvm-ram-cost-standalone",
   "bundle": {
+    "linux": {
+      "deb": {
+        "files": {
+          "../README.md": "docs/README.md",
+          "../dist-app-backend/build/jpackage/jvm-ram-cost": "backend"
+        }
+      }
+    },
     "resources": {
-      "../dist-app-backend/build/jpackage/jvm-ram-cost": "jvm-ram-cost"
     }
-  }
+  }  
 }

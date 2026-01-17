@@ -1,5 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
+  "productName": "jvm-ram-cost",
   "version": "1.0.4",
   "identifier": "jvmram",
   "build": {
