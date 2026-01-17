@@ -123,9 +123,13 @@ jobs:
         run: |
           yarn tauri build --no-bundle
 
-      - name: Package Tauri application into DEB
+      - name: Package JDK-25 Tauri application into DEB
         run: |
           yarn tauri bundle --bundles deb -c /tmp/tauri-versioned.conf.json
+
+      - name: Package Standalone Tauri application into DEB
+        run: |
+          yarn tauri bundle --bundles deb -c /tmp/tauri-versioned.conf.json -c src-tauri/tauri.standalone.conf.json
 
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@v4
@@ -297,8 +301,8 @@ jobs:
             **Debian/Ubuntu:**
             Скачайте `.deb` файл из раздела Assets и установите:
             ```bash
-            wget https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag_name }}/jvm-ram-cost_${{ steps.version.outputs.version }}_amd64.deb
-            sudo dpkg -i jvm-ram-cost_${{ steps.version.outputs.version }}_amd64.deb
+            wget https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag_name }}/jvm-ram-cost-jdk25_${{ steps.version.outputs.version }}_amd64.deb
+            sudo dpkg -i jvm-ram-cost-jdk25_${{ steps.version.outputs.version }}_amd64.deb
             ```  
             **Windows:**
             Скачайте `.msi` файл из раздела Assets и запустите установщик.
