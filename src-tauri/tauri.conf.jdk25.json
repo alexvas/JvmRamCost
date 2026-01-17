@@ -1,0 +1,8 @@
+{
+  "productName": "jvm-ram-cost-jdk25",
+  "bundle": {
+    "resources": {
+      "../dist-app-backend/build/minified/jvm-ram-cost.jar": "jvm-ram-cost.jar"
+    }
+  }
+}

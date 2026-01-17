@@ -125,7 +125,7 @@ jobs:
 
       - name: Package JDK-25 Tauri application into DEB
         run: |
-          yarn tauri bundle --bundles deb -c /tmp/tauri-versioned.conf.json
+          yarn tauri bundle --bundles deb -c /tmp/tauri-versioned.conf.json -c src-tauri/tauri.jdk25.conf.json
 
       - name: Package Standalone Tauri application into DEB
         run: |
@@ -220,7 +220,7 @@ jobs:
 
       - name: Package Tauri application into MSI
         run: |
-          yarn tauri bundle --bundles msi -c $env:TEMP\tauri-versioned.conf.json
+          yarn tauri bundle --bundles msi -c $env:TEMP\tauri-versioned.conf.json -c src-tauri/tauri.jdk25.conf.json
 
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@v4

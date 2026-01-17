@@ -1,6 +1,8 @@
 {
   "productName": "jvm-ram-cost-standalone",
-  "resources": {
-    "../dist-app-backend/build/jpackage/jvm-ram-cost": "jvm-ram-cost"
+  "bundle": {
+    "resources": {
+      "../dist-app-backend/build/jpackage/jvm-ram-cost": "jvm-ram-cost"
+    }
   }
 }
