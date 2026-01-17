@@ -72,9 +72,10 @@ jobs:
       
       - name: Unzip jpackage artifact
         run: |
-          unzip ./jvm-ram-cost-jpackage.zip -d ./dist-app-backend/build/jpackage/
+          mkdir -p ./dist-app-backend/build/jpackage/jvm-ram-cost
+          unzip ./jvm-ram-cost-jpackage.zip -d ./dist-app-backend/build/jpackage/jvm-ram-cost/
           echo "jpackage unzipped:"
-          ls -la ./dist-app-backend/build/jpackage/
+          ls -la ./dist-app-backend/build/jpackage/jvm-ram-cost/
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -162,9 +163,10 @@ jobs:
       
       - name: Unzip jpackage artifact
         run: |
-          Expand-Archive -Path ./jvm-ram-cost-jpackage.zip -DestinationPath ./dist-app-backend/build/jpackage/ -Force
+          New-Item -ItemType Directory -Force -Path ./dist-app-backend/build/jpackage/jvm-ram-cost
+          Expand-Archive -Path ./jvm-ram-cost-jpackage.zip -DestinationPath ./dist-app-backend/build/jpackage/jvm-ram-cost/ -Force
           echo "jpackage unzipped:"
-          Get-ChildItem -Path ./dist-app-backend/build/jpackage/ -Recurse | Select-Object FullName
+          Get-ChildItem -Path ./dist-app-backend/build/jpackage/jvm-ram-cost/ -Recurse | Select-Object FullName
      
       - name: Setup Node.js
         uses: actions/setup-node@v4
