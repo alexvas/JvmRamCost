@@ -7,7 +7,7 @@ on:
   workflow_dispatch: # Позволяет запускать вручную
 
 jobs:
-  build-minified-jar:
+  build-with-jdk:
     name: Собираем минифицированный JAR
     runs-on: ubuntu-latest
     permissions:
@@ -35,9 +35,22 @@ jobs:
           path: dist-app-backend/build/minified/jvm-ram-cost.jar
           retention-days: 1
 
+      - name: Строим jpackage
+        run: ./gradlew jpackageMin
+
+      - name: zip jpackage output
+        run: zip -r jvm-ram-cost-jpackage.zip dist-app-backend/build/jpackage/jvm-ram-cost
+
+      - name: Upload jpackage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: jvm-ram-cost-jpackage
+          path: jvm-ram-cost-jpackage.zip
+          retention-days: 1
+
   build-ubuntu:
     name: Собираем Tauri DEB для Ubuntu
-    needs: [build-minified-jar]
+    needs: [build-with-jdk]
     runs-on: ubuntu-22.04
     permissions:
       contents: read
@@ -50,6 +63,19 @@ jobs:
         with:
           name: jvm-ram-cost-minified-jar
           path: ./dist-app-backend/build/minified/     
+
+      - uses: actions/checkout@v4
+      - name: Download jpackage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jvm-ram-cost-jpackage
+          path: jvm-ram-cost-jpackage.zip     
+      
+      - name: Unzip jpackage artifact
+        run: |
+          unzip jvm-ram-cost-jpackage.zip -d ./dist-app-backend/build/jpackage/
+          echo "jpackage unzipped:"
+          ls -la ./dist-app-backend/build/jpackage/
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -111,7 +137,7 @@ jobs:
 
   build-windows:
     name: Собираем Tauri MSI для Windows
-    needs: [build-minified-jar]
+    needs: [build-with-jdk]
     runs-on: windows-2022
     permissions:
       contents: read
@@ -124,6 +150,19 @@ jobs:
         with:
           name: jvm-ram-cost-minified-jar
           path: ./dist-app-backend/build/minified/
+
+      - uses: actions/checkout@v4
+      - name: Download jpackage artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jvm-ram-cost-jpackage
+          path: jvm-ram-cost-jpackage.zip     
+      
+      - name: Unzip jpackage artifact
+        run: |
+          Expand-Archive -Path jvm-ram-cost-jpackage.zip -DestinationPath ./dist-app-backend/build/jpackage/ -Force
+          echo "jpackage unzipped:"
+          Get-ChildItem -Path ./dist-app-backend/build/jpackage/ -Recurse | Select-Object FullName
      
       - name: Setup Node.js
         uses: actions/setup-node@v4
