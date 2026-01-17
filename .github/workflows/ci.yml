@@ -64,16 +64,15 @@ jobs:
           name: jvm-ram-cost-minified-jar
           path: ./dist-app-backend/build/minified/     
 
-      - uses: actions/checkout@v4
       - name: Download jpackage artifact
         uses: actions/download-artifact@v4
         with:
           name: jvm-ram-cost-jpackage
-          path: jvm-ram-cost-jpackage.zip     
+          path: ./
       
       - name: Unzip jpackage artifact
         run: |
-          unzip ${{ github.workspace }}/jvm-ram-cost-jpackage.zip -d ./dist-app-backend/build/jpackage/
+          unzip ./jvm-ram-cost-jpackage.zip -d ./dist-app-backend/build/jpackage/
           echo "jpackage unzipped:"
           ls -la ./dist-app-backend/build/jpackage/
 
@@ -151,16 +150,15 @@ jobs:
           name: jvm-ram-cost-minified-jar
           path: ./dist-app-backend/build/minified/
 
-      - uses: actions/checkout@v4
       - name: Download jpackage artifact
         uses: actions/download-artifact@v4
         with:
           name: jvm-ram-cost-jpackage
-          path: jvm-ram-cost-jpackage.zip     
+          path: ./
       
       - name: Unzip jpackage artifact
         run: |
-          Expand-Archive -Path ${{ github.workspace }}\jvm-ram-cost-jpackage.zip -DestinationPath ./dist-app-backend/build/jpackage/ -Force
+          Expand-Archive -Path ./jvm-ram-cost-jpackage.zip -DestinationPath ./dist-app-backend/build/jpackage/ -Force
           echo "jpackage unzipped:"
           Get-ChildItem -Path ./dist-app-backend/build/jpackage/ -Recurse | Select-Object FullName
      
