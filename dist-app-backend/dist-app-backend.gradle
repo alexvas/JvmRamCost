@@ -58,41 +58,6 @@ tasks.register('fatJar', Jar) {
     }
 }
 
-// jpackage с fat JAR
-tasks.register('jpackageFat', Exec) {
-    dependsOn fatJar
-    group = 'build'
-    description = 'Create installable package using jpackage with fat JAR'
-    
-    doFirst {
-        def javaHome = System.getProperty('java.home')
-        def jpackageExe = new File(javaHome, 'bin/jpackage')
-        if (!jpackageExe.exists()) {
-            throw new GradleException("jpackage not found at ${jpackageExe.absolutePath}")
-        }
-        
-        def fatJarFile = fatJar.archiveFile.get().asFile
-        def outputDir = file("${buildDir}/jpackage")
-        outputDir.mkdirs()
-        
-        def libsDir = file("${buildDir}/libs")
-        
-        commandLine = [
-            jpackageExe.absolutePath,
-            '--input', libsDir.absolutePath,
-            '--main-jar', fatJarFile.name,
-            '--main-class', application.mainClass.get(),
-            '--name', 'jvm-ram-cost',
-            '--app-version', libs.versions.jvmram.get(),
-            '--vendor', 'Alexander Vasilev',
-            '--type', 'deb',
-            '--linux-menu-group', 'Utilities',
-            '--linux-shortcut',
-            '--dest', outputDir.absolutePath
-        ]
-    }
-}
-
 // ProGuard минификация
 tasks.register('proguardMinify', JavaExec) {
     dependsOn fatJar
