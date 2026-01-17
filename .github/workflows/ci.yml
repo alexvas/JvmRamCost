@@ -136,7 +136,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: jvm-ram-cost-tauri-deb
-          path: src-tauri/target/release/bundle/deb/jvm-ram-cost_*.deb
+          path: src-tauri/target/release/bundle/deb/jvm-ram-cost*.deb
           retention-days: 1
 
   build-windows:
