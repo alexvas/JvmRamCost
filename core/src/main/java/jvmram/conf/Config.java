@@ -34,14 +34,14 @@ public final class Config {
         Arrays.stream(MetricType.values()).forEach(type -> {
 
             int devDurationInSeconds = switch (type) {
-                case RSS, WS, HEAP_USED, HEAP_COMMITTED, NMT_USED, NMT_COMMITTED -> 1;
+                case RSS, WS, HEAP_USED, HEAP_COMMITTED, NMT_USED, NMT_COMMITTED, BUFFER_TOTAL -> 1;
                 case PSS, USS, PB -> 10;
             };
             var devDuration = Duration.ofSeconds(devDurationInSeconds);
             DEV_POLL_INTERVALS.put(type, devDuration);
 
             int productionDurationInSeconds = switch (type) {
-                case RSS, WS, HEAP_USED, HEAP_COMMITTED, NMT_USED, NMT_COMMITTED -> 2;
+                case RSS, WS, HEAP_USED, HEAP_COMMITTED, NMT_USED, NMT_COMMITTED, BUFFER_TOTAL -> 2;
                 case PB -> 15;
                 case PSS, USS -> 30;
             };
@@ -50,7 +50,7 @@ public final class Config {
 
             int leakHuntDurationInSeconds = switch (type) {
                 case RSS, WS -> 2;
-                case PSS, USS, PB, HEAP_USED, HEAP_COMMITTED, NMT_USED, NMT_COMMITTED -> 5;
+                case PSS, USS, PB, HEAP_USED, HEAP_COMMITTED, NMT_USED, NMT_COMMITTED, BUFFER_TOTAL -> 5;
             };
             var leakHuntDuration = Duration.ofSeconds(leakHuntDurationInSeconds);
             LEAK_HUNT_POLL_INTERVALS.put(type, leakHuntDuration);

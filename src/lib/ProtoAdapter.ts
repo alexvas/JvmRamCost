@@ -7,7 +7,6 @@ import {
     type JvmProcessListResponse,
     Pid
 } from "$lib/generated/proto/protocol";
-import type { Timestamp } from "$lib/generated/google/protobuf/timestamp";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import type { ProcInfo } from "./ProcHandle";

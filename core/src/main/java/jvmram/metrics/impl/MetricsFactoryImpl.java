@@ -46,7 +46,8 @@ public class MetricsFactoryImpl implements MetricsFactory {
                 HEAP_USED, createMetrics(pid, HEAP_USED, JmxData::heapUsed),
                 HEAP_COMMITTED, createMetrics(pid, HEAP_COMMITTED, JmxData::heapCommitted),
                 NMT_USED, createMetrics(pid, NMT_USED, JmxData::nmtUsed),
-                NMT_COMMITTED, createMetrics(pid, NMT_COMMITTED, JmxData::nmtCommitted)
+                NMT_COMMITTED, createMetrics(pid, NMT_COMMITTED, JmxData::nmtCommitted),
+                BUFFER_TOTAL, createMetrics(pid, BUFFER_TOTAL, JmxData::bufferTotal)
         );
         var output = new HashMap<>(osSpecific);
         output.putAll(common);

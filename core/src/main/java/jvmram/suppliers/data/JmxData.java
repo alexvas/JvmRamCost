@@ -7,6 +7,8 @@ public record JmxData(
         long heapCommitted,
         long nmtUsed,
         long nmtCommitted,
+        int bufferCount,
+        long bufferTotal,
         Properties properties,
         Properties sysProps
 ) implements HardwareData {

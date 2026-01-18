@@ -84,6 +84,7 @@ class Converter {
             case HEAP_COMMITTED -> MetricType.HEAP_COMMITTED;
             case NMT_USED -> MetricType.NMT_USED;
             case NMT_COMMITTED -> MetricType.NMT_COMMITTED;
+            case BUFFER_TOTAL -> MetricType.BUFFER_TOTAL;
         };
     }
 
@@ -98,6 +99,7 @@ class Converter {
             case HEAP_COMMITTED -> HEAP_COMMITTED;
             case NMT_USED -> NMT_USED;
             case NMT_COMMITTED -> NMT_COMMITTED;
+            case BUFFER_TOTAL -> BUFFER_TOTAL;
             case UNRECOGNIZED -> null;
         };
     }

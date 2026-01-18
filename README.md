@@ -44,6 +44,29 @@ WEBKIT_DISABLE_COMPOSITING_MODE=1 jvm-ram-cost
 - JMX метрики: 5 сек
 
 
+## Схема памяти в JVM
+
+```
+┌─────────────────────────────────────────────────────┐
+│                    JVM Process                      │
+├─────────────────────────────────────────────────────┤
+│  Heap (MemoryMXBean.getHeapMemoryUsage)             │
+│    - Eden, Survivor, Old Gen                        │
+├─────────────────────────────────────────────────────┤
+│  Non-Heap (MemoryMXBean.getNonHeapMemoryUsage)      │
+│    - Metaspace                                      │
+│    - Code Cache                                     │
+│    - Compressed Class Space                         │
+├─────────────────────────────────────────────────────┤
+│  Native / Off-Heap (НЕ входит в MemoryMXBean!)      │
+│    - Direct Buffers  ← BufferPoolMXBean "direct"    │
+│    - Mapped Buffers  ← BufferPoolMXBean "mapped"    │
+│    - JNI allocations                                │
+│    - Thread stacks                                  │
+│    - etc.                                           │
+└─────────────────────────────────────────────────────┘
+```
+
 ## Примечания
 
 - JMX подключение работает только для локальных процессов

@@ -9,10 +9,12 @@ import org.slf4j.LoggerFactory;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import java.lang.invoke.MethodHandles;
+import java.lang.management.BufferPoolMXBean;
 import java.lang.management.MemoryMXBean;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static java.lang.management.ManagementFactory.getPlatformMXBeans;
 import static java.lang.management.ManagementFactory.newPlatformMXBeanProxy;
 
 class JmxBeanFactoryImpl implements JmxBeanFactory {
@@ -69,10 +71,15 @@ class JmxBeanFactoryImpl implements JmxBeanFactory {
                         HotSpotDiagnosticMXBean.class
                 );
 
+                var bufferPools = getPlatformMXBeans(
+                        connection,
+                        BufferPoolMXBean.class
+                );
+
                 var agentProps = vm.getAgentProperties();
                 var sysProps = vm.getSystemProperties();
 
-                return new MxDatum(jmxConnector, memoryMxBean, hotSpotBean, agentProps, sysProps);
+                return new MxDatum(jmxConnector, memoryMxBean, hotSpotBean, bufferPools, agentProps, sysProps);
 
             } finally {
                 // Отключаемся от виртуальной машины (но оставляем JMX коннектор открытым)

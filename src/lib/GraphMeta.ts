@@ -15,4 +15,5 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
   [MetricType.HEAP_COMMITTED]: { color_light: "cyan", color_dark: "cyan" },
   [MetricType.NMT_USED]: { color_light: "rgb(128, 0, 255)", color_dark: "rgb(128, 0, 255)" },
   [MetricType.NMT_COMMITTED]: { color_light: "rgb(32, 42, 69)", color_dark: "rgb(0, 155, 255)" },
+  [MetricType.BUFFER_TOTAL]: { color_light: "rgb(159, 98, 0)", color_dark: "rgb(231, 155, 33)" },
 };

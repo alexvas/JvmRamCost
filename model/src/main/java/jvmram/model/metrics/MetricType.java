@@ -14,7 +14,9 @@ public enum MetricType {
     HEAP_USED(EnumSet.allOf(Os.class), "Heap Used"),
     HEAP_COMMITTED(EnumSet.allOf(Os.class), "Heap Committed"),
     NMT_USED(EnumSet.allOf(Os.class), "Native Memory Used"),
-    NMT_COMMITTED(EnumSet.allOf(Os.class), "Native Memory Committed");
+    NMT_COMMITTED(EnumSet.allOf(Os.class), "Native Memory Committed"),
+    BUFFER_TOTAL(EnumSet.allOf(Os.class), "Buffer Total"),
+    ;
     
     private final EnumSet<Os> applicable;
     private final String displayName;

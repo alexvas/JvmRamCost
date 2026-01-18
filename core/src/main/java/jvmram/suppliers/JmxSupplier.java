@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.management.BufferPoolMXBean;
 
 class JmxSupplier extends AbstractDataSupplier<JmxData> {
 
@@ -39,8 +40,10 @@ class JmxSupplier extends AbstractDataSupplier<JmxData> {
         long heapCommitted = 0;
         long nmtUsed = 0;
         long nmtCommitted = 0;
+        long bufferTotal = 0;
 
-        // Получаем информацию о heap памяти
+        // Получаем информацию о heap памяти:
+        // это Eden, Survivor, Old Gen.
         var heapMemoryUsage = memory.getHeapMemoryUsage();
         if (heapMemoryUsage != null) {
             heapUsed = heapMemoryUsage.getUsed();
@@ -48,10 +51,20 @@ class JmxSupplier extends AbstractDataSupplier<JmxData> {
         }
         
         // Получаем информацию о non-heap памяти (NMT)
+        // это Metaspace, Code Cache, Compressed Class Space
         var nonHeapMemoryUsage = memory.getNonHeapMemoryUsage();
         if (nonHeapMemoryUsage != null) {
             nmtUsed = nonHeapMemoryUsage.getUsed();
             nmtCommitted = nonHeapMemoryUsage.getCommitted();
+        }
+
+        // Получаем информацию о Direct Memory:
+        // Direct buffers / Mapped buffers/ etc.
+        for (var pool : mxDatum.bufferPools()) {
+            long used = pool.getMemoryUsed();
+            bufferTotal += used < 0 // used == -1 if JVM is unable to give an estimate
+                    ? pool.getTotalCapacity()
+                    : used;
         }
 
         return new JmxData(
@@ -59,6 +72,8 @@ class JmxSupplier extends AbstractDataSupplier<JmxData> {
                 heapCommitted,
                 nmtUsed,
                 nmtCommitted,
+                mxDatum.bufferPools().size(),
+                bufferTotal,
                 mxDatum.agentProps(),
                 mxDatum.sysProps()
         );

@@ -11,6 +11,7 @@ export enum MetricType {
   HEAP_COMMITTED = 6,
   NMT_USED = 7,
   NMT_COMMITTED = 8,
+  BUFFER_TOTAL = 9,
 }
 
 /** Лимит точек на каждую метрику для каждого процесса */
