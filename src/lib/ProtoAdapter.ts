@@ -98,7 +98,14 @@ export async function listenJvmProcessList(listener: (procInfoMap: Map<number, P
         const availableJvmProcesses = new Map(
             sortedProcesses.map((proc) => {
                 const pid = proc.pid;
-                return [pid, proc];
+                return [
+                    pid, 
+                    { 
+                        pid, 
+                        display_name: proc.display_name, 
+                        active: true,
+                    }
+                ];
             }),
         );
         listener(availableJvmProcesses)

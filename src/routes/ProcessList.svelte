@@ -1,7 +1,7 @@
 <div class="column card">
   <h3 class="card-title">Processes</h3>
   <div class="process-list">
-    {#each Array.from(availableJvmProcesses.entries()) as [pid, process]}
+    {#each Array.from(jvmProcesses.entries()) as [pid, process]}
       <label class="process-item" class:selected={followingPids.includes(pid)}>
         <input
           type="checkbox"
@@ -28,10 +28,9 @@
 <script lang="ts">
   import { getContext } from "svelte";
 
-  const getAvailableJvmProcesses = getContext<() => Map<number, ProcInfo>>(
-    "availableJvmProcesses",
-  )!;
-  let availableJvmProcesses = $derived(getAvailableJvmProcesses());
+  const getJvmProcesses =
+    getContext<() => Map<number, ProcInfo>>("jvmProcesses")!;
+  let jvmProcesses = $derived(getJvmProcesses());
   const getFollowingPids = getContext<() => number[]>("followingPids")!;
   let followingPids = $derived(getFollowingPids());
 

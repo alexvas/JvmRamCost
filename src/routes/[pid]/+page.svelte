@@ -16,12 +16,11 @@
   import { triggerGc } from "$lib/ProtoAdapter";
   let pidStr = $derived(page.params.pid);
   let pid = $derived(pidStr ? Number(pidStr) : null);
-  const getAvailableJvmProcesses = getContext<() => Map<number, ProcInfo>>(
-    "availableJvmProcesses",
-  )!;
+  const getJvmProcesses =
+    getContext<() => Map<number, ProcInfo>>("jvmProcesses")!;
   import { graphStore } from "$lib/GraphStore";
   let process = $derived.by(() =>
-    pid ? getAvailableJvmProcesses().get(pid) : undefined,
+    pid ? getJvmProcesses().get(pid) : undefined,
   );
   // Процесс может быть среди отслеживаемых, но ещё не прислал данных.
   const hasGraph = $derived(

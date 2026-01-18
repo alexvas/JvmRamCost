@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'application'
     alias(libs.plugins.protobuf)
 }
 
@@ -35,26 +34,3 @@ protobuf {
     }
 }
 
-application {
-    mainClass = 'jvmram.backend.JvmRunCost'
-}
-
-distributions {
-    main {
-        contents {
-            from('../README.md') {
-                into 'docs'
-            }
-            from ('src/main/resources/simplelogger.properties') {
-                into 'conf'
-            }
-        }
-    }
-}
-
-startScripts {
-    doLast {
-        unixScript.text = unixScript.text.replace('CLASSPATH=', 'CLASSPATH=$APP_HOME/conf:')
-        windowsScript.text = windowsScript.text.replace('CLASSPATH=', 'CLASSPATH=%APP_HOME%\\conf;')
-    }
-}

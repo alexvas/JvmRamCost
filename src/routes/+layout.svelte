@@ -29,13 +29,26 @@
 
   let { children } = $props();
   let followingPids = $state<number[]>([]);
-  let availableJvmProcesses = $state<Map<number, ProcInfo>>(new Map());
+  let jvmProcesses = $state<Map<number, ProcInfo>>(new Map());
 
   setContext("followingPids", () => followingPids);
-  setContext("availableJvmProcesses", () => availableJvmProcesses);
+  setContext("jvmProcesses", () => jvmProcesses);
 
   listenJvmProcessList((procInfoMap) => {
-    availableJvmProcesses = procInfoMap;
+    let nextJvmProcesses = new Map<number, ProcInfo>();
+    for (const [pid, procInfo] of jvmProcesses) {
+      nextJvmProcesses.set(pid, {
+        ...procInfo,
+        active: procInfoMap.has(pid),
+      });
+    }
+    for (const [pid, procInfo] of procInfoMap) {
+      nextJvmProcesses.set(pid, {
+        ...procInfo,
+        active: true,
+      });
+    }
+    jvmProcesses = nextJvmProcesses;
   });
 
   let graphVersion = $state(0);
