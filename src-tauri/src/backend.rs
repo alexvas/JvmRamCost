@@ -83,7 +83,7 @@ enum BackendKind {
 impl BackendKind {
     fn new() -> Result<Self, String> {
         let standalone_path =
-            PathBuf::from("usr/lib/jvm-ram-cost-standalone/backend/bin/jvm-ram-cost");
+            PathBuf::from("/usr/lib/jvm-ram-cost-standalone/backend/bin/jvm-ram-cost");
         let standalone_exists = standalone_path.exists();
         if standalone_exists {
             Ok(BackendKind::StandaloneLinux(standalone_path))
