@@ -64,14 +64,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: jvm-ram-cost-minified-jar
-          path: ./dist-app-backend/build/minified/     
+          path: ./dist-app-backend/build/minified/
 
       - name: Download jpackage artifact
         uses: actions/download-artifact@v4
         with:
           name: jvm-ram-cost-jpackage
           path: ./
-      
+
       - name: Unzip jpackage artifact
         run: |
           mkdir -p ./dist-app-backend/build/jpackage
@@ -82,7 +82,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Enable Corepack
         run: corepack enable
@@ -93,7 +93,7 @@ jobs:
       - name: Generate protobuf files for TypeScript (Linux)
         run: |
           yarn proto:gen
-      
+
       - name: Get version from tag
         id: version
         run: |
@@ -162,18 +162,18 @@ jobs:
         with:
           name: jvm-ram-cost-jpackage
           path: ./
-      
+
       - name: Unzip jpackage artifact
         run: |
           New-Item -ItemType Directory -Force -Path ./dist-app-backend/build/jpackage/jvm-ram-cost
           Expand-Archive -Path ./jvm-ram-cost-jpackage.zip -DestinationPath ./dist-app-backend/build/jpackage/jvm-ram-cost/ -Force
           echo "jpackage unzipped:"
           Get-ChildItem -Path ./dist-app-backend/build/jpackage/jvm-ram-cost/ -Recurse | Select-Object FullName
-     
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Enable Corepack
         run: corepack enable
@@ -184,7 +184,7 @@ jobs:
       - name: Generate protobuf files for TypeScript (Windows)
         run: |
           yarn proto:gen
-      
+
       - name: Get version from tag
         id: version
         run: |
@@ -243,7 +243,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Get version from tag
         id: version
         run: |
@@ -251,7 +251,7 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           TAG_NAME=${GITHUB_REF#refs/tags/}
           echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
-      
+
       - name: Delete existing release if present
         run: |
           echo "Checking for existing release: ${{ steps.version.outputs.tag_name }}"
@@ -264,19 +264,19 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Download Tauri DEB artifact
         uses: actions/download-artifact@v4
         with:
           name: jvm-ram-cost-tauri-deb
           path: ./distro/
-      
+
       - name: Download Tauri MSI artifact
         uses: actions/download-artifact@v4
         with:
           name: jvm-ram-cost-tauri-msi
           path: ./distro/
-            
+
       - name: Check files and prepare release
         id: check_files
         run: |
@@ -301,12 +301,18 @@ jobs:
           name: Release ${{ steps.version.outputs.version }}
           body: |
             ## JVM RAM Cost ${{ steps.version.outputs.version }}  
-            ### Установка  
-            **Debian/Ubuntu:**
-            Скачайте `.deb` файл из раздела Assets и установите:
+            ### Установка
+            #### Debian/Ubuntu
+            Скачайте `.deb` файл из раздела Assets и установите. Либо воспользуйтесь командами ниже.
+            **JDK-25:**
             ```bash
             wget https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag_name }}/jvm-ram-cost-jdk25_${{ steps.version.outputs.version }}_amd64.deb
             sudo dpkg -i jvm-ram-cost-jdk25_${{ steps.version.outputs.version }}_amd64.deb
+            ```
+            **Standalone:**
+            ```bash
+            wget https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag_name }}/jvm-ram-cost-standalone_${{ steps.version.outputs.version }}_amd64.deb
+            sudo dpkg -i jvm-ram-cost-standalone_${{ steps.version.outputs.version }}_amd64.deb
             ```  
             **Windows:**
             Скачайте `.msi` файл из раздела Assets и запустите установщик.
