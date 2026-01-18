@@ -130,9 +130,19 @@ jobs:
         run: |
           yarn tauri bundle --bundles deb -c /tmp/tauri-versioned.conf.json -c src-tauri/tauri.jdk25.conf.json
 
+      - name: Fix JDK-25 DEB icon names
+        run: |
+          DEB_FILE=$(ls src-tauri/target/release/bundle/deb/jvm-ram-cost-jdk25*.deb)
+          ./scripts/fix-deb-icons.sh "$DEB_FILE" "jvm-ram-cost-jdk25"
+
       - name: Package Standalone Tauri application into DEB
         run: |
           yarn tauri bundle --bundles deb -c /tmp/tauri-versioned.conf.json -c src-tauri/tauri.standalone.conf.json
+
+      - name: Fix Standalone DEB icon names
+        run: |
+          DEB_FILE=$(ls src-tauri/target/release/bundle/deb/jvm-ram-cost-standalone*.deb)
+          ./scripts/fix-deb-icons.sh "$DEB_FILE" "jvm-ram-cost-standalone"  
 
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@v4

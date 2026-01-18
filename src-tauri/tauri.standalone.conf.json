@@ -1,15 +1,10 @@
 {
   "productName": "jvm-ram-cost-standalone",
   "bundle": {
-    "linux": {
-      "deb": {
-        "files": {
-          "/usr/share/jvm-ram-cost-standalone/docs/README.md": "../README.md",
-          "/usr/share/jvm-ram-cost-standalone/backend/bin/": "../dist-app-backend/build/jpackage/jvm-ram-cost/bin/",
-          "/usr/share/jvm-ram-cost-standalone/backend/lib/": "../dist-app-backend/build/jpackage/jvm-ram-cost/lib/"
-        }
-      }
-    },
-    "resources": {}
+    "resources": {
+      "../README.md": "docs/README.md",
+      "../dist-app-backend/build/jpackage/jvm-ram-cost/bin/": "backend/bin/",
+      "../dist-app-backend/build/jpackage/jvm-ram-cost/lib/": "backend/lib/"
+    }
   }
 }

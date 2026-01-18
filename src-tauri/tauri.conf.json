@@ -29,9 +29,6 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ],
-    "resources": {
-      "../dist-app-backend/build/minified/jvm-ram-cost.jar": "jvm-ram-cost.jar"
-    }
+    ]
   }
 }
