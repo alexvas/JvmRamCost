@@ -49,60 +49,6 @@ const MAX_RETRY_DELAY_MS: u64 = 1000;
 
 use std::net::{IpAddr, Ipv4Addr};
 
-fn find_java() -> Result<std::path::PathBuf, String> {
-    // Пробуем java в PATH
-    if let Ok(output) = std::process::Command::new("java").arg("-version").output() {
-        if output.status.success() {
-            return Ok("java".into());
-        }
-    }
-
-    // Пробуем $JAVA_HOME/bin/java
-    if let Ok(java_home) = std::env::var("JAVA_HOME") {
-        let java_path = std::path::PathBuf::from(java_home).join("bin/java");
-        if java_path.exists() {
-            return Ok(java_path);
-        }
-    }
-
-    Err("Java не найдена. Установите Java или задайте JAVA_HOME".into())
-}
-
-fn start_backend(app: &tauri::App) -> Result<std::process::Child, String> {
-    let java = find_java()?;
-    let resource_path = app
-        .path()
-        .resource_dir()
-        .map_err(|e| format!("Не удалось получить путь к ресурсам: {}", e))?
-        .join("jvm-ram-cost.jar");
-
-    if !resource_path.exists() {
-        return Err(format!("JAR файл не найден: {:?}", resource_path));
-    }
-
-    let mut cmd = std::process::Command::new(java);
-    cmd.arg("-Xms10m")
-        .arg("-Xmx100m")
-        .arg("-XX:MaxDirectMemorySize=50m")
-        .arg("--enable-native-access=ALL-UNNAMED")
-        .arg("-jar")
-        .arg(&resource_path);
-    // На Unix: создаём новую process group, чтобы можно было убить все дочерние процессы
-    #[cfg(unix)]
-    {
-        use std::os::unix::process::CommandExt;
-        unsafe {
-            cmd.pre_exec(|| {
-                libc::setpgid(0, 0);
-                Ok(())
-            });
-        }
-    }
-
-    cmd.spawn()
-        .map_err(|e| format!("Не удалось запустить бэкенд: {}", e))
-}
-
 fn create_grpc_client() -> AppBackendClient<Channel> {
     let uri = format!("http://{}:{}", LOCALHOST_V4, GRPC_SERVER_PORT)
         .parse::<Uri>()
@@ -133,31 +79,13 @@ impl AppState {
     }
 }
 
+mod backend;
+
 impl AppState {
     fn kill_backend(&self) {
         if let Ok(mut process) = self.backend_process.lock() {
             if let Some(mut child) = process.take() {
-                #[cfg(unix)]
-                {
-                    // На Unix убиваем всю process group
-                    unsafe {
-                        let pgid = libc::getpgid(child.id() as i32);
-                        if pgid > 0 {
-                            let _ = libc::killpg(pgid, libc::SIGTERM);
-                            // Даём время на graceful shutdown
-                            std::thread::sleep(std::time::Duration::from_millis(500));
-                            let _ = libc::killpg(pgid, libc::SIGKILL);
-                        } else {
-                            // Если не удалось получить pgid, просто убиваем процесс
-                            let _ = child.kill();
-                        }
-                    }
-                }
-                #[cfg(not(unix))]
-                {
-                    let _ = child.kill();
-                }
-                let _ = child.wait();
+                backend::kill(&mut child);
             }
         }
     }
@@ -168,6 +96,7 @@ impl Drop for AppState {
         self.kill_backend();
     }
 }
+
 
 // Модуль google должен быть доступен через super:: из сгенерированного jvmram.rs
 // Сгенерированный код находится в модуле jvmram (по имени package в proto)
@@ -241,17 +170,17 @@ async fn trigger_gc(state: State<'_, Arc<AppState>>, request: Jmvram::Pid) -> Re
 }
 
 use tauri::{AppHandle, Emitter};
-
 use crate::google::protobuf::Empty;
+use std::time::Duration;
 
 async fn listen_available_jvm_processes_updated(app: AppHandle, state: Arc<AppState>) {
-    let mut retry_delay = std::time::Duration::from_millis(INITIAL_RETRY_DELAY_MS);
+    let mut retry_delay = Duration::from_millis(INITIAL_RETRY_DELAY_MS);
 
     loop {
         match try_listen_jvm_processes(&app, &state).await {
             Ok(()) => {
                 // Стрим завершился нормально, сбрасываем таймаут и переподключаемся
-                retry_delay = std::time::Duration::from_millis(INITIAL_RETRY_DELAY_MS);
+                retry_delay = Duration::from_millis(INITIAL_RETRY_DELAY_MS);
             }
             Err(e) => {
                 eprintln!(
@@ -263,7 +192,7 @@ async fn listen_available_jvm_processes_updated(app: AppHandle, state: Arc<AppSt
         tokio::time::sleep(retry_delay).await;
         retry_delay = std::cmp::min(
             retry_delay * 2,
-            std::time::Duration::from_millis(MAX_RETRY_DELAY_MS),
+            Duration::from_millis(MAX_RETRY_DELAY_MS),
         );
     }
 }
@@ -281,13 +210,13 @@ async fn try_listen_jvm_processes(app: &AppHandle, state: &Arc<AppState>) -> Res
 }
 
 async fn listen_graph_queues(app: AppHandle, state: Arc<AppState>) {
-    let mut retry_delay = std::time::Duration::from_millis(INITIAL_RETRY_DELAY_MS);
+    let mut retry_delay = Duration::from_millis(INITIAL_RETRY_DELAY_MS);
 
     loop {
         match try_listen_graph_queues(&app, &state).await {
             Ok(()) => {
                 // Стрим завершился нормально, сбрасываем таймаут и переподключаемся
-                retry_delay = std::time::Duration::from_millis(INITIAL_RETRY_DELAY_MS);
+                retry_delay = Duration::from_millis(INITIAL_RETRY_DELAY_MS);
             }
             Err(e) => {
                 eprintln!(
@@ -299,7 +228,7 @@ async fn listen_graph_queues(app: AppHandle, state: Arc<AppState>) {
         tokio::time::sleep(retry_delay).await;
         retry_delay = std::cmp::min(
             retry_delay * 2,
-            std::time::Duration::from_millis(MAX_RETRY_DELAY_MS),
+            Duration::from_millis(MAX_RETRY_DELAY_MS),
         );
     }
 }
@@ -322,6 +251,7 @@ pub fn run() {
     Builder::default()
         .setup(|app| {
             // Запускаем Java бэкенд
+            use crate::backend::start_backend;
             let backend_child = match start_backend(app) {
                 Ok(child) => child,
                 Err(e) => {
