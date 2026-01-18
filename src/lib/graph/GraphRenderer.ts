@@ -40,6 +40,7 @@ export class GraphRenderer {
 
     // Кэш для вертикальных линий
     private cachedVerticalLines: GridLine[] = [];
+    private cachedVerticalMinTime: number | null = null;
     private cachedVerticalMaxTime: number | null = null;
     private cachedVerticalInterval: number | null = null;
 
@@ -118,7 +119,7 @@ export class GraphRenderer {
             - bottomLabelSpace;
 
         const timeRange = Math.max(
-            minMax.maxMoment,
+            minMax.maxMoment - minMax.minMoment,
             minTimeRange
         );
         const dataWidth = timeRange;
@@ -140,8 +141,8 @@ export class GraphRenderer {
      * Вычислить вертикальные линии сетки (ось времени)
      */
     getVerticalGridLines(minMax: ProcessMinMax): GridLine[] {
-        const { maxMoment } = minMax;
-        const timeRange = maxMoment;
+        const { minMoment, maxMoment } = minMax;
+        const timeRange = maxMoment - minMoment;
 
         // Выбираем интервал
         let selectedInterval = GRID_INTERVALS_TENTH_OF_SECOND[GRID_INTERVALS_TENTH_OF_SECOND.length - 1];
@@ -155,6 +156,7 @@ export class GraphRenderer {
 
         // Проверяем кэш
         if (
+            this.cachedVerticalMinTime === minMoment &&
             this.cachedVerticalMaxTime === maxMoment &&
             this.cachedVerticalInterval === selectedInterval &&
             this.cachedVerticalLines.length > 0
@@ -163,17 +165,18 @@ export class GraphRenderer {
         }
 
         // Генерируем линии
-        const firstTick = selectedInterval;
+        const firstTick = minMoment + selectedInterval;
         const lines: GridLine[] = [];
 
         for (let tick = firstTick; tick < maxMoment; tick += selectedInterval) {
-            const positionInDataUnits = tick;
-            const label = formatTimeLabel(tick, selectedInterval);
+            const positionInDataUnits = tick - minMoment;
+            const label = formatTimeLabel(tick, minMoment, selectedInterval);
             lines.push({ positionInDataUnits, label });
         }
 
         // Кэшируем
         this.cachedVerticalLines = lines;
+        this.cachedVerticalMinTime = minMoment;
         this.cachedVerticalMaxTime = maxMoment;
         this.cachedVerticalInterval = selectedInterval;
 
@@ -403,6 +406,7 @@ export class GraphRenderer {
     renderGraphPath(
         metricType: number,
         points: Array<{ moment: number; kilobytes: number }>,
+        minMoment: number,
         maxKb: number,
     ): string {
         if (points.length === 0) return '';
@@ -410,7 +414,7 @@ export class GraphRenderer {
         const metricTypeName = this.metricNames[metricType] || `Metric${metricType}`;
         const d = points
             .map((point, i) => {
-                const x = point.moment;
+                const x = point.moment - minMoment;
                 const y = maxKb - point.kilobytes;
                 return `${i === 0 ? 'M' : 'L'} ${x},${y}`;
             })
@@ -423,11 +427,11 @@ export class GraphRenderer {
      * Сгенерировать все пути графиков
      */
     renderGraphPaths(minMax: ProcessMinMax, graphs: Iterable<GraphData>): string {
-        const { maxKb } = minMax;
+        const { minMoment, maxKb } = minMax;
         const paths: string[] = [];
 
         for (const graph of graphs) {
-            const path = this.renderGraphPath(graph.metricType, graph.points, maxKb);
+            const path = this.renderGraphPath(graph.metricType, graph.points, minMoment, maxKb);
             if (path) paths.push(path);
         }
 
@@ -474,12 +478,13 @@ export class GraphRenderer {
         const transform = this.getTransform(minMax);
         const verticalLines = this.getVerticalGridLines(minMax);
         const horizontalLines = this.getHorizontalGridLines(minMax);
+        const fixedGcMarks = gcMarks.map((gcMark) => gcMark - minMax.minMoment);
 
         const styles = this.renderStyles();
         const graphFrame = this.renderGraphFrame(transform);
         const vGridLines = this.renderVerticalGridLines(verticalLines, transform.dataHeight);
         const hGridLines = this.renderHorizontalGridLines(horizontalLines, transform.dataWidth);
-        const gcMarksLines = this.renderGcMarks(gcMarks, transform.dataHeight);
+        const gcMarksLines = this.renderGcMarks(fixedGcMarks, transform.dataHeight);
         const graphPaths = this.renderGraphPaths(minMax, graphs);
         const xLabels = this.renderXLabels(verticalLines, transform);
         const yLabels = this.renderYLabels(horizontalLines, transform);
@@ -519,6 +524,7 @@ export class GraphRenderer {
      */
     clearCache(): void {
         this.cachedVerticalLines = [];
+        this.cachedVerticalMinTime = null;
         this.cachedVerticalMaxTime = null;
         this.cachedVerticalInterval = null;
         this.cachedHorizontalLines = [];
