@@ -2,7 +2,11 @@
   <h3 class="card-title">Processes</h3>
   <div class="process-list">
     {#each Array.from(jvmProcesses.entries()) as [pid, process]}
-      <label class="process-item" class:selected={followingPids.includes(pid)}>
+      <label
+        class="process-item"
+        class:selected={followingPids.includes(pid)}
+        class:processnotactive={!process.active}
+      >
         <input
           type="checkbox"
           checked={followingPids.includes(pid)}
@@ -108,6 +112,10 @@
     color: #ffffff;
   }
 
+  .process-item.processnotactive .process-text {
+    color: #808080;
+  }
+
   @media (prefers-color-scheme: dark) {
     .process-list {
       background-color: #1e1e1e;
@@ -132,6 +140,10 @@
 
     .process-item.selected .process-text {
       color: #000000;
+    }
+
+    .process-item.processnotactive .process-text {
+      color: #808080;
     }
   }
 </style>
