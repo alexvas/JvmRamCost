@@ -23,6 +23,7 @@ class Converter {
         return ProcInfo.newBuilder()
                 .setPid(input.pid())
                 .setDisplayName(input.displayName())
+                .addAllChildren(input.children())
                 .build();
     }
 

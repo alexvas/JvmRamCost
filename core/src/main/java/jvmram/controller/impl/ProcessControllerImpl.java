@@ -93,10 +93,16 @@ public class ProcessControllerImpl implements ProcessController {
                     var pidsGone = new HashSet<>(explicitlyFollowingPids);
                     pidsGone.removeAll(actualPids);
                     pidsGone.forEach(this::doUnfollowPid);
+                    var fixedJvmProcesses = jvmProcesses.stream()
+                            .map(it -> {
+                                var children = descendantPids.get(it.pid());
+                                return it.withChildren(children);
+                            })
+                            .toList();
 
                     callActionOrGetRidOfListener(
                             onProcessInfoChangedListeners,
-                            listener -> listener.accept(jvmProcesses)
+                            listener -> listener.accept(fixedJvmProcesses)
                     );
                 }
         );

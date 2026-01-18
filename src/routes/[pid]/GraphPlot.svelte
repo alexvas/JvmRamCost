@@ -12,8 +12,10 @@
   import { graphMetaMap } from "$lib/GraphMeta";
   import { Debouncer } from "$lib/Debouncer";
   import { getContext } from "svelte";
+  import type { ProcInfo } from "$lib/ProcHandle";
 
-  let { pid }: { pid: number } = $props();
+  let { process }: { process: ProcInfo } = $props();
+  let pid = $derived(process.pid);
   let containerElement: HTMLDivElement | null = $state(null);
   let containerWidth = $state(1);
   let containerHeight = $state(1);

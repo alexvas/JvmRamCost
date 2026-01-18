@@ -2,8 +2,21 @@
   <h2>Process {pidStr} not found</h2>
 {:else}
   <h2>{pidStr} {process.display_name}</h2>
+  {#if process.parent}
+    <p>Parent: {process.parent}</p>
+  {/if}
+  {#if process.children.length > 0}
+    <ul>
+      {#each process.children as childPid}
+        <li><a href={`/${childPid}`}>{childPid}</a></li>
+      {/each}
+    </ul>
+  {/if}
+  {#if !process.active}
+    <p>Process is not alive</p>
+  {/if}
   {#if hasGraph}
-    <GraphPlot pid={pid!} />
+    <GraphPlot {process} />
   {/if}
   <button onclick={trigger_gc}>Trigger GC</button>
 {/if}

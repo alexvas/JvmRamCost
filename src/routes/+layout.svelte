@@ -34,6 +34,8 @@
   setContext("followingPids", () => followingPids);
   setContext("jvmProcesses", () => jvmProcesses);
 
+  let parents = new Map<number, number>();
+
   listenJvmProcessList((procInfoMap) => {
     let nextJvmProcesses = new Map<number, ProcInfo>();
     for (const [pid, procInfo] of jvmProcesses) {
@@ -43,10 +45,16 @@
       });
     }
     for (const [pid, procInfo] of procInfoMap) {
+      for (const childPid of procInfo.children) {
+        parents.set(childPid, pid);
+      }
       nextJvmProcesses.set(pid, {
         ...procInfo,
         active: true,
       });
+    }
+    for (const [pid, procInfo] of nextJvmProcesses) {
+      procInfo.parent = parents.get(pid);
     }
     jvmProcesses = nextJvmProcesses;
   });

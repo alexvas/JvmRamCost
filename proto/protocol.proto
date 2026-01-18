@@ -36,6 +36,7 @@ message Pid {
 message ProcInfo {
   int32 pid = 1;
   string display_name = 2;
+  repeated int32 children = 3;
 }
 
 message PidList {

@@ -35,7 +35,8 @@ public class ProcessManagerImpl implements ProcessManager {
                         getPid(vmd),
                         vmd.displayName().isEmpty()
                                 ? vmd.id()
-                                : vmd.displayName()
+                                : vmd.displayName(),
+                        List.of()
                 )).toList();
     }
 

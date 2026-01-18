@@ -104,6 +104,7 @@ export async function listenJvmProcessList(listener: (procInfoMap: Map<number, P
                         pid, 
                         display_name: proc.display_name, 
                         active: true,
+                        children: proc.children,
                     }
                 ];
             }),
