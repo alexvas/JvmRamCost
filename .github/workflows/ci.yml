@@ -133,7 +133,7 @@ jobs:
       - name: Fix JDK-25 DEB icon names
         run: |
           DEB_FILE=$(ls src-tauri/target/release/bundle/deb/jvm-ram-cost-jdk25*.deb)
-          ./scripts/fix-deb-icons.sh "$DEB_FILE" "jvm-ram-cost-jdk25"
+          ./scripts/fix-deb-artifact.sh "$DEB_FILE" "jvm-ram-cost-jdk25"
 
       - name: Package Standalone Tauri application into DEB
         run: |
@@ -142,7 +142,7 @@ jobs:
       - name: Fix Standalone DEB icon names
         run: |
           DEB_FILE=$(ls src-tauri/target/release/bundle/deb/jvm-ram-cost-standalone*.deb)
-          ./scripts/fix-deb-icons.sh "$DEB_FILE" "jvm-ram-cost-standalone"  
+          ./scripts/fix-deb-artifact.sh "$DEB_FILE" "jvm-ram-cost-standalone"  
 
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@v4
