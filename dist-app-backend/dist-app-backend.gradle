@@ -107,6 +107,7 @@ tasks.register('jpackageMin', Exec) {
         def javaHome = System.getProperty('java.home')
         def jpackageExe = new File(javaHome, 'bin/jpackage')
         if (!jpackageExe.exists()) {
+            jpackageExe = new File(javaHome, 'bin/jpackage.exe')
             throw new GradleException("jpackage not found at ${jpackageExe.absolutePath}")
         }
 
