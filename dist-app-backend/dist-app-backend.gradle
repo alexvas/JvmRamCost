@@ -105,10 +105,12 @@ tasks.register('jpackageMin', Exec) {
 
     doFirst {
         def javaHome = System.getProperty('java.home')
-        def jpackageExe = new File(javaHome, 'bin/jpackage')
+        def jpackageExe = new File(javaHome, 'bin/jpackage.exe')
         if (!jpackageExe.exists()) {
-            jpackageExe = new File(javaHome, 'bin/jpackage.exe')
-            throw new GradleException("jpackage not found at ${jpackageExe.absolutePath}")
+            jpackageExe = new File(javaHome, 'bin/jpackage')
+            if (!jpackageExe.exists()) {
+                throw new GradleException("jpackage not found at ${javaHome}/bin/jpackage or ${javaHome}/bin/jpackage.exe")
+            }
         }
 
         def fatJarFile = proguardMinify.outputs.files.singleFile

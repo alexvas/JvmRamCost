@@ -174,9 +174,13 @@ jobs:
         run: |
           yarn tauri build --no-bundle
 
-      - name: Package Tauri application into MSI
+      - name: Package JDK-25 Tauri application into MSI
         run: |
           yarn tauri bundle --bundles msi -c $env:TEMP\tauri-versioned.conf.json -c src-tauri/tauri.jdk25.conf.json
+
+      - name: Package Standalone Tauri application into MSI
+        run: |
+          yarn tauri bundle --bundles msi -c $env:TEMP\tauri-versioned.conf.json -c src-tauri/tauri.standalone.conf.json
 
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@v4
