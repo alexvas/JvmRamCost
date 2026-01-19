@@ -96,7 +96,9 @@ public class ProcessControllerImpl implements ProcessController {
                     var fixedJvmProcesses = jvmProcesses.stream()
                             .map(it -> {
                                 var children = descendantPids.get(it.pid());
-                                return it.withChildren(children);
+                                return children == null
+                                        ? it
+                                        : it.withChildren(children);
                             })
                             .toList();
 

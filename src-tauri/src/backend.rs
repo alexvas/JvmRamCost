@@ -4,7 +4,12 @@ use std::process::Command;
 use tauri::{App, Manager};
 
 pub fn start_backend(app: &App) -> Result<std::process::Child, String> {
-    let backend_kind = BackendKind::new()?;
+    let resource_dir = app
+        .path()
+        .resource_dir()
+        .map_err(|e| format!("Не удалось получить путь к ресурсам: {}", e))?;
+
+    let backend_kind = BackendKind::new(resource_dir.clone())?;
 
     let mut cmd: Command = match backend_kind.clone() {
         BackendKind::StandaloneLinux(path) => {
@@ -18,15 +23,11 @@ pub fn start_backend(app: &App) -> Result<std::process::Child, String> {
                 .arg("-XX:MaxDirectMemorySize=50m")
                 .arg("--enable-native-access=ALL-UNNAMED");
 
-            let resource_path = app
-                .path()
-                .resource_dir()
-                .map_err(|e| format!("Не удалось получить путь к ресурсам: {}", e))?
-                .join("jvm-ram-cost.jar");
-            if !resource_path.exists() {
-                return Err(format!("JAR файл не найден: {:?}", resource_path));
+            let jar_path = resource_dir.join("jvm-ram-cost.jar");
+            if !jar_path.exists() {
+                return Err(format!("JAR файл не найден: {:?}", jar_path));
             }
-            cmd.arg("-jar").arg(&resource_path);
+            cmd.arg("-jar").arg(&jar_path);
 
             cmd
         }
@@ -81,13 +82,16 @@ enum BackendKind {
 }
 
 impl BackendKind {
-    fn new() -> Result<Self, String> {
-        let standalone_path =
-            PathBuf::from("/usr/lib/jvm-ram-cost-standalone/backend/bin/jvm-ram-cost");
+    fn new(resource_dir: PathBuf) -> Result<Self, String> {
+        let standalone_path = resource_dir
+            .join("backend")
+            .join("bin")
+            .join("jvm-ram-cost");
         let standalone_exists = standalone_path.exists();
         if standalone_exists {
             Ok(BackendKind::StandaloneLinux(standalone_path))
         } else {
+            eprintln!("Standalone backend not found at {:?}", standalone_path);
             let java = BackendKind::find_java()?;
             Ok(BackendKind::Jdk25(java))
         }
