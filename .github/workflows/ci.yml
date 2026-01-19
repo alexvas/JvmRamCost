@@ -7,9 +7,10 @@ on:
   workflow_dispatch: # Позволяет запускать вручную
 
 jobs:
-  build-with-jdk:
-    name: Собираем минифицированный JAR
-    runs-on: ubuntu-latest
+
+  build-ubuntu:
+    name: Собираем Tauri DEB для Ubuntu
+    runs-on: ubuntu-22.04
     permissions:
       contents: read
       packages: write
@@ -25,59 +26,8 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
-      - name: Build with Gradle
-        run: ./gradlew proguardMinify
-
-      - name: Upload minified JAR artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: jvm-ram-cost-minified-jar
-          path: dist-app-backend/build/minified/jvm-ram-cost.jar
-          retention-days: 1
-
       - name: Строим jpackage
         run: ./gradlew jpackageMin
-
-      - name: zip jpackage output
-        run: |
-          cd dist-app-backend/build/jpackage
-          zip -r ../../../jvm-ram-cost-jpackage.zip jvm-ram-cost
-
-      - name: Upload jpackage artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: jvm-ram-cost-jpackage
-          path: jvm-ram-cost-jpackage.zip
-          retention-days: 1
-
-  build-ubuntu:
-    name: Собираем Tauri DEB для Ubuntu
-    needs: [build-with-jdk]
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      packages: write
-
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download minified JAR artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jvm-ram-cost-minified-jar
-          path: ./dist-app-backend/build/minified/
-
-      - name: Download jpackage artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jvm-ram-cost-jpackage
-          path: ./
-
-      - name: Unzip jpackage artifact
-        run: |
-          mkdir -p ./dist-app-backend/build/jpackage
-          unzip ./jvm-ram-cost-jpackage.zip -d ./dist-app-backend/build/jpackage/
-          echo "jpackage unzipped:"
-          ls -la ./dist-app-backend/build/jpackage/jvm-ram-cost/
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -153,7 +103,6 @@ jobs:
 
   build-windows:
     name: Собираем Tauri MSI для Windows
-    needs: [build-with-jdk]
     runs-on: windows-2022
     permissions:
       contents: read
@@ -161,24 +110,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Download minified JAR artifact
-        uses: actions/download-artifact@v4
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
         with:
-          name: jvm-ram-cost-minified-jar
-          path: ./dist-app-backend/build/minified/
+          java-version: "25"
+          distribution: "liberica"
 
-      - name: Download jpackage artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: jvm-ram-cost-jpackage
-          path: ./
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
-      - name: Unzip jpackage artifact
-        run: |
-          New-Item -ItemType Directory -Force -Path ./dist-app-backend/build/jpackage/jvm-ram-cost
-          Expand-Archive -Path ./jvm-ram-cost-jpackage.zip -DestinationPath ./dist-app-backend/build/jpackage/jvm-ram-cost/ -Force
-          echo "jpackage unzipped:"
-          Get-ChildItem -Path ./dist-app-backend/build/jpackage/jvm-ram-cost/ -Recurse | Select-Object FullName
+      - name: Строим jpackage
+        run: .\gradlew.exe jpackageMin
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

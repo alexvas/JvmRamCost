@@ -16,6 +16,10 @@ pub fn start_backend(app: &App) -> Result<std::process::Child, String> {
             // JVM-аргументы уже вшиты в launcher через jpackage --java-options
             Command::new(path)
         }
+        BackendKind::StandaloneWindows(path) => {
+            // JVM-аргументы уже вшиты в launcher через jpackage --java-options
+            Command::new(path)
+        }
         BackendKind::Jdk25(path) => {
             let mut cmd = Command::new(path);
             cmd.arg("-Xms10m")
@@ -78,23 +82,36 @@ pub fn kill(child: &mut Child) {
 #[derive(Clone)]
 enum BackendKind {
     StandaloneLinux(PathBuf),
+    StandaloneWindows(PathBuf),
     Jdk25(PathBuf),
 }
 
 impl BackendKind {
     fn new(resource_dir: PathBuf) -> Result<Self, String> {
-        let standalone_path = resource_dir
+        let standalone_linux_path = resource_dir
             .join("backend")
             .join("bin")
             .join("jvm-ram-cost");
-        let standalone_exists = standalone_path.exists();
+        let standalone_exists = standalone_linux_path.exists();
         if standalone_exists {
-            Ok(BackendKind::StandaloneLinux(standalone_path))
-        } else {
-            eprintln!("Standalone backend not found at {:?}", standalone_path);
-            let java = BackendKind::find_java()?;
-            Ok(BackendKind::Jdk25(java))
+            return Ok(BackendKind::StandaloneLinux(standalone_linux_path));
         }
+
+        let standalone_windows_path = resource_dir
+            .join("backend")
+            .join("bin")
+            .join("jvm-ram-cost.exe");
+        if standalone_windows_path.exists() {
+            return Ok(BackendKind::StandaloneWindows(standalone_windows_path));
+        }
+
+        eprintln!(
+            "Standalone backend not found at {:?} or {:?}",
+            standalone_linux_path,
+            standalone_windows_path
+        );
+        let java = BackendKind::find_java()?;
+        Ok(BackendKind::Jdk25(java))
     }
 
     fn find_java() -> Result<PathBuf, String> {
