@@ -264,15 +264,48 @@ pub fn run() {
             *state.backend_process.lock().unwrap() = Some(backend_child);
             app.manage(state.clone());
 
-            let state2 = state.clone();
-
+            let state1 = state.clone();
             let app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
-                listen_available_jvm_processes_updated(app_handle, state).await;
+                listen_available_jvm_processes_updated(app_handle, state1).await;
             });
+
+            let state2 = state.clone();
             let app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 listen_graph_queues(app_handle, state2).await;
+            });
+
+            let state3 = state.clone();
+            // Обработчик сигналов для корректного завершения бэкенда при CTRL+C
+            tauri::async_runtime::spawn(async move {
+                #[cfg(unix)]
+                {
+                    use tokio::signal::unix::{signal, SignalKind};
+                    let mut sigterm = signal(SignalKind::terminate())
+                        .expect("failed to install SIGTERM handler");
+                    let mut sigint = signal(SignalKind::interrupt())
+                        .expect("failed to install SIGINT handler");
+                    
+                    tokio::select! {
+                        _ = sigterm.recv() => {
+                            eprintln!("Получен SIGTERM, завершаем бэкенд...");
+                        }
+                        _ = sigint.recv() => {
+                            eprintln!("Получен SIGINT (CTRL+C), завершаем бэкенд...");
+                        }
+                    }
+                }
+                #[cfg(not(unix))]
+                {
+                    tokio::signal::ctrl_c()
+                        .await
+                        .expect("failed to install CTRL+C handler");
+                    eprintln!("Получен CTRL+C, завершаем бэкенд...");
+                }
+                state3.kill_backend();
+                // Завершаем процесс после завершения бэкенда
+                std::process::exit(0);
             });
 
             Ok(())
