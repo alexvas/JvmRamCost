@@ -126,18 +126,18 @@ enum BackendKind {
 
 impl BackendKind {
     fn new(resource_dir: PathBuf) -> Result<Self, String> {
+        // Linux: backend/bin/jvm-ram-cost
         let standalone_linux_path = resource_dir
             .join("backend")
             .join("bin")
             .join("jvm-ram-cost");
-        let standalone_exists = standalone_linux_path.exists();
-        if standalone_exists {
+        if standalone_linux_path.exists() {
             return Ok(BackendKind::StandaloneLinux(standalone_linux_path));
         }
 
+        // Windows: backend/jvm-ram-cost.exe (jpackage на Windows кладёт exe в корень, не в bin/)
         let standalone_windows_path = resource_dir
             .join("backend")
-            .join("bin")
             .join("jvm-ram-cost.exe");
         if standalone_windows_path.exists() {
             return Ok(BackendKind::StandaloneWindows(standalone_windows_path));

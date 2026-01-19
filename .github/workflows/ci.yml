@@ -87,7 +87,7 @@ jobs:
 
       - name: Package Standalone Tauri application into DEB
         run: |
-          yarn tauri bundle --bundles deb -c /tmp/tauri-versioned.conf.json -c src-tauri/tauri.standalone.conf.json
+          yarn tauri bundle --bundles deb -c /tmp/tauri-versioned.conf.json -c src-tauri/tauri.standalone.linux.conf.json
 
       - name: Fix Standalone DEB icon names
         run: |
@@ -180,7 +180,7 @@ jobs:
 
       - name: Package Standalone Tauri application into MSI
         run: |
-          yarn tauri bundle --bundles msi -c $env:TEMP\tauri-versioned.conf.json -c src-tauri/tauri.standalone.conf.json
+          yarn tauri bundle --bundles msi -c $env:TEMP\tauri-versioned.conf.json -c src-tauri/tauri.standalone.windows.conf.json
 
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@v4

@@ -1,0 +1,11 @@
+{
+  "productName": "jvm-ram-cost-standalone",
+  "bundle": {
+    "resources": {
+      "../README.md": "docs/README.md",
+      "../dist-app-backend/build/jpackage/jvm-ram-cost/jvm-ram-cost.exe": "backend/jvm-ram-cost.exe",
+      "../dist-app-backend/build/jpackage/jvm-ram-cost/app/": "backend/app/",
+      "../dist-app-backend/build/jpackage/jvm-ram-cost/runtime/": "backend/runtime/"
+    }
+  }
+}
