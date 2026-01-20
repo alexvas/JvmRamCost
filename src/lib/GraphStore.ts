@@ -9,9 +9,12 @@ export enum MetricType {
   PB = 4,
   HEAP_USED = 5,
   HEAP_COMMITTED = 6,
-  NMT_USED = 7,
-  NMT_COMMITTED = 8,
-  BUFFER_TOTAL = 9,
+  OLD_GEN_MAX = 7,
+  OLD_GEN_COMMITTED = 8,
+  OLD_GEN_USED = 9,
+  NMT_USED = 10,
+  NMT_COMMITTED = 11,
+  BUFFER_TOTAL = 12,
 }
 
 /** Лимит точек на каждую метрику для каждого процесса */

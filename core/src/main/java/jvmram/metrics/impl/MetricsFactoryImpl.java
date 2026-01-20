@@ -45,6 +45,9 @@ public class MetricsFactoryImpl implements MetricsFactory {
         var common = Map.of(
                 HEAP_USED, createMetrics(pid, HEAP_USED, JmxData::heapUsed),
                 HEAP_COMMITTED, createMetrics(pid, HEAP_COMMITTED, JmxData::heapCommitted),
+                OLD_GEN_MAX, createMetrics(pid, OLD_GEN_MAX, JmxData::oldGenMax),
+                OLD_GEN_COMMITTED, createMetrics(pid, OLD_GEN_COMMITTED, JmxData::oldGenCommitted),
+                OLD_GEN_USED, createMetrics(pid, OLD_GEN_USED, JmxData::oldGenUsed),
                 NMT_USED, createMetrics(pid, NMT_USED, JmxData::nmtUsed),
                 NMT_COMMITTED, createMetrics(pid, NMT_COMMITTED, JmxData::nmtCommitted),
                 BUFFER_TOTAL, createMetrics(pid, BUFFER_TOTAL, JmxData::bufferTotal)

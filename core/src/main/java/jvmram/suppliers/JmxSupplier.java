@@ -42,12 +42,27 @@ class JmxSupplier extends AbstractDataSupplier<JmxData> {
         long nmtCommitted = 0;
         long bufferTotal = 0;
 
+        long oldGenMax = 0;
+        long oldGenCommitted = 0;
+        long oldGenUsed = 0;
+
         // Получаем информацию о heap памяти:
         // это Eden, Survivor, Old Gen.
         var heapMemoryUsage = memory.getHeapMemoryUsage();
         if (heapMemoryUsage != null) {
             heapUsed = heapMemoryUsage.getUsed();
             heapCommitted = heapMemoryUsage.getCommitted();
+        }
+
+        // И отдельно про старшее поколение
+        var oldGen = mxDatum.oldGenPool();
+        if (oldGen != null) {
+            var oldGenUsage = oldGen.getUsage();
+            if (oldGenUsage != null) {
+                oldGenMax = oldGenUsage.getMax();
+                oldGenCommitted = oldGenUsage.getCommitted();
+                oldGenUsed = oldGenUsage.getUsed();
+            }
         }
         
         // Получаем информацию о non-heap памяти (NMT)
@@ -70,6 +85,9 @@ class JmxSupplier extends AbstractDataSupplier<JmxData> {
         return new JmxData(
                 heapUsed,
                 heapCommitted,
+                oldGenMax,
+                oldGenCommitted,
+                oldGenUsed,
                 nmtUsed,
                 nmtCommitted,
                 mxDatum.bufferPools().size(),

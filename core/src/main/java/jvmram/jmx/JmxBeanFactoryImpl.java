@@ -11,6 +11,7 @@ import javax.management.remote.JMXServiceURL;
 import java.lang.invoke.MethodHandles;
 import java.lang.management.BufferPoolMXBean;
 import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryPoolMXBean;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -71,6 +72,18 @@ class JmxBeanFactoryImpl implements JmxBeanFactory {
                         HotSpotDiagnosticMXBean.class
                 );
 
+                var memoryPools = getPlatformMXBeans(connection, MemoryPoolMXBean.class);
+
+                var oldGenPool = memoryPools.stream()
+                        .filter(pool -> {
+                            var poolName = pool.getName().toLowerCase();
+                            return poolName.contains("old") ||
+                                    poolName.contains("tenured");
+                        })
+                        .findFirst()
+                        .orElse(null);
+
+
                 var bufferPools = getPlatformMXBeans(
                         connection,
                         BufferPoolMXBean.class
@@ -79,7 +92,15 @@ class JmxBeanFactoryImpl implements JmxBeanFactory {
                 var agentProps = vm.getAgentProperties();
                 var sysProps = vm.getSystemProperties();
 
-                return new MxDatum(jmxConnector, memoryMxBean, hotSpotBean, bufferPools, agentProps, sysProps);
+                return new MxDatum(
+                        jmxConnector,
+                        memoryMxBean,
+                        oldGenPool,
+                        hotSpotBean,
+                        bufferPools,
+                        agentProps,
+                        sysProps
+                );
 
             } finally {
                 // Отключаемся от виртуальной машины (но оставляем JMX коннектор открытым)

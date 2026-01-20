@@ -83,6 +83,9 @@ class Converter {
             case PB -> MetricType.PB;
             case HEAP_USED -> MetricType.HEAP_USED;
             case HEAP_COMMITTED -> MetricType.HEAP_COMMITTED;
+            case OLD_GEN_MAX -> MetricType.OLD_GEN_MAX;
+            case OLD_GEN_COMMITTED -> MetricType.OLD_GEN_COMMITTED;
+            case OLD_GEN_USED -> MetricType.OLD_GEN_USED;
             case NMT_USED -> MetricType.NMT_USED;
             case NMT_COMMITTED -> MetricType.NMT_COMMITTED;
             case BUFFER_TOTAL -> MetricType.BUFFER_TOTAL;
@@ -98,6 +101,9 @@ class Converter {
             case PB -> PB;
             case HEAP_USED -> HEAP_USED;
             case HEAP_COMMITTED -> HEAP_COMMITTED;
+            case OLD_GEN_MAX -> OLD_GEN_MAX;
+            case OLD_GEN_COMMITTED -> OLD_GEN_COMMITTED;
+            case OLD_GEN_USED -> OLD_GEN_USED;
             case NMT_USED -> NMT_USED;
             case NMT_COMMITTED -> NMT_COMMITTED;
             case BUFFER_TOTAL -> BUFFER_TOTAL;

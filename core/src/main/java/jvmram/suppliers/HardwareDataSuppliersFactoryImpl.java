@@ -31,7 +31,8 @@ class HardwareDataSuppliersFactoryImpl implements HardwareDataSuppliersFactory {
             case RSS -> MemInfoSupplier.class;
             case PSS, USS -> SmapsSupplier.class;
             case WS, PB -> WinSupplier.class;
-            case HEAP_COMMITTED, HEAP_USED, NMT_USED, NMT_COMMITTED, BUFFER_TOTAL -> JmxSupplier.class;
+            case HEAP_COMMITTED, HEAP_USED, OLD_GEN_MAX, OLD_GEN_COMMITTED, OLD_GEN_USED, NMT_USED, NMT_COMMITTED,
+                 BUFFER_TOTAL -> JmxSupplier.class;
         };
     }
 
@@ -40,7 +41,8 @@ class HardwareDataSuppliersFactoryImpl implements HardwareDataSuppliersFactory {
             case RSS -> new MemInfoSupplier(pid);
             case PSS, USS -> new SmapsSupplier(pid);
             case WS, PB -> new WinSupplier(pid);
-            case HEAP_COMMITTED, HEAP_USED, NMT_USED, NMT_COMMITTED, BUFFER_TOTAL -> new JmxSupplier(pid);
+            case HEAP_COMMITTED, HEAP_USED, OLD_GEN_MAX, OLD_GEN_COMMITTED, OLD_GEN_USED, NMT_USED, NMT_COMMITTED,
+                 BUFFER_TOTAL -> new JmxSupplier(pid);
         };
     }
 

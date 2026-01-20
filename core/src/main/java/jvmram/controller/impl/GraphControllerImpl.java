@@ -51,6 +51,9 @@ public class GraphControllerImpl implements GraphController {
         LOG.trace("effective metrics: {}", effectiveMetrics);
         for (var mt : effectiveMetrics) {
             var ramMetric = metrics.get(mt);
+            if (ramMetric == null) {
+                continue;
+            }
             var point = ramMetric.getGraphPoint();
 
             if (point.isRedundant()) {

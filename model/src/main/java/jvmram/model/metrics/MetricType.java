@@ -6,31 +6,28 @@ import static jvmram.model.metrics.Os.LINUX;
 import static jvmram.model.metrics.Os.WINDOWS;
 
 public enum MetricType {
-    RSS(EnumSet.of(LINUX), "Resident Set Size"),
-    PSS(EnumSet.of(LINUX), "Proportional Set Size"),
-    USS(EnumSet.of(LINUX), "Unique Set Size"),
-    WS(EnumSet.of(WINDOWS), "Working Set"),
-    PB(EnumSet.of(WINDOWS), "Private Bytes"),
-    HEAP_USED(EnumSet.allOf(Os.class), "Heap Used"),
-    HEAP_COMMITTED(EnumSet.allOf(Os.class), "Heap Committed"),
-    NMT_USED(EnumSet.allOf(Os.class), "Native Memory Used"),
-    NMT_COMMITTED(EnumSet.allOf(Os.class), "Native Memory Committed"),
-    BUFFER_TOTAL(EnumSet.allOf(Os.class), "Buffer Total"),
+    RSS(EnumSet.of(LINUX)),
+    PSS(EnumSet.of(LINUX)),
+    USS(EnumSet.of(LINUX)),
+    WS(EnumSet.of(WINDOWS)),
+    PB(EnumSet.of(WINDOWS)),
+    HEAP_USED(EnumSet.allOf(Os.class)),
+    HEAP_COMMITTED(EnumSet.allOf(Os.class)),
+    OLD_GEN_MAX(EnumSet.allOf(Os.class)),
+    OLD_GEN_COMMITTED(EnumSet.allOf(Os.class)),
+    OLD_GEN_USED(EnumSet.allOf(Os.class)),
+    NMT_USED(EnumSet.allOf(Os.class)),
+    NMT_COMMITTED(EnumSet.allOf(Os.class)),
+    BUFFER_TOTAL(EnumSet.allOf(Os.class)),
     ;
     
     private final EnumSet<Os> applicable;
-    private final String displayName;
 
-    MetricType(EnumSet<Os> applicable, String displayName) {
+    MetricType(EnumSet<Os> applicable) {
         this.applicable = applicable;
-        this.displayName = displayName;
     }
 
     public boolean isApplicable(Os input) {
         return applicable.contains(input);
-    }
-
-    public String getDisplayName() {
-        return displayName;
     }
 }
