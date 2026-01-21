@@ -10,7 +10,8 @@
           type="checkbox"
           name="metric-types"
           value={mt}
-          bind:group={visibleMetrics}
+          checked={visibleMetrics.includes(mt)}
+          onchange={onCheckboxChange}
           class="fluent-checkbox"
         />
         <span class="checkbox-text">{MetricType[mt]}</span>
@@ -27,13 +28,26 @@
     getApplicableMetrics,
   } from "$lib/ProtoAdapter";
   import { graphMetaMap } from "$lib/GraphMeta";
-  import { getContext } from "svelte";
+  import { getContext, onMount } from "svelte";
+  import {
+    allMetricTypes as allMetricTypesStore,
+    visibleMetrics as visibleMetricsStore,
+  } from "$lib/metricStore";
 
-  let { allMetricTypes, visibleMetrics } = $props();
+  let allMetricTypes = $state<MetricType[]>([]);
+  let visibleMetrics = $state<MetricType[]>([]);
 
-  getApplicableMetrics().then((types) => {
-    allMetricTypes = types;
-    visibleMetrics = types;
+  allMetricTypesStore.subscribe((v) => (allMetricTypes = v));
+  visibleMetricsStore.subscribe((v) => (visibleMetrics = v));
+
+  onMount(() => {
+    getApplicableMetrics().then((types) => {
+      allMetricTypesStore.set(types);
+      // Инициализируем visibleMetrics только если он пуст
+      visibleMetricsStore.update((current) =>
+        current.length === 0 ? types : current,
+      );
+    });
   });
 
   let oldVisibleMetrics: MetricType[] | undefined = undefined;
@@ -49,8 +63,19 @@
       added.forEach((mt: MetricType) => setVisible(mt));
       removed.forEach((mt: MetricType) => setInvisible(mt));
     }
-    oldVisibleMetrics = $state.snapshot(newVal) as MetricType[];
+    oldVisibleMetrics = [...newVal];
   });
+
+  function onCheckboxChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const value = parseInt(target.value) as MetricType;
+    if (target.checked) {
+      visibleMetricsStore.update((arr) => [...arr, value]);
+    } else {
+      visibleMetricsStore.update((arr) => arr.filter((m) => m !== value));
+    }
+  }
+
   let prefersDark = getContext<() => boolean>("prefersDark")!();
 
   const backgroundColors = new Map<MetricType, string>();
