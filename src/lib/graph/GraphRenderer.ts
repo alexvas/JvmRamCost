@@ -7,8 +7,7 @@ import type {
     GraphConfigResolved,
     GraphTransform,
     GridLine,
-    MetricColorMap,
-    MetricNameMap,
+    MetricMetaMap,
     GraphData,
     ProcessMinMax,
     CurrentValues,
@@ -35,9 +34,7 @@ import { formatTimeLabel, formatBytesLabel } from './formatters';
  */
 export class GraphRenderer {
     private config: GraphConfigResolved;
-    private metricColors: MetricColorMap;
-    private metricNames: MetricNameMap;
-
+    private metricMeta: MetricMetaMap;
     // Кэш для вертикальных линий
     private cachedVerticalLines: GridLine[] = [];
     private cachedVerticalMinTime: number | null = null;
@@ -51,8 +48,7 @@ export class GraphRenderer {
 
     constructor(
         config: GraphConfig,
-        metricColors: MetricColorMap,
-        metricNames: MetricNameMap,
+        metricMeta: MetricMetaMap,
     ) {
         this.config = {
             containerWidth: config.containerWidth,
@@ -65,8 +61,7 @@ export class GraphRenderer {
             minTimeRange: config.minTimeRange ?? DEFAULT_MIN_TIME_RANGE,
             prefersDark: config.prefersDark ?? false,
         };
-        this.metricColors = metricColors;
-        this.metricNames = metricNames;
+        this.metricMeta = metricMeta;
     }
 
     /**
@@ -254,12 +249,26 @@ export class GraphRenderer {
     }
 
     /**
+     * Преобразовать стиль линии в значение stroke-dasharray
+     */
+    lineStyleToDashArray(lineStyle: string): string {
+        switch (lineStyle) {
+            case 'dashed':
+                return '8,4';
+            case 'dotted':
+                return '2,4';
+            case 'solid':
+            default:
+                return 'none';
+        }
+    }
+
+    /**
      * Сгенерировать CSS-стили для SVG
      */
     renderStyles(): string {
         const frameColor = this.getFrameColor();
         const backgroundColor = this.getBackgroundColor();
-        const colorKey = this.config.prefersDark ? 'color_dark' : 'color_light';
 
         const baseStyles = /*css*/ `
       .graph-plot {
@@ -306,14 +315,19 @@ export class GraphRenderer {
       }
     `;
 
-        const metricStyles = Object.keys(this.metricColors)
+        const metricStyles = Object.keys(this.metricMeta)
             .map((metricTypeKey) => {
                 const metricType = Number(metricTypeKey);
-                const metricTypeName = this.metricNames[metricType] || `Metric${metricType}`;
-                const meta = this.metricColors[metricType];
+                const name = this.metricMeta[metricType].name;
+                const color = this.config.prefersDark
+                    ? this.metricMeta[metricType].color_dark
+                    : this.metricMeta[metricType].color_light;
+                const lineStyle = this.metricMeta[metricType].line_style;
+                const dashArray = this.lineStyleToDashArray(lineStyle);
                 return /*css*/ `
-      .graph-path-${metricTypeName} {
-        stroke: ${meta[colorKey]};
+      .graph-path-${name} {
+        stroke: ${color};
+        stroke-dasharray: ${dashArray};
       }
     `;
             })
@@ -343,7 +357,7 @@ export class GraphRenderer {
             const metricType = graph.metricType;
             const kilobytes = lastPoint.kilobytes;
             const label = formatBytesLabel(kilobytes, 2);
-            const title = this.metricNames[metricType] || `Metric${metricType}`;
+            const title = this.metricMeta[metricType].title;
             currentValuesArray.push({ metricType, label, title, kilobytes });
         }
         const currentValues: CurrentValues = {
@@ -357,8 +371,9 @@ export class GraphRenderer {
         let yLine = transform.translateY + this.config.rightCurrentValuePadding;
         const lines: string[] = [];
         for (const currentValue of currentValues.items) {
-            const metricColorMeta = this.metricColors[currentValue.metricType];
-            const metricColor = metricColorMeta[this.config.prefersDark ? 'color_dark' : 'color_light'];
+            const metricColor = this.config.prefersDark
+                ? this.metricMeta[currentValue.metricType].color_dark
+                : this.metricMeta[currentValue.metricType].color_light;
             lines.push(/*svg*/`<text class="current-value" x="${xStart + 15}" y="${yLine}" text-anchor="middle" dominant-baseline="hanging" fill="${metricColor}"><title>${currentValue.title}</title>${currentValue.label}</text>`);
             yLine += 20;
         }
@@ -410,8 +425,7 @@ export class GraphRenderer {
         maxKb: number,
     ): string {
         if (points.length === 0) return '';
-
-        const metricTypeName = this.metricNames[metricType] || `Metric${metricType}`;
+        const name = this.metricMeta[metricType].name;
         const d = points
             .map((point, i) => {
                 const x = point.moment - minMoment;
@@ -420,7 +434,7 @@ export class GraphRenderer {
             })
             .join(' ');
 
-        return /*svg*/`<path class="graph-path graph-path-${metricTypeName}" d="${d}"/>`;
+        return /*svg*/`<path class="graph-path graph-path-${name}" d="${d}"/>`;
     }
 
     /**

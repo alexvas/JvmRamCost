@@ -27,8 +27,7 @@ export type {
   GraphPoint,
   GraphTransform,
   GridLine,
-  MetricColorMap,
-  MetricNameMap,
+  MetricMetaMap,
   ProcessMinMax,
 } from './types';
 export {

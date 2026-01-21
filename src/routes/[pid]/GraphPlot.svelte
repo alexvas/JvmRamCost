@@ -3,12 +3,8 @@
 </div>
 
 <script lang="ts">
-  import {
-    GraphRenderer,
-    type MetricColorMap,
-    type MetricNameMap,
-  } from "$lib/graph";
-  import { graphStore, MetricType } from "$lib/GraphStore";
+  import { GraphRenderer, type MetricMetaMap } from "$lib/graph";
+  import { graphStore } from "$lib/GraphStore";
   import { graphMetaMap } from "$lib/GraphMeta";
   import { Debouncer } from "$lib/Debouncer";
   import { getContext } from "svelte";
@@ -24,12 +20,7 @@
   let prefersDark = getContext<() => boolean>("prefersDark")!();
 
   // Создаём карты цветов и имён метрик для рендерера
-  const metricColors: MetricColorMap = graphMetaMap;
-  const metricNames: MetricNameMap = Object.fromEntries(
-    Object.keys(MetricType)
-      .filter((key) => isNaN(Number(key)))
-      .map((name) => [MetricType[name as keyof typeof MetricType], name]),
-  );
+  const metricMeta: MetricMetaMap = graphMetaMap;
 
   // Создаём рендерер
   const renderer = new GraphRenderer(
@@ -38,8 +29,7 @@
       containerHeight: 1,
       prefersDark,
     },
-    metricColors,
-    metricNames,
+    metricMeta,
   );
 
   // Отслеживание размеров контейнера

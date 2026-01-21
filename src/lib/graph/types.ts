@@ -77,13 +77,13 @@ export interface GraphTransform {
 }
 
 /** Мета-информация о цветах метрики */
-export interface MetricColorMeta {
+export interface MetricMeta {
     color_light: string;
     color_dark: string;
+    line_style: string;
+    name: string;
+    title: string;
 }
 
-/** Карта цветов метрик */
-export type MetricColorMap = Record<number, MetricColorMeta>;
-
-/** Карта имён метрик */
-export type MetricNameMap = Record<number, string>;
+/** Карта мета-информации о метриках */
+export type MetricMetaMap = Record<number, MetricMeta>;
