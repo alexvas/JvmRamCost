@@ -26,7 +26,16 @@ service AppBackend {
   rpc ListenGraphQueues (google.protobuf.Empty) returns (stream GraphQueues);
 
   rpc TriggerGc (Pid) returns (google.protobuf.Empty);
-  rpc DumpHeap (File) returns (google.protobuf.Empty);
+
+  /* RPC between UI and Rust backend: */
+  rpc DumpHeap (DumpRequest) returns (DumpResponse);
+  /* RPC between Rust and JVM backends: */
+  rpc DumpHeapJvm (DumpJvmRequest) returns (google.protobuf.Empty);
+
+  /* RPC between UI and Rust backend: */
+  rpc DumpThread (DumpRequest) returns (DumpResponse);
+  /* RPC between Rust and JVM backends: */
+  rpc DumpThreadJvm (DumpJvmRequest) returns (google.protobuf.Empty);
 }
 
 message Pid {
@@ -47,9 +56,19 @@ message JvmProcessListResponse {
   repeated ProcInfo infos = 1;
 }
 
-message File {
+message DumpRequest {
   int32 pid = 1;
-  string file_name = 2;
+  string main = 2;
+  string comment = 3;
+}
+
+message DumpJvmRequest {
+  int32 pid = 1;
+  string output_file_path = 2;
+}
+
+message DumpResponse {
+  string file_name = 1;
 }
 
 enum MetricType {

@@ -5,7 +5,8 @@ import {
     ApplicableMetricsResponse,
     type GraphQueues,
     type JvmProcessListResponse,
-    Pid
+    Pid,
+    DumpRequest
 } from "$lib/generated/proto/protocol";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
@@ -41,6 +42,18 @@ export async function setInvisible(mt: MetricType) {
 export async function triggerGc(pid: number) {
     const request = Pid.create({ pid: pid });
     await invoke("trigger_gc", { request });
+}
+
+export async function dumpHeap(pid: number, comment: string) {
+    const request = DumpRequest.create({ pid: pid, comment: comment });
+    let fileName = await invoke<string>("heap_dump", { request });
+    return fileName;
+}
+
+export async function dumpThread(pid: number, comment: string) {
+    const request = DumpRequest.create({ pid: pid, comment: comment });
+    let fileName = await invoke<string>("thread_dump", { request });
+    return fileName;
 }
 
 export async function getApplicableMetrics() {
@@ -99,10 +112,10 @@ export async function listenJvmProcessList(listener: (procInfoMap: Map<number, P
             sortedProcesses.map((proc) => {
                 const pid = proc.pid;
                 return [
-                    pid, 
-                    { 
-                        pid, 
-                        display_name: proc.display_name, 
+                    pid,
+                    {
+                        pid,
+                        display_name: proc.display_name,
                         active: true,
                         children: proc.children,
                     }

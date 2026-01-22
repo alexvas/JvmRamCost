@@ -142,6 +142,7 @@
 
 # com.sun.management classes are in jdk.management module
 -dontwarn com.sun.management.HotSpotDiagnosticMXBean
+-dontwarn com.sun.management.HotSpotDiagnosticMXBean$ThreadDumpFormat
 
 # Exclude JNDI resolver (not needed, causes issues with java.naming)
 -assumenosideeffects class io.grpc.internal.JndiResourceResolverFactory { *; }

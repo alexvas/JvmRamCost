@@ -11,7 +11,9 @@ public interface JmxService {
      */
     void gc(int pid);
 
-    void createHeapDump(String filepath);
+    void createHeapDump(int pid, String outputHprofFilePath);
+
+    void createThreadDump(int pid, String outputThreadDumpPath);
 
     static JmxService getInstance() {
         return JmxServiceImpl.INSTANCE;
