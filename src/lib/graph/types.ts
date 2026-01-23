@@ -87,3 +87,10 @@ export interface MetricMeta {
 
 /** Карта мета-информации о метриках */
 export type MetricMetaMap = Record<number, MetricMeta>;
+
+/**
+ * Режим рендеринга SVG:
+ * - `embedded` - для встраивания в HTML (preserveAspectRatio="none", растягивается по контейнеру)
+ * - `standalone` - для экспорта/сохранения (preserveAspectRatio="xMidYMid meet", сохраняет пропорции)
+ */
+export type SvgRenderMode = 'embedded' | 'standalone';

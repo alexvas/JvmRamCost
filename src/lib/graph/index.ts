@@ -20,6 +20,7 @@
  */
 
 export { GraphRenderer } from './GraphRenderer';
+export { renderGraphSvg, renderGraphSvgOrEmpty, EMPTY_SVG } from './renderGraphSvg';
 export type {
   GraphConfig,
   GraphConfigResolved,
@@ -29,6 +30,7 @@ export type {
   GridLine,
   MetricMetaMap,
   ProcessMinMax,
+  SvgRenderMode,
 } from './types';
 export {
   DEFAULT_PADDING_PERCENT,

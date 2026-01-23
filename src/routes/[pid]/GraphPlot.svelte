@@ -3,8 +3,7 @@
 </div>
 
 <script lang="ts">
-  import { GraphRenderer, type MetricMetaMap } from "$lib/graph";
-  import { graphStore } from "$lib/GraphStore";
+  import { GraphRenderer, type MetricMetaMap, renderGraphSvgOrEmpty, EMPTY_SVG } from "$lib/graph";
   import { graphMetaMap } from "$lib/GraphMeta";
   import { Debouncer } from "$lib/Debouncer";
   import { getContext } from "svelte";
@@ -12,11 +11,9 @@
 
   let {
     process,
-    comment,
     notice,
   }: {
     process: ProcInfo;
-    comment: string | undefined;
     notice: (message: string) => void;
   } = $props();
   let pid = $derived(process.pid);
@@ -79,20 +76,12 @@
 
     // Ждём реальных размеров контейнера
     if (containerWidth <= 1 || containerHeight <= 1) {
-      return /*svg*/ `<svg xmlns="http://www.w3.org/2000/svg" class="graph-plot"></svg>`;
+      return EMPTY_SVG;
     }
 
-    // Обновляем размеры рендерера
+    // Обновляем размеры рендерера и рендерим
     renderer.updateSize(containerWidth, containerHeight);
-
-    // Получаем данные
-    const processMinMax = graphStore.getProcessMinMax(pid);
-    if (!processMinMax) {
-      return /*svg*/ `<svg xmlns="http://www.w3.org/2000/svg" class="graph-plot"></svg>`;
-    }
-    const graphs = graphStore.getGraphs(pid);
-    const gcMarks = graphStore.getGcMarks(pid);
-    const content = renderer.renderToString(processMinMax, graphs, gcMarks);
+    const content = renderGraphSvgOrEmpty(pid, renderer);
 
     let now = Temporal.Instant.fromEpochMilliseconds(Date.now());
     if (
@@ -100,7 +89,7 @@
       Temporal.Instant.compare(lastSaved.add(duration), now) < 0
     ) {
       lastSaved = now;
-      saveSvg(pid, false, comment ?? "", content).then((filename) => {
+      saveSvg(pid, true, "", content).then((filename) => {
         console.log("saveSvg success", filename);
         notice(`Graph saved to ${filename}`);
       });

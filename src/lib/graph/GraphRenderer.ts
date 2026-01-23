@@ -12,6 +12,7 @@ import type {
     ProcessMinMax,
     CurrentValues,
     CurrentValue,
+    SvgRenderMode,
 } from './types';
 
 import {
@@ -481,10 +482,12 @@ export class GraphRenderer {
 
     /**
      * Сгенерировать полный SVG как строку
+     * @param mode - режим рендеринга: 'embedded' (растягивается по контейнеру) или 'standalone' (сохраняет пропорции)
      */
-    renderToString(minMax: ProcessMinMax, graphs: GraphData[], gcMarks: number[]): string {
+    renderToString(minMax: ProcessMinMax, graphs: GraphData[], gcMarks: number[], mode: SvgRenderMode = 'embedded'): string {
         const { containerWidth, containerHeight } = this.config;
         const viewBox = `0 0 ${containerWidth} ${containerHeight}`;
+        const preserveAspectRatio = mode === 'standalone' ? 'xMidYMid meet' : 'none';
 
         const transform = this.getTransform(minMax);
         const verticalLines = this.getVerticalGridLines(minMax);
@@ -502,7 +505,7 @@ export class GraphRenderer {
         const currentValueFrame = this.renderCurrentValueFrame(transform);
         const currentVals = this.calculateCurrentValues(graphs);
         const currentValues = this.renderCurrentValues(transform, currentVals);
-        return /*svg*/`<svg xmlns="http://www.w3.org/2000/svg" class="graph-plot" width="${containerWidth}" height="${containerHeight}" viewBox="${viewBox}" preserveAspectRatio="none">
+        return /*svg*/`<svg xmlns="http://www.w3.org/2000/svg" class="graph-plot" viewBox="${viewBox}" preserveAspectRatio="${preserveAspectRatio}">
   ${styles}
   <!-- Группа трансформаций для графика -->
   <g transform="translate(${transform.translateX}, ${transform.translateY})">

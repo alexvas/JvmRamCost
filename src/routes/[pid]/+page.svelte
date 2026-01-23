@@ -16,7 +16,7 @@
     <p>Process is not alive</p>
   {/if}
   {#if hasGraph}
-    <GraphPlot {process} {comment} {notice} />
+    <GraphPlot {process} {notice} />
   {/if}
   <p class="notice-container">{noticeMessage}</p>
   <div class="controls-container">
@@ -24,6 +24,7 @@
       <input type="text" bind:value={comment} />
       <button onclick={dump_heap}>Dump Heap</button>
       <button onclick={dump_thread}>Dump Thread</button>
+      <button onclick={saveGraphWithComment}>Save Graph</button>
     </div>
     <button onclick={trigger_gc} class="btn-gc">Trigger GC</button>
   </div>
@@ -78,6 +79,37 @@
     if (!pid) return;
     dumpThread(pid, comment).then((filename) => {
       notice(`Thread dump saved to ${filename}`);
+    });
+  }
+
+  import { GraphRenderer, renderGraphSvg } from "$lib/graph";
+  import { graphMetaMap } from "$lib/GraphMeta";
+  import { saveSvg } from "$lib/ProtoAdapter";
+
+  // Фиксированные размеры для экспорта
+  const EXPORT_WIDTH = 1920;
+  const EXPORT_HEIGHT = 1080;
+
+  function saveGraphWithComment() {
+    if (!pid) return;
+
+    const exportRenderer = new GraphRenderer(
+      {
+        containerWidth: EXPORT_WIDTH,
+        containerHeight: EXPORT_HEIGHT,
+        prefersDark: false,
+      },
+      graphMetaMap,
+    );
+
+    const svg = renderGraphSvg(pid, exportRenderer, "standalone");
+    if (!svg) {
+      notice("Нет данных для экспорта");
+      return;
+    }
+
+    saveSvg(pid, false, comment, svg).then((filename) => {
+      notice(`Graph saved to ${filename}`);
     });
   }
 </script>
