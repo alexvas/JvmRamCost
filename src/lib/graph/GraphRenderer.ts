@@ -272,11 +272,8 @@ export class GraphRenderer {
 
         const baseStyles = /*css*/ `
       .graph-plot {
-        width: 100%;
-        height: 100%;
         background-color: ${backgroundColor};
         display: block;
-        max-height: 100%;
         overflow: hidden;
       }
       .graph-path {
@@ -505,7 +502,7 @@ export class GraphRenderer {
         const currentValueFrame = this.renderCurrentValueFrame(transform);
         const currentVals = this.calculateCurrentValues(graphs);
         const currentValues = this.renderCurrentValues(transform, currentVals);
-        return /*svg*/`<svg class="graph-plot" viewBox="${viewBox}" preserveAspectRatio="none">
+        return /*svg*/`<svg xmlns="http://www.w3.org/2000/svg" class="graph-plot" width="${containerWidth}" height="${containerHeight}" viewBox="${viewBox}" preserveAspectRatio="none">
   ${styles}
   <!-- Группа трансформаций для графика -->
   <g transform="translate(${transform.translateX}, ${transform.translateY})">

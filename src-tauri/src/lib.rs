@@ -190,18 +190,20 @@ async fn read_yaml_config(state: State<'_, Arc<AppState>>) -> Result<String, Err
 
 use chrono::Local;
 
-#[tauri::command]
-async fn heap_dump(
-    state: State<'_, Arc<AppState>>,
-    request: Jmvram::DumpRequest,
-) -> Result<String, Error> {
+fn prepare_output_file(
+    prefix: &str,
+    extension: &str,
+    pid: i32,
+    comment: &str,
+    app_data_path: &PathBuf,
+) -> PathBuf {
     let now = Local::now();
     let date_today = now.format("%Y-%m-%d").to_string();
-    let output_dir = state.app_data_path.join("output").join(date_today);
+    let output_dir = app_data_path.join("output").join(date_today);
     if !output_dir.exists() {
         std::fs::create_dir_all(&output_dir).expect("Failed to create output directory");
     }
-    let process_output_dir = output_dir.join(request.pid.to_string());
+    let process_output_dir = output_dir.join(pid.to_string());
     if !process_output_dir.exists() {
         std::fs::create_dir_all(&process_output_dir)
             .expect("Failed to create process output directory");
@@ -209,15 +211,30 @@ async fn heap_dump(
 
     let date_time_now = now.format("%Y-%m-%d_%H_%M_%S").to_string();
 
-    let file_name = if request.comment.is_empty() {
-        format!("heap_dump_{}_{}.hprof", request.pid, date_time_now)
+    let file_name = if comment.is_empty() {
+        format!("{}_{}_{}.{}", prefix, pid, date_time_now, extension)
     } else {
         format!(
-            "heap_dump_{}_{}_{}.hprof",
-            request.pid, date_time_now, request.comment
+            "{}_{}_{}_{}.{}",
+            prefix, pid, date_time_now, comment, extension
         )
     };
     let output_file_path = process_output_dir.join(&file_name);
+    return output_file_path;
+}
+
+#[tauri::command]
+async fn heap_dump(
+    state: State<'_, Arc<AppState>>,
+    request: Jmvram::DumpRequest,
+) -> Result<String, Error> {
+    let output_file_path = prepare_output_file(
+        "heap_dump",
+        "hprof",
+        request.pid,
+        &request.comment,
+        &state.app_data_path,
+    );
 
     let jvm_request = Jmvram::DumpJvmRequest {
         pid: request.pid,
@@ -226,6 +243,11 @@ async fn heap_dump(
 
     let mut client = get_client(&state).await;
     client.dump_heap_jvm(jvm_request).await?;
+    let file_name = output_file_path
+        .file_name()
+        .unwrap()
+        .to_string_lossy()
+        .to_string();
     Ok(file_name)
 }
 
@@ -234,29 +256,13 @@ async fn thread_dump(
     state: State<'_, Arc<AppState>>,
     request: Jmvram::DumpRequest,
 ) -> Result<String, Error> {
-    let now = Local::now();
-    let date_today = now.format("%Y-%m-%d").to_string();
-    let output_dir = state.app_data_path.join("output").join(date_today);
-    if !output_dir.exists() {
-        std::fs::create_dir_all(&output_dir).expect("Failed to create output directory");
-    }
-    let process_output_dir = output_dir.join(request.pid.to_string());
-    if !process_output_dir.exists() {
-        std::fs::create_dir_all(&process_output_dir)
-            .expect("Failed to create process output directory");
-    }
-
-    let date_time_now = now.format("%Y-%m-%d_%H_%M_%S").to_string();
-
-    let file_name = if request.comment.is_empty() {
-        format!("thread_dump_{}_{}.txt", request.pid, date_time_now)
-    } else {
-        format!(
-            "thread_dump_{}_{}_{}.txt",
-            request.pid, date_time_now, request.comment
-        )
-    };
-    let output_file_path = process_output_dir.join(&file_name);
+    let output_file_path = prepare_output_file(
+        "thread_dump",
+        "txt",
+        request.pid,
+        &request.comment,
+        &state.app_data_path,
+    );
 
     let jvm_request = Jmvram::DumpJvmRequest {
         pid: request.pid,
@@ -265,6 +271,29 @@ async fn thread_dump(
 
     let mut client = get_client(&state).await;
     client.dump_thread_jvm(jvm_request).await?;
+    let file_name = output_file_path
+        .file_name()
+        .unwrap()
+        .to_string_lossy()
+        .to_string();
+    Ok(file_name)
+}
+
+#[tauri::command]
+async fn save_svg(
+    state: State<'_, Arc<AppState>>,
+    request: Jmvram::SvgSaveRequest,
+) -> Result<String, Error> {
+    let prefix = if request.auto {
+        "metrics_auto"
+    } else {
+        "metrics"
+    };
+    let output_file_path = prepare_output_file(
+        prefix, "svg", request.pid, &request.comment, &state.app_data_path,
+    );
+    std::fs::write(&output_file_path, request.content).expect("Failed to write SVG file");
+    let file_name = output_file_path.file_name().unwrap().to_string_lossy().to_string();
     Ok(file_name)
 }
 
@@ -366,6 +395,7 @@ pub fn run() {
             read_yaml_config,
             heap_dump,
             thread_dump,
+            save_svg,
         ])
         .on_window_event(|_window, event| {
             if let tauri::WindowEvent::CloseRequested { .. } = event {

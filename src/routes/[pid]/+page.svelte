@@ -16,7 +16,7 @@
     <p>Process is not alive</p>
   {/if}
   {#if hasGraph}
-    <GraphPlot {process} />
+    <GraphPlot {process} {comment} {notice} />
   {/if}
   <p class="notice-container">{noticeMessage}</p>
   <div class="controls-container">
@@ -59,29 +59,25 @@
       });
   }
   let comment = $state("");
-  let noticeMessage = $state("   ");
+  let noticeMessage = $state(" ");
+
+  function notice(message: string) {
+    noticeMessage = message;
+    setTimeout(() => {
+      noticeMessage = " ";
+    }, 5000);
+  }
+
   function dump_heap() {
     if (!pid) return;
-    console.log("dump_heap", pid);
     dumpHeap(pid, comment).then((filename) => {
-      console.log("dump_heap success", filename);
-      // alert
-      noticeMessage = `Heap dump saved to ${filename}`;
-      setTimeout(() => {
-        noticeMessage = "   ";
-      }, 5000);
+      notice(`Heap dump saved to ${filename}`);
     });
   }
   function dump_thread() {
     if (!pid) return;
-    console.log("dump_thread", pid);
     dumpThread(pid, comment).then((filename) => {
-      console.log("dump_thread success", filename);
-      noticeMessage = `Thread dump saved to ${filename}`;
-      console.log("dump_thread success");
-      setTimeout(() => {
-        noticeMessage = "   ";
-      }, 5000);
+      notice(`Thread dump saved to ${filename}`);
     });
   }
 </script>

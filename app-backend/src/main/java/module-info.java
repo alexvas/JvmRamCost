@@ -9,6 +9,7 @@ module jvmram.backend {
 
     requires jvmram.model;
     requires jvmram.core;
+    requires io.grpc.protobuf;
 
     exports jvmram.backend;
 }

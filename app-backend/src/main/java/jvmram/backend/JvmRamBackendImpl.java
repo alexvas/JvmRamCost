@@ -101,19 +101,9 @@ class JvmRamBackendImpl extends AppBackendGrpc.AppBackendImplBase {
     }
 
     @Override
-    public void dumpHeap(DumpRequest request, StreamObserver<DumpResponse> responseObserver) {
-        throw new UnsupportedOperationException("DumpHeap method is not implemented in JVM backend");
-    }
-
-    @Override
     public void dumpHeapJvm(DumpJvmRequest request, StreamObserver<Empty> responseObserver) {
         jmxService.createHeapDump(request.getPid(), request.getOutputFilePath());
         fireEmptyResponse(responseObserver);
-    }
-
-    @Override
-    public void dumpThread(DumpRequest request, StreamObserver<DumpResponse> responseObserver) {
-        throw new UnsupportedOperationException("DumpThread method is not implemented in JVM backend");
     }
 
     @Override

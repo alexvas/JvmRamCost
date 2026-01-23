@@ -6,7 +6,8 @@ import {
     type GraphQueues,
     type JvmProcessListResponse,
     Pid,
-    DumpRequest
+    DumpRequest,
+    SvgSaveRequest
 } from "$lib/generated/proto/protocol";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
@@ -62,6 +63,12 @@ export async function getApplicableMetrics() {
     );
     console.log("get applicable metrics response", response);
     return response.types.map(fromProtoMetricType);
+}
+
+export async function saveSvg(pid: number, auto: boolean, comment: string, content: string) {
+    const request = SvgSaveRequest.create({ pid: pid, auto: auto, comment: comment, content: content });
+    let fileName = await invoke<string>("save_svg", { request });
+    return fileName;
 }
 
 let start: Temporal.Instant | null = null;

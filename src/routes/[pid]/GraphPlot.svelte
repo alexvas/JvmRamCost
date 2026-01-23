@@ -10,7 +10,15 @@
   import { getContext } from "svelte";
   import type { ProcInfo } from "$lib/ProcHandle";
 
-  let { process }: { process: ProcInfo } = $props();
+  let {
+    process,
+    comment,
+    notice,
+  }: {
+    process: ProcInfo;
+    comment: string | undefined;
+    notice: (message: string) => void;
+  } = $props();
   let pid = $derived(process.pid);
   let containerElement: HTMLDivElement | null = $state(null);
   let containerWidth = $state(1);
@@ -59,10 +67,20 @@
     };
   });
 
+  import { Temporal } from "@js-temporal/polyfill";
+  import { saveSvg } from "$lib/ProtoAdapter";
+  let lastSaved: Temporal.Instant | null = null;
+  const duration = Temporal.Duration.from({ minutes: 1 });
+
   // Реактивный рендеринг SVG
   let svgContent = $derived.by(() => {
     const graphVersion = getGraphVersion(); // для реактивности
     void graphVersion;
+
+    // Ждём реальных размеров контейнера
+    if (containerWidth <= 1 || containerHeight <= 1) {
+      return /*svg*/ `<svg xmlns="http://www.w3.org/2000/svg" class="graph-plot"></svg>`;
+    }
 
     // Обновляем размеры рендерера
     renderer.updateSize(containerWidth, containerHeight);
@@ -70,11 +88,25 @@
     // Получаем данные
     const processMinMax = graphStore.getProcessMinMax(pid);
     if (!processMinMax) {
-      return /*svg*/ `<svg class="graph-plot"></svg>`;
+      return /*svg*/ `<svg xmlns="http://www.w3.org/2000/svg" class="graph-plot"></svg>`;
     }
     const graphs = graphStore.getGraphs(pid);
     const gcMarks = graphStore.getGcMarks(pid);
-    return renderer.renderToString(processMinMax, graphs, gcMarks);
+    const content = renderer.renderToString(processMinMax, graphs, gcMarks);
+
+    let now = Temporal.Instant.fromEpochMilliseconds(Date.now());
+    if (
+      lastSaved == null ||
+      Temporal.Instant.compare(lastSaved.add(duration), now) < 0
+    ) {
+      lastSaved = now;
+      saveSvg(pid, false, comment ?? "", content).then((filename) => {
+        console.log("saveSvg success", filename);
+        notice(`Graph saved to ${filename}`);
+      });
+    }
+
+    return content;
   });
 </script>
 
@@ -85,5 +117,12 @@
     min-height: 0; /* важно для flexbox с overflow */
     overflow: hidden;
     display: flex; /* чтобы GraphPlot растягивался */
+  }
+
+  /* Стили для SVG внутри приложения (не влияют на отдельный SVG-файл) */
+  .graph-container :global(.graph-plot) {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
   }
 </style>
