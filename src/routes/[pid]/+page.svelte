@@ -53,7 +53,7 @@
     console.log("trigger_gc", pid);
     triggerGc(pid)
       .then(() => {
-        graphStore.addGcMark(pid);
+        graphStore.addActionMark(pid, "GC");
       })
       .catch((error) => {
         console.error("trigger_gc error", error);

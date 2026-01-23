@@ -14,6 +14,12 @@ export interface GraphData {
     points: GraphPoint[];
 }
 
+/** Отметка действия (GC, HeapDump, ThreadDump, etc.) */
+export interface ActionMark {
+    comment: string;
+    zehntel: number;
+}
+
 /** Min/max значения для процесса */
 export interface ProcessMinMax {
     minMoment: number;

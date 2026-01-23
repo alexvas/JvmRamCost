@@ -13,6 +13,7 @@ import type {
     CurrentValues,
     CurrentValue,
     SvgRenderMode,
+    ActionMark,
 } from './types';
 
 import {
@@ -296,12 +297,17 @@ export class GraphRenderer {
         opacity: 0.3;
         fill: none;
       }
-      .gc-marks {
+      .action-mark-line {
         stroke: green;
         stroke-width: 0.9;
         vector-effect: non-scaling-stroke;
         opacity: 0.7;
         fill: none;
+      }
+      .action-mark-text {
+        fill: green;
+        font-size: 10px;
+        font-family: sans-serif;
       }
       .grid-label-x,
       .grid-label-y {
@@ -402,15 +408,28 @@ export class GraphRenderer {
 
 
     /**
-     * Сгенерировать path для отметок ручного запуска GC из приложения
+     * Сгенерировать path для отметок ручных действий из приложения
      */
-    renderGcMarks(gcMarks: number[], dataHeight: number): string {
-        if (gcMarks.length === 0) return '';
-        console.log('gcMarks', gcMarks);
-        const d = gcMarks
-            .map((gcMark) => `M ${gcMark} 0 L ${gcMark} ${dataHeight}`)
+    renderActionMarksLines(actionMarks: ActionMark[], dataHeight: number): string {
+        if (actionMarks.length === 0) return '';
+        console.log('actionMarks', actionMarks);
+        const d = actionMarks
+            .map((actionMark) => `M ${actionMark.zehntel} 0 L ${actionMark.zehntel} ${dataHeight}`)
             .join(' ');
-        return /*svg*/`<path class="gc-marks" d="${d}"/>`;
+        return /*svg*/`<path class="action-mark-line" d="${d}"/>`;
+    }
+
+    /**
+     * Сгенерировать path для отметок ручных действий из приложения
+     */
+    renderActionMarksText(actionMarks: ActionMark[], transform: GraphTransform): string {
+        if (actionMarks.length === 0) return '';
+        const y = this.config.containerHeight / 2;
+        return actionMarks.map((actionMark) => {
+            const zehntel = actionMark.zehntel;
+            const x = this.toX(zehntel, transform) - 8;
+            return /*svg*/`<text class="action-mark-text" x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90, ${x}, ${y})">${actionMark.comment}</text>`;
+        }).join('\n');
     }
 
     /**
@@ -484,7 +503,7 @@ export class GraphRenderer {
      * Сгенерировать полный SVG как строку
      * @param mode - режим рендеринга: 'embedded' (растягивается по контейнеру) или 'standalone' (сохраняет пропорции)
      */
-    renderToString(minMax: ProcessMinMax, graphs: GraphData[], gcMarks: number[], mode: SvgRenderMode = 'embedded'): string {
+    renderToString(minMax: ProcessMinMax, graphs: GraphData[], actionMarks: ActionMark[], mode: SvgRenderMode = 'embedded'): string {
         const { containerWidth, containerHeight } = this.config;
         const viewBox = `0 0 ${containerWidth} ${containerHeight}`;
         const preserveAspectRatio = mode === 'standalone' ? 'xMidYMid meet' : 'none';
@@ -492,13 +511,17 @@ export class GraphRenderer {
         const transform = this.getTransform(minMax);
         const verticalLines = this.getVerticalGridLines(minMax);
         const horizontalLines = this.getHorizontalGridLines(minMax);
-        const fixedGcMarks = gcMarks.map((gcMark) => gcMark - minMax.minMoment);
+        const fixedActionMarks = actionMarks.map((actionMark) => {
+            const zehntel = actionMark.zehntel - minMax.minMoment;
+            return { zehntel, comment: actionMark.comment };
+        });
 
         const styles = this.renderStyles();
         const graphFrame = this.renderGraphFrame(transform);
         const vGridLines = this.renderVerticalGridLines(verticalLines, transform.dataHeight);
         const hGridLines = this.renderHorizontalGridLines(horizontalLines, transform.dataWidth);
-        const gcMarksLines = this.renderGcMarks(fixedGcMarks, transform.dataHeight);
+        const actionMarksLines = this.renderActionMarksLines(fixedActionMarks, transform.dataHeight);
+        const actionMarksText = this.renderActionMarksText(fixedActionMarks, transform);
         const graphPaths = this.renderGraphPaths(minMax, graphs);
         const xLabels = this.renderXLabels(verticalLines, transform);
         const yLabels = this.renderYLabels(horizontalLines, transform);
@@ -517,7 +540,7 @@ export class GraphRenderer {
       <!-- Вспомогательные горизонтальные линии -->
       ${hGridLines}
       <!-- Отметки ручного запуска GC из приложения -->
-      ${gcMarksLines}
+      ${actionMarksLines}
       <!-- Графики данных -->
       ${graphPaths}
     </g>
@@ -526,6 +549,8 @@ export class GraphRenderer {
   ${xLabels}
   <!-- Подписи ординаты -->
   ${yLabels}
+  <!-- Отметки ручных действий -->
+  ${actionMarksText}
   <!-- Рамка текущего значения -->
   ${currentValueFrame}
   <!-- Текущие значения -->

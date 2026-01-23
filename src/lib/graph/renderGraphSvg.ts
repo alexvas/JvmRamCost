@@ -22,8 +22,8 @@ export function renderGraphSvg(
     return null;
   }
   const graphs = graphStore.getGraphs(pid);
-  const gcMarks = graphStore.getGcMarks(pid);
-  return renderer.renderToString(processMinMax, graphs, gcMarks, mode);
+  const actionMarks = graphStore.getActionMarks(pid);
+  return renderer.renderToString(processMinMax, graphs, actionMarks, mode);
 }
 
 /**

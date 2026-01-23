@@ -42,7 +42,7 @@ interface ProcessDatum {
   points: Map<MetricType, GraphPoint[]>;
   timestamps: Map<MetricType, Set<number>>;
   minMax: ProcessMinMax;
-  gcMarks: number[];
+  actionMarks: ActionMark[];
 }
 
 export interface ProcessMinMax {
@@ -50,6 +50,11 @@ export interface ProcessMinMax {
   maxMoment: number;
   // до 2 терабайт
   maxKb: number;
+}
+
+export interface ActionMark {
+  comment: string;
+  zehntel: number;
 }
 
 export class GraphStore {
@@ -78,8 +83,8 @@ export class GraphStore {
     return this.prosessData.get(pid)?.minMax ?? null;
   }
 
-  getGcMarks(pid: number): number[] {
-    return this.prosessData.get(pid)?.gcMarks ?? [];
+  getActionMarks(pid: number): ActionMark[] {
+    return this.prosessData.get(pid)?.actionMarks ?? [];
   }
 
   /** Удалить все данные для конкретного процесса */
@@ -111,7 +116,7 @@ export class GraphStore {
         points: new Map(),
         timestamps: new Map(),
         minMax: minMax,
-        gcMarks: [],
+        actionMarks: [],
       };
       this.prosessData.set(pid, processDatum);
     }
@@ -151,7 +156,7 @@ export class GraphStore {
     this.trimIfNeeded(processDatum, points, timestamps!);
   }
 
-  addGcMark(pid: number): void {
+  addActionMark(pid: number, comment: string): void {
     const processDatum = this.prosessData.get(pid);
     if (!processDatum) {
       return;
@@ -161,7 +166,7 @@ export class GraphStore {
     const gcMarkMillis = nowMillis - appStartMillis;
     const gcMarkZehntel = Math.round(gcMarkMillis / 100);
     console.log("start", appStartMillis, "now", nowMillis, 'gcMarkZehntel', gcMarkZehntel);
-    processDatum.gcMarks.push(gcMarkZehntel);
+    processDatum.actionMarks.push({ comment: comment, zehntel: gcMarkZehntel });
   }
 
   private trimIfNeeded(processDatum: ProcessDatum, points: GraphPoint[], timestamps: Set<number>): void {
