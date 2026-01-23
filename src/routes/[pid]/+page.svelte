@@ -72,12 +72,14 @@
   function dump_heap() {
     if (!pid) return;
     dumpHeap(pid, comment).then((filename) => {
+      graphStore.addActionMark(pid, filename);
       notice(`Heap dump saved to ${filename}`);
     });
   }
   function dump_thread() {
     if (!pid) return;
     dumpThread(pid, comment).then((filename) => {
+      graphStore.addActionMark(pid, filename);
       notice(`Thread dump saved to ${filename}`);
     });
   }
