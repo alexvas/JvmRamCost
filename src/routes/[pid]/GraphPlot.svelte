@@ -20,11 +20,13 @@
     notice,
     hiddenMetrics,
     viewportRange,
+    followDataUpdate = true,
   }: {
     process: ProcInfo;
     notice: (message: string) => void;
     hiddenMetrics?: Set<MetricType>;
     viewportRange?: ViewportRange | null;
+    followDataUpdate?: boolean;
   } = $props();
   let pid = $derived(process.pid);
   let containerElement: HTMLDivElement | null = $state(null);
@@ -79,20 +81,12 @@
   let lastSaved: Temporal.Instant | null = null;
   const duration = Temporal.Duration.from({ minutes: 1 });
 
-  // Кэш для замораживания графика при просмотре истории
+  // Кэш для замораживания графика
   interface GraphCache {
     svg: string;
     viewportRange: ViewportRange | null;
-    lastGraphVersion: number;
   }
   let graphCache: GraphCache | null = null;
-
-  // Проверяем, смотрим ли на "живой" край данных
-  function isViewingLiveEdge(vr: ViewportRange | null | undefined, globalMaxMoment: number): boolean {
-    if (!vr) return true; // без viewport — смотрим всё
-    // Допускаем погрешность 10 секунд (100 zehntel)
-    return vr.max >= globalMaxMoment - 100;
-  }
 
   // Реактивный рендеринг SVG
   let svgContent = $derived.by(() => {
@@ -109,15 +103,24 @@
       return EMPTY_SVG;
     }
 
-    // Если смотрим на историю (не на живой край) и данные graphVersion не изменились — используем кэш
-    const viewingLiveEdge = isViewingLiveEdge(viewportRange, globalMinMax.maxMoment);
+    // Вычисляем эффективный viewport с учётом followDataUpdate
+    let effectiveViewport = viewportRange;
+    if (followDataUpdate && viewportRange) {
+      // При followDataUpdate сдвигаем viewport к правому краю
+      const width = viewportRange.max - viewportRange.min;
+      effectiveViewport = {
+        min: globalMinMax.maxMoment - width,
+        max: globalMinMax.maxMoment,
+      };
+    }
+
+    // Если не следуем за данными и viewport не изменился — используем кэш
     if (
-      !viewingLiveEdge &&
+      !followDataUpdate &&
       graphCache &&
-      graphCache.viewportRange?.min === viewportRange?.min &&
-      graphCache.viewportRange?.max === viewportRange?.max
+      graphCache.viewportRange?.min === effectiveViewport?.min &&
+      graphCache.viewportRange?.max === effectiveViewport?.max
     ) {
-      // Смотрим на историю и viewport не изменился — возвращаем кэш
       return graphCache.svg;
     }
 
@@ -135,12 +138,12 @@
     let effectiveGraphs = filteredGraphs;
     let effectiveActionMarks = actionMarks;
 
-    if (viewportRange) {
+    if (effectiveViewport) {
       // Фильтруем точки графиков по viewport
       effectiveGraphs = filteredGraphs.map((graph) => ({
         ...graph,
         points: graph.points.filter(
-          (p) => p.moment >= viewportRange.min && p.moment <= viewportRange.max
+          (p) => p.moment >= effectiveViewport.min && p.moment <= effectiveViewport.max
         ),
       })).filter((g) => g.points.length > 0);
 
@@ -155,14 +158,14 @@
       }
 
       effectiveMinMax = {
-        minMoment: viewportRange.min,
-        maxMoment: viewportRange.max,
+        minMoment: effectiveViewport.min,
+        maxMoment: effectiveViewport.max,
         maxKb: maxKbInViewport > 0 ? maxKbInViewport : globalMinMax.maxKb,
       };
 
       // Фильтруем action marks
       effectiveActionMarks = actionMarks.filter(
-        (m) => m.zehntel >= viewportRange.min && m.zehntel <= viewportRange.max
+        (m) => m.zehntel >= effectiveViewport.min && m.zehntel <= effectiveViewport.max
       );
     }
 
@@ -171,8 +174,7 @@
     // Обновляем кэш
     graphCache = {
       svg: content,
-      viewportRange: viewportRange ? { ...viewportRange } : null,
-      lastGraphVersion: graphVersion,
+      viewportRange: effectiveViewport ? { ...effectiveViewport } : null,
     };
 
     let now = Temporal.Instant.fromEpochMilliseconds(Date.now());

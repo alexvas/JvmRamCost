@@ -21,8 +21,8 @@
     <p>Process is not alive</p>
   {/if}
   {#if hasGraph}
-    <GraphPlot {process} {notice} {hiddenMetrics} {viewportRange} />
-    <GraphNavigator pid={pid!} bind:viewportRange {hiddenMetrics} />
+    <GraphPlot {process} {notice} {hiddenMetrics} {viewportRange} {followDataUpdate} />
+    <GraphNavigator pid={pid!} bind:viewportRange {hiddenMetrics} bind:followDataUpdate />
   {/if}
   <ControlToolbar {pid} {notice} bind:hiddenMetrics />
 {/if}
@@ -53,6 +53,8 @@
     max: number;
   }
   let viewportRange = $state<ViewportRange | null>(null);
+  // Режим следования за обновлениями данных
+  let followDataUpdate = $state(true);
   let headerEl = $state<HTMLHeadingElement | null>(null);
   type NoticeHandle = { show: (message: string) => void | Promise<void> };
   let noticePopup = $state<NoticeHandle | null>(null);

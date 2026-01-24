@@ -1,3 +1,15 @@
+<!-- Чекбокс следования за данными -->
+<div class="navigator-controls">
+  <label class="follow-checkbox">
+    <input
+      type="checkbox"
+      checked={followDataUpdate}
+      onchange={handleFollowChange}
+    />
+    Follow data update
+  </label>
+</div>
+
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="navigator-container"
@@ -25,8 +37,8 @@
       <path class="navigator-path" d={path.d} stroke={path.color}></path>
     {/each}
 
-    <!-- Затемнение слева от окна -->
-    {#if viewportRange}
+    <!-- Затемнение слева от окна (только если навигатор активен и viewport задан) -->
+    {#if isNavigatorActive && viewportRange}
       <rect
         class="navigator-overlay"
         x="0"
@@ -45,8 +57,8 @@
     {/if}
   </svg>
 
-  <!-- Интерактивные элементы поверх SVG -->
-  {#if viewportRange}
+  <!-- Интерактивные элементы поверх SVG (только если навигатор активен) -->
+  {#if isNavigatorActive && viewportRange}
     <!-- Левая ручка -->
     <!-- svelte-ignore a11y_no_static_element_interactions a11y_no_noninteractive_element_interactions -->
     <div
@@ -102,10 +114,12 @@
     pid,
     viewportRange = $bindable<ViewportRange | null>(null),
     hiddenMetrics,
+    followDataUpdate = $bindable(true),
   }: {
     pid: number;
     viewportRange: ViewportRange | null;
     hiddenMetrics?: Set<MetricType>;
+    followDataUpdate: boolean;
   } = $props();
 
   let containerElement: HTMLDivElement | null = $state(null);
@@ -143,6 +157,27 @@
   let globalMinMax = $derived.by((): ProcessMinMax | null => {
     void getGraphVersion();
     return graphStore.getProcessMinMax(pid);
+  });
+
+  // Навигатор активен только если данных достаточно (>= MIN_VIEWPORT_ZEHNTEL)
+  let isNavigatorActive = $derived.by(() => {
+    if (!globalMinMax) return false;
+    const dataRange = globalMinMax.maxMoment - globalMinMax.minMoment;
+    return dataRange >= MIN_VIEWPORT_ZEHNTEL;
+  });
+
+  // Автоматически сдвигаем viewport при followDataUpdate и поступлении новых данных
+  $effect(() => {
+    if (!followDataUpdate || !globalMinMax || !viewportRange) return;
+    
+    // Если viewport.max отстаёт от globalMinMax.maxMoment — сдвигаем вправо
+    if (viewportRange.max < globalMinMax.maxMoment) {
+      const width = viewportRange.max - viewportRange.min;
+      viewportRange = {
+        min: globalMinMax.maxMoment - width,
+        max: globalMinMax.maxMoment,
+      };
+    }
   });
 
   // Кэширование миниатюры (не реактивные переменные для кэша)
@@ -266,6 +301,7 @@
   function startDrag(e: MouseEvent, type: "left" | "right" | "center") {
     e.preventDefault();
     e.stopPropagation();
+    disableFollow(); // Отключаем следование при начале drag
     dragType = type;
     dragStartX = e.clientX;
     dragStartViewport = viewportRange ? { ...viewportRange } : null;
@@ -329,7 +365,8 @@
 
   function handleWheel(e: WheelEvent) {
     e.preventDefault();
-    if (!globalMinMax || !containerElement) return;
+    if (!isNavigatorActive || !globalMinMax || !containerElement) return;
+    disableFollow(); // Отключаем следование при взаимодействии
 
     const rect = containerElement.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
@@ -396,16 +433,61 @@
   }
 
   function handleDoubleClick() {
+    if (!isNavigatorActive) return;
     viewportRange = null;
+    followDataUpdate = true; // Двойной клик сбрасывает — включаем следование
+  }
+
+  function handleFollowChange(e: Event) {
+    const target = e.target as HTMLInputElement;
+    followDataUpdate = target.checked;
+    
+    if (followDataUpdate && globalMinMax) {
+      // При включении следования — сдвигаем viewport к правому краю
+      if (viewportRange) {
+        const width = viewportRange.max - viewportRange.min;
+        viewportRange = {
+          min: globalMinMax.maxMoment - width,
+          max: globalMinMax.maxMoment,
+        };
+      }
+    }
+  }
+
+  // Отключает режим следования при взаимодействии пользователя
+  function disableFollow() {
+    if (followDataUpdate) {
+      followDataUpdate = false;
+    }
   }
 </script>
 
 <style>
+  .navigator-controls {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+
+  .follow-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #444;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .follow-checkbox input {
+    margin: 0;
+    cursor: pointer;
+  }
+
   .navigator-container {
     width: 100%;
     height: 80px;
     position: relative;
-    margin-top: 4px;
     user-select: none;
   }
 
@@ -459,6 +541,10 @@
   }
 
   @media (prefers-color-scheme: dark) {
+    .follow-checkbox {
+      color: #ccc;
+    }
+
     .navigator-bg {
       fill: #2d2d2d;
     }
