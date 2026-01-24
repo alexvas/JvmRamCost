@@ -21,7 +21,8 @@
     <p>Process is not alive</p>
   {/if}
   {#if hasGraph}
-    <GraphPlot {process} {notice} {hiddenMetrics} />
+    <GraphPlot {process} {notice} {hiddenMetrics} {viewportRange} />
+    <GraphNavigator pid={pid!} bind:viewportRange {hiddenMetrics} />
   {/if}
   <ControlToolbar {pid} {notice} bind:hiddenMetrics />
 {/if}
@@ -31,6 +32,7 @@
   import { getContext } from "svelte";
   import type { ProcInfo } from "$lib/ProcHandle";
   import GraphPlot from "./GraphPlot.svelte";
+  import GraphNavigator from "./GraphNavigator.svelte";
   import ControlToolbar from "./ControlToolbar.svelte";
   import Notice from "./Notice.svelte";
   let pidStr = $derived(page.params.pid);
@@ -46,6 +48,11 @@
     pid ? graphStore.hasGraphDataForProcess(pid) : false,
   );
   let hiddenMetrics = $state<Set<MetricType>>(new Set());
+  interface ViewportRange {
+    min: number;
+    max: number;
+  }
+  let viewportRange = $state<ViewportRange | null>(null);
   let headerEl = $state<HTMLHeadingElement | null>(null);
   type NoticeHandle = { show: (message: string) => void | Promise<void> };
   let noticePopup = $state<NoticeHandle | null>(null);

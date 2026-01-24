@@ -43,3 +43,4 @@ export {
   MAX_HORIZONTAL_GRID_LINES,
 } from './constants';
 export { formatTimeLabel, formatBytesLabel } from './formatters';
+export { downsampleMinMax } from './downsampling';
