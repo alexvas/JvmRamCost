@@ -1,7 +1,12 @@
 {#if !process}
-  <h2>Process {pidStr} not found</h2>
+  <h2 bind:this={headerEl}>Process {pidStr} not found</h2>
 {:else}
-  <h2>{pidStr} {process.display_name}</h2>
+  <h2 bind:this={headerEl}>{pidStr} {process.display_name}</h2>
+{/if}
+
+<Notice bind:this={noticePopup} anchorEl={headerEl} />
+
+{#if process}
   {#if process.parent}
     <p>Parent: {process.parent}</p>
   {/if}
@@ -18,7 +23,6 @@
   {#if hasGraph}
     <GraphPlot {process} {notice} />
   {/if}
-  <p class="notice-container">{noticeMessage}</p>
   <div class="controls-container">
     <div class="dump-controls">
       <input type="text" bind:value={comment} />
@@ -35,6 +39,7 @@
   import { getContext } from "svelte";
   import type { ProcInfo } from "$lib/ProcHandle";
   import GraphPlot from "./GraphPlot.svelte";
+  import Notice from "./Notice.svelte";
   import { triggerGc, dumpHeap, dumpThread } from "$lib/ProtoAdapter";
   let pidStr = $derived(page.params.pid);
   let pid = $derived(pidStr ? Number(pidStr) : null);
@@ -60,13 +65,12 @@
       });
   }
   let comment = $state("");
-  let noticeMessage = $state(" ");
+  let headerEl = $state<HTMLHeadingElement | null>(null);
+  type NoticeHandle = { show: (message: string) => void | Promise<void> };
+  let noticePopup = $state<NoticeHandle | null>(null);
 
   function notice(message: string) {
-    noticeMessage = message;
-    setTimeout(() => {
-      noticeMessage = " ";
-    }, 5000);
+    noticePopup?.show(message);
   }
 
   function dump_heap() {
