@@ -264,6 +264,8 @@ jobs:
 
             Скачайте `.deb` файл из раздела Assets и установите. Либо воспользуйтесь командами ниже.
             Download `.deb` file from Assets section and install. Or use the commands below.
+            下载`.deb`文件从资产部分和安装。或者使用下面的命令。
+
             ##### Standard (рекомендуется recommended 推荐使用).
             ```bash
             wget https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag_name }}/jvm-ram-cost_${{ steps.version.outputs.version }}_amd64.deb
