@@ -256,8 +256,12 @@ jobs:
             Jdk-25 distributions are slightly smaller, but require installed JDK 25 in PATH or JAVA_HOME.
             Jdk-25分布式稍小，但需要安装JDK25在PATH或JAVA_HOME中。
 
-            ### Установка. Install Application. 安装应用程序
+            ### Установка. Install Application. 安装应用程序。
             #### Debian/Ubuntu
+            Иногда требуется установить переменную окружения WEBKIT_DISABLE_COMPOSITING_MODE=1 перед запуском приложения.
+            Sometimes it is required to set the environment variable WEBKIT_DISABLE_COMPOSITING_MODE=1 before running the application.
+            有时需要在运行应用程序之前设置环境变量 WEBKIT_DISABLE_COMPOSITING_MODE=1。
+
             Скачайте `.deb` файл из раздела Assets и установите. Либо воспользуйтесь командами ниже.
             Download `.deb` file from Assets section and install. Or use the commands below.
             ##### Standard (рекомендуется recommended 推荐使用).
