@@ -89,11 +89,6 @@ jobs:
         run: |
           yarn tauri bundle --bundles deb -c /tmp/tauri-versioned.conf.json -c src-tauri/tauri.standalone.linux.conf.json
 
-      - name: Fix Standalone DEB icon names
-        run: |
-          DEB_FILE=$(ls src-tauri/target/release/bundle/deb/jvm-ram-cost-standalone*.deb)
-          ./scripts/fix-deb-artifact.sh "$DEB_FILE" "jvm-ram-cost-standalone"  
-
       - name: Upload distribution artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -256,22 +251,29 @@ jobs:
           tag_name: ${{ steps.version.outputs.tag_name }}
           name: Release ${{ steps.version.outputs.version }}
           body: |
-            ## JVM RAM Cost ${{ steps.version.outputs.version }}  
-            ### Установка
+            ## JVM RAM Cost ${{ steps.version.outputs.version }}
+            Дистрибутивы jdk-25 чуть меньше, но требуют установленной JDK 25 в PATH или JAVA_HOME.
+            Jdk-25 distributions are slightly smaller, but require installed JDK 25 in PATH or JAVA_HOME.
+            Jdk-25分布式稍小，但需要安装JDK25在PATH或JAVA_HOME中。
+
+            ### Установка. Install Application. 安装应用程序
             #### Debian/Ubuntu
             Скачайте `.deb` файл из раздела Assets и установите. Либо воспользуйтесь командами ниже.
+            Download `.deb` file from Assets section and install. Or use the commands below.
+            ##### Standard (рекомендуется recommended 推荐使用).
+            ```bash
+            wget https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag_name }}/jvm-ram-cost_${{ steps.version.outputs.version }}_amd64.deb
+            sudo dpkg -i jvm-ram-cost_${{ steps.version.outputs.version }}_amd64.deb
+            ```  
             ##### JDK-25
             ```bash
             wget https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag_name }}/jvm-ram-cost-jdk25_${{ steps.version.outputs.version }}_amd64.deb
             sudo dpkg -i jvm-ram-cost-jdk25_${{ steps.version.outputs.version }}_amd64.deb
             ```
-            ##### Standalone
-            ```bash
-            wget https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag_name }}/jvm-ram-cost-standalone_${{ steps.version.outputs.version }}_amd64.deb
-            sudo dpkg -i jvm-ram-cost-standalone_${{ steps.version.outputs.version }}_amd64.deb
-            ```  
             #### Windows
-            Скачайте `.msi` файл из раздела Assets и запустите установщик.
+            Скачайте `.msi` файл из раздела Assets и запустите установщик. 
+            Download `.msi` file from Assets section and run installer. 
+            下载`.msi`文件从资产部分和运行安装程序。
           files: ${{ steps.check_files.outputs.files }}
           draft: false
           prerelease: false

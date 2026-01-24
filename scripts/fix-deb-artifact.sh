@@ -4,7 +4,7 @@ set -euo pipefail
 # Скрипт для исправления имён артефактов в deb-пакетах
 # Использование: ./scripts/fix-deb-icons.sh <путь_к_deb> <productName>
 #
-# Пример: ./scripts/fix-deb-icons.sh app.deb "jvm-ram-cost-standalone"
+# Пример: ./scripts/fix-deb-icons.sh app.deb "jvm-ram-cost-jdk25"
 #
 # Скрипт:
 # 1. Распаковывает deb-пакет во временную директорию

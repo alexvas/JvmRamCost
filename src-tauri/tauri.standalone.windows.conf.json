@@ -1,5 +1,4 @@
 {
-  "productName": "jvm-ram-cost-standalone",
   "bundle": {
     "resources": {
       "../README.md": "docs/README.md",
