@@ -8,13 +8,16 @@
   import { Debouncer } from "$lib/Debouncer";
   import { getContext } from "svelte";
   import type { ProcInfo } from "$lib/ProcHandle";
+  import type { MetricType } from "$lib/GraphStore";
 
   let {
     process,
     notice,
+    hiddenMetrics,
   }: {
     process: ProcInfo;
     notice: (message: string) => void;
+    hiddenMetrics?: Set<MetricType>;
   } = $props();
   let pid = $derived(process.pid);
   let containerElement: HTMLDivElement | null = $state(null);
@@ -81,7 +84,7 @@
 
     // Обновляем размеры рендерера и рендерим
     renderer.updateSize(containerWidth, containerHeight);
-    const content = renderGraphSvgOrEmpty(pid, renderer);
+    const content = renderGraphSvgOrEmpty(pid, renderer, 'embedded', hiddenMetrics);
 
     let now = Temporal.Instant.fromEpochMilliseconds(Date.now());
     if (
