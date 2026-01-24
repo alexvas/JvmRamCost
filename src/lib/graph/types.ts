@@ -57,6 +57,7 @@ export interface CurrentValue {
     metricType: number;
     label: string;
     title: string;
+    abbreviation: string;
     kilobytes: number;
 }
 
@@ -89,6 +90,7 @@ export interface MetricMeta {
     line_style: string;
     name: string;
     title: string;
+    abbreviation: string;
 }
 
 /** Карта мета-информации о метриках */

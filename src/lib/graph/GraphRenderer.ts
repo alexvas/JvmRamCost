@@ -278,6 +278,12 @@ export class GraphRenderer {
         display: block;
         overflow: hidden;
       }
+      .current-value {
+        font-size: 12px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        white-space: pre;
+        text-anchor: start;
+      }
       .graph-path {
         fill: none;
         stroke-width: 0.7;
@@ -362,7 +368,8 @@ export class GraphRenderer {
             const kilobytes = lastPoint.kilobytes;
             const label = formatBytesLabel(kilobytes, 2);
             const title = this.metricMeta[metricType].title;
-            currentValuesArray.push({ metricType, label, title, kilobytes });
+            const abbreviation = this.metricMeta[metricType].abbreviation;
+            currentValuesArray.push({ metricType, label, title, abbreviation, kilobytes });
         }
         const currentValues: CurrentValues = {
             items: currentValuesArray.sort((a, b) => b.kilobytes - a.kilobytes),
@@ -378,7 +385,11 @@ export class GraphRenderer {
             const metricColor = this.config.prefersDark
                 ? this.metricMeta[currentValue.metricType].color_dark
                 : this.metricMeta[currentValue.metricType].color_light;
-            lines.push(/*svg*/`<text class="current-value" x="${xStart + 15}" y="${yLine}" text-anchor="middle" dominant-baseline="hanging" fill="${metricColor}"><title>${currentValue.title}</title>${currentValue.label}</text>`);
+            const title = this.metricMeta[currentValue.metricType].title;
+            const abbreviation = this.metricMeta[currentValue.metricType].abbreviation;
+            const abbrPadded = abbreviation.padEnd(7, ' ');
+            const label = `${abbrPadded}  ${currentValue.label}`;
+            lines.push(/*svg*/`<text class="current-value" x="${xStart}" y="${yLine}" fill="${metricColor}" xml:space="preserve"><title>${title}</title>${label}</text>`);
             yLine += 20;
         }
         return lines.join('\n');

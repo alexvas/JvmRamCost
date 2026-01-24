@@ -6,6 +6,7 @@ export interface GraphMeta {
   line_style: string;
   name: string;
   title: string;
+  abbreviation: string;
 }
 
 export const graphMetaMap: Record<MetricType, GraphMeta> = {
@@ -15,6 +16,7 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
     line_style: "solid",
     name: "RSS",
     title: "Resident Set Size",
+    abbreviation: "RSS",
   },
   [MetricType.PSS]: {
     color_light: "green",
@@ -22,6 +24,7 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
     line_style: "solid",
     name: "PSS",
     title: "Proportional Set Size",
+    abbreviation: "PSS",
   },
   [MetricType.USS]: {
     color_light: "blue", color_dark:
@@ -29,6 +32,7 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
     line_style: "solid",
     name: "USS",
     title: "Unique Set Size",
+    abbreviation: "USS",
   },
   [MetricType.WS]: {
     color_light: "red",
@@ -36,6 +40,7 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
     line_style: "solid",
     name: "WS",
     title: "Working Set",
+    abbreviation: "WS",
   },
   [MetricType.PB]: {
     color_light: "blue",
@@ -43,6 +48,7 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
     line_style: "solid",
     name: "PB",
     title: "Private Bytes",
+    abbreviation: "PB",
   },
   [MetricType.HEAP_USED]: {
     color_light: "magenta",
@@ -50,6 +56,7 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
     line_style: "dotted",
     name: "HEAP_USED",
     title: "Heap Used",
+    abbreviation: "HP_USD",
   },
   [MetricType.HEAP_COMMITTED]: {
     color_light: "cyan",
@@ -57,6 +64,7 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
     line_style: "solid",
     name: "HEAP_COMMITTED",
     title: "Heap Committed",
+    abbreviation: "HP_CMT",
   },
   [MetricType.OLD_GEN_MAX]: {
     color_light: "rgb(14, 52, 31)",
@@ -64,6 +72,7 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
     line_style: "dashed",
     name: "OLD_GEN_MAX",
     title: "Old Gen Max",
+    abbreviation: "OG_MAX",
   },
   [MetricType.OLD_GEN_COMMITTED]: {
     color_light: "rgb(52, 29, 14)",
@@ -71,6 +80,7 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
     line_style: "solid",
     name: "OLD_GEN_COMMITTED",
     title: "Old Gen Committed",
+    abbreviation: "OG_CMT",
   },
   [MetricType.OLD_GEN_USED]: {
     color_light: "rgb(72, 19, 37)",
@@ -78,6 +88,7 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
     line_style: "dotted",
     name: "OLD_GEN_USED",
     title: "Old Gen Used",
+    abbreviation: "OG_USD",
   },
   [MetricType.NMT_USED]: {
     color_light: "rgb(128, 0, 255)",
@@ -85,6 +96,7 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
     line_style: "solid",
     name: "NMT_USED",
     title: "NMT Used",
+    abbreviation: "NMT_USD",
   },
   [MetricType.NMT_COMMITTED]: {
     color_light: "rgb(32, 42, 69)",
@@ -92,6 +104,7 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
     line_style: "solid",
     name: "NMT_COMMITTED",
     title: "NMT Committed",
+    abbreviation: "NMT_CMT",
   },
   [MetricType.BUFFER_TOTAL]: {
     color_light: "rgb(159, 98, 0)",
@@ -99,5 +112,6 @@ export const graphMetaMap: Record<MetricType, GraphMeta> = {
     line_style: "solid",
     name: "BUFFER_TOTAL",
     title: "Buffer Total",
+    abbreviation: "BUFF",
   },
 };

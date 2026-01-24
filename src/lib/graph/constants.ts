@@ -6,7 +6,7 @@
 export const DEFAULT_PADDING_PERCENT = 0.05;
 export const DEFAULT_BOTTOM_LABEL_SPACE = 25;
 export const DEFAULT_LEFT_LABEL_SPACE = 20;
-export const DEFAULT_RIGHT_CURRENT_VALUE_WIDTH = 100;
+export const DEFAULT_RIGHT_CURRENT_VALUE_WIDTH = 150;
 export const DEFAULT_RIGHT_CURRENT_VALUE_PADDING = 20;
 export const DEFAULT_MIN_TIME_RANGE = 2 * 60 * 10; // 2 минуты в десятых долях секунды
 
