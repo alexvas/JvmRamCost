@@ -136,10 +136,13 @@ export class GraphRenderer {
 
     /**
      * Вычислить вертикальные линии сетки (ось времени)
+     * @param minMax - границы видимой области
+     * @param globalMinMoment - глобальное начало данных (для выравнивания сетки и подписей)
      */
-    getVerticalGridLines(minMax: ProcessMinMax): GridLine[] {
+    getVerticalGridLines(minMax: ProcessMinMax, globalMinMoment?: number): GridLine[] {
         const { minMoment, maxMoment } = minMax;
         const timeRange = maxMoment - minMoment;
+        const alignTo = globalMinMoment ?? minMoment;
 
         // Выбираем интервал
         let selectedInterval = GRID_INTERVALS_TENTH_OF_SECOND[GRID_INTERVALS_TENTH_OF_SECOND.length - 1];
@@ -161,13 +164,18 @@ export class GraphRenderer {
             return this.cachedVerticalLines;
         }
 
-        // Генерируем линии
-        const firstTick = minMoment + selectedInterval;
+        // Генерируем линии, выровненные по глобальной сетке
+        // Находим первый tick, кратный интервалу от alignTo, который >= minMoment
+        const offsetFromAlign = minMoment - alignTo;
+        const ticksFromAlign = Math.ceil(offsetFromAlign / selectedInterval);
+        const firstTick = alignTo + ticksFromAlign * selectedInterval;
+        
         const lines: GridLine[] = [];
 
         for (let tick = firstTick; tick < maxMoment; tick += selectedInterval) {
             const positionInDataUnits = tick - minMoment;
-            const label = formatTimeLabel(tick, minMoment, selectedInterval);
+            // Подпись относительно глобального начала
+            const label = formatTimeLabel(tick, alignTo, selectedInterval);
             lines.push({ positionInDataUnits, label });
         }
 
@@ -512,15 +520,19 @@ export class GraphRenderer {
 
     /**
      * Сгенерировать полный SVG как строку
+     * @param minMax - границы видимой области
+     * @param graphs - данные графиков
+     * @param actionMarks - отметки действий
      * @param mode - режим рендеринга: 'embedded' (растягивается по контейнеру) или 'standalone' (сохраняет пропорции)
+     * @param globalMinMoment - глобальное начало данных (для выравнивания сетки)
      */
-    renderToString(minMax: ProcessMinMax, graphs: GraphData[], actionMarks: ActionMark[], mode: SvgRenderMode = 'embedded'): string {
+    renderToString(minMax: ProcessMinMax, graphs: GraphData[], actionMarks: ActionMark[], mode: SvgRenderMode = 'embedded', globalMinMoment?: number): string {
         const { containerWidth, containerHeight } = this.config;
         const viewBox = `0 0 ${containerWidth} ${containerHeight}`;
         const preserveAspectRatio = mode === 'standalone' ? 'xMidYMid meet' : 'none';
 
         const transform = this.getTransform(minMax);
-        const verticalLines = this.getVerticalGridLines(minMax);
+        const verticalLines = this.getVerticalGridLines(minMax, globalMinMoment);
         const horizontalLines = this.getHorizontalGridLines(minMax);
         const fixedActionMarks = actionMarks.map((actionMark) => {
             const zehntel = actionMark.zehntel - minMax.minMoment;

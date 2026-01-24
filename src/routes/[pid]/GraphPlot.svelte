@@ -169,7 +169,8 @@
       );
     }
 
-    const content = renderer.renderToString(effectiveMinMax, effectiveGraphs, effectiveActionMarks, 'embedded');
+    // Передаём globalMinMax.minMoment для выравнивания сетки по глобальному началу данных
+    const content = renderer.renderToString(effectiveMinMax, effectiveGraphs, effectiveActionMarks, 'embedded', globalMinMax.minMoment);
 
     // Обновляем кэш
     graphCache = {
