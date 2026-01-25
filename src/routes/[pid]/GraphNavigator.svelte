@@ -14,8 +14,15 @@
 <div
   class="navigator-container"
   bind:this={containerElement}
+  role="slider"
+  aria-label="Graph navigator"
+  aria-valuemin={globalMinMax?.minMoment ?? 0}
+  aria-valuemax={globalMinMax?.maxMoment ?? 0}
+  aria-valuenow={viewportRange?.min ?? globalMinMax?.minMoment ?? 0}
+  tabindex="0"
   onwheel={handleWheel}
   ondblclick={handleDoubleClick}
+  onkeydown={handleKeyDown}
 >
   <!-- Миниатюра графика -->
   <svg
@@ -464,6 +471,72 @@
     }
   }
 
+  function handleKeyDown(e: KeyboardEvent) {
+    if (!isNavigatorActive || !globalMinMax) return;
+
+    const isArrowKey = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key);
+    if (!isArrowKey) return;
+
+    e.preventDefault();
+    disableFollow();
+
+    const totalRange = globalMinMax.maxMoment - globalMinMax.minMoment;
+    const current = viewportRange ?? {
+      min: globalMinMax.minMoment,
+      max: globalMinMax.maxMoment,
+    };
+    const currentWidth = current.max - current.min;
+
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      // Pan влево/вправо
+      const panAmount = currentWidth * 0.1; // 10% от ширины viewport
+      const direction = e.key === "ArrowLeft" ? -1 : 1;
+      let newMin = current.min + panAmount * direction;
+      let newMax = current.max + panAmount * direction;
+
+      // Clamp
+      if (newMin < globalMinMax.minMoment) {
+        newMin = globalMinMax.minMoment;
+        newMax = newMin + currentWidth;
+      }
+      if (newMax > globalMinMax.maxMoment) {
+        newMax = globalMinMax.maxMoment;
+        newMin = newMax - currentWidth;
+      }
+
+      viewportRange = { min: newMin, max: newMax };
+    } else if (e.ctrlKey && (e.key === "ArrowUp" || e.key === "ArrowDown")) {
+      // Zoom с Ctrl
+      const zoomFactor = e.key === "ArrowDown" ? 1.2 : 0.8; // Down = zoom out, Up = zoom in
+      const newWidth = Math.max(
+        MIN_VIEWPORT_ZEHNTEL,
+        Math.min(totalRange, currentWidth * zoomFactor),
+      );
+
+      // Pivot по центру viewport
+      const pivotTime = (current.min + current.max) / 2;
+      let newMin = pivotTime - newWidth / 2;
+      let newMax = pivotTime + newWidth / 2;
+
+      // Clamp
+      if (newMin < globalMinMax.minMoment) {
+        newMin = globalMinMax.minMoment;
+        newMax = newMin + newWidth;
+      }
+      if (newMax > globalMinMax.maxMoment) {
+        newMax = globalMinMax.maxMoment;
+        newMin = newMax - newWidth;
+      }
+
+      // Если zoom вернул полный диапазон - сбрасываем viewport
+      if (newMin <= globalMinMax.minMoment && newMax >= globalMinMax.maxMoment) {
+        viewportRange = null;
+      } else {
+        viewportRange = { min: newMin, max: newMax };
+      }
+    }
+  }
+
   function handleDoubleClick() {
     if (!isNavigatorActive) return;
     viewportRange = null;
@@ -521,6 +594,12 @@
     height: 80px;
     position: relative;
     user-select: none;
+    outline: none;
+  }
+
+  .navigator-container:focus {
+    outline: 2px solid rgba(0, 120, 212, 0.5);
+    outline-offset: -2px;
   }
 
   .navigator-svg {
