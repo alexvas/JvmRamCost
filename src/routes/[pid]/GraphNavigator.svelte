@@ -32,6 +32,17 @@
       height={NAVIGATOR_HEIGHT}
     ></rect>
 
+    <!-- Вертикальные линии actionMarks (зелёные) -->
+    {#each actionMarkLines as mark}
+      <line
+        class="navigator-action-mark"
+        x1={mark.x}
+        y1="0"
+        x2={mark.x}
+        y2={NAVIGATOR_HEIGHT}
+      ></line>
+    {/each}
+
     <!-- Линии графиков -->
     {#each downsampledPaths as path}
       <path class="navigator-path" d={path.d} stroke={path.color}></path>
@@ -169,7 +180,7 @@
   // Автоматически сдвигаем viewport при followDataUpdate и поступлении новых данных
   $effect(() => {
     if (!followDataUpdate || !globalMinMax || !viewportRange) return;
-    
+
     // Если viewport.max отстаёт от globalMinMax.maxMoment — сдвигаем вправо
     if (viewportRange.max < globalMinMax.maxMoment) {
       const width = viewportRange.max - viewportRange.min;
@@ -242,6 +253,27 @@
     void getGraphVersion(); // для реактивности
     void containerWidth; // для реактивности при изменении ширины
     return computePaths();
+  });
+
+  // X-координаты для actionMarks (зелёные вертикальные линии)
+  interface ActionMarkLine {
+    x: number;
+  }
+
+  let actionMarkLines = $derived.by((): ActionMarkLine[] => {
+    void getGraphVersion();
+    const minMax = globalMinMax;
+    if (!minMax) return [];
+
+    const actionMarks = graphStore.getActionMarks(pid);
+    if (actionMarks.length === 0) return [];
+
+    const timeRange = minMax.maxMoment - minMax.minMoment;
+    if (timeRange === 0) return [];
+
+    return actionMarks.map((mark) => ({
+      x: ((mark.zehntel - minMax.minMoment) / timeRange) * containerWidth,
+    }));
   });
 
   function buildPathD(points: GraphPoint[], minMax: ProcessMinMax): string {
@@ -441,7 +473,7 @@
   function handleFollowChange(e: Event) {
     const target = e.target as HTMLInputElement;
     followDataUpdate = target.checked;
-    
+
     if (followDataUpdate && globalMinMax) {
       // При включении следования — сдвигаем viewport к правому краю
       if (viewportRange) {
@@ -503,6 +535,12 @@
 
   .navigator-path {
     fill: none;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .navigator-action-mark {
+    stroke: #22c55e;
     stroke-width: 1;
     vector-effect: non-scaling-stroke;
   }
