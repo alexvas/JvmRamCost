@@ -474,6 +474,21 @@
   function handleKeyDown(e: KeyboardEvent) {
     if (!isNavigatorActive || !globalMinMax) return;
 
+    // Пробел переключает followDataUpdate
+    if (e.key === " " || e.key === "Space") {
+      e.preventDefault();
+      followDataUpdate = !followDataUpdate;
+      if (followDataUpdate && viewportRange) {
+        // При включении следования — сдвигаем viewport к правому краю
+        const width = viewportRange.max - viewportRange.min;
+        viewportRange = {
+          min: globalMinMax.maxMoment - width,
+          max: globalMinMax.maxMoment,
+        };
+      }
+      return;
+    }
+
     const isArrowKey = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key);
     if (!isArrowKey) return;
 
