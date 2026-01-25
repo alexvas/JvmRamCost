@@ -1,6 +1,7 @@
 import { graphStore, type MetricType } from "$lib/GraphStore";
 import type { GraphRenderer } from "./GraphRenderer";
 import type { SvgRenderMode } from "./types";
+import type { TimeLabelOptions } from "./formatters";
 
 const EMPTY_SVG = /*svg*/ `<svg xmlns="http://www.w3.org/2000/svg" class="graph-plot"></svg>`;
 
@@ -17,6 +18,7 @@ export function renderGraphSvg(
   pid: number,
   renderer: GraphRenderer,
   mode: SvgRenderMode = 'embedded',
+  timeLabelOptions: TimeLabelOptions,
   hiddenMetrics?: Set<MetricType>,
 ): string | null {
   const processMinMax = graphStore.getProcessMinMax(pid);
@@ -28,19 +30,13 @@ export function renderGraphSvg(
     ? graphs.filter((g) => !hiddenMetrics.has(g.metricType))
     : graphs;
   const actionMarks = graphStore.getActionMarks(pid);
-  return renderer.renderToString(processMinMax, filteredGraphs, actionMarks, mode);
-}
-
-/**
- * Рендерит SVG-график для процесса или возвращает пустой SVG.
- */
-export function renderGraphSvgOrEmpty(
-  pid: number,
-  renderer: GraphRenderer,
-  mode: SvgRenderMode = 'embedded',
-  hiddenMetrics?: Set<MetricType>,
-): string {
-  return renderGraphSvg(pid, renderer, mode, hiddenMetrics) ?? EMPTY_SVG;
+  return renderer.renderToString(
+    processMinMax,
+    filteredGraphs,
+    actionMarks,
+    mode,
+    timeLabelOptions,
+  );
 }
 
 export { EMPTY_SVG };

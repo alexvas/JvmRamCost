@@ -9,11 +9,15 @@
     />
     <button class="btn" onclick={dump_heap}>Dump Heap</button>
     <button class="btn" onclick={dump_thread}>Dump Thread</button>
-    <button class="btn btn-icon" onclick={saveGraphWithComment} title="Save Graph">
+    <button
+      class="btn btn-icon"
+      onclick={saveGraphWithComment}
+      title="Save Graph"
+    >
       <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
         <path
           d="M5.5 3L4.85 4.29A1 1 0 0 1 3.94 5H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-1.94a1 1 0 0 1-.91-.71L10.5 3h-5zM8 12a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0-1a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"
-        />
+        ></path>
       </svg>
     </button>
   </div>
@@ -27,7 +31,9 @@
         {#each availableMetrics as metricType}
           <label
             class="metric-item"
-            style="color: {prefersDark ? graphMetaMap[metricType].color_dark : graphMetaMap[metricType].color_light}"
+            style="color: {prefersDark
+              ? graphMetaMap[metricType].color_dark
+              : graphMetaMap[metricType].color_light}"
           >
             <input
               type="checkbox"
@@ -39,6 +45,21 @@
         {/each}
       </div>
     </details>
+
+    <label
+      class="follow-checkbox"
+      title="Абсолютные метки времени по стартовому моменту"
+    >
+      <input
+        type="checkbox"
+        checked={absoluteDates}
+        onchange={(e) => {
+          const target = e.target as HTMLInputElement;
+          absoluteDates = target.checked;
+        }}
+      />
+      Absolute Dates
+    </label>
 
     <label class="follow-checkbox" title="Следовать за обновлением данных">
       <input
@@ -66,6 +87,7 @@
     notice: (message: string) => void;
     hiddenMetrics: Set<MetricType>;
     followDataUpdate: boolean;
+    absoluteDates: boolean;
   };
 
   // Внешнее состояние: чтобы родитель мог передать фильтр в GraphPlot/экспорт
@@ -74,6 +96,7 @@
     notice,
     hiddenMetrics = $bindable(),
     followDataUpdate = $bindable(),
+    absoluteDates = $bindable(true),
   }: Props = $props();
 
   // Comment входит в название создаваемого файла
@@ -143,7 +166,17 @@
       graphMetaMap,
     );
 
-    const svg = renderGraphSvg(pid, exportRenderer, "standalone", hiddenMetrics);
+    const appStartInstant = graphStore.getAppStartInstant();
+    const svg = renderGraphSvg(
+      pid,
+      exportRenderer,
+      "standalone",
+      {
+        absoluteDates,
+        appStartInstant,
+      },
+      hiddenMetrics,
+    );
     if (!svg) {
       notice("Нет данных для экспорта");
       return;
@@ -181,7 +214,9 @@
     color: #202020;
     font-size: 14px;
     outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
   }
 
   .save-group .comment-input:focus {
@@ -198,7 +233,9 @@
     color: #202020;
     font-size: 14px;
     cursor: pointer;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease;
   }
 
   .btn:hover {

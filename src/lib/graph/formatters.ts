@@ -2,6 +2,8 @@
  * Функции форматирования для меток осей графика
  */
 
+import { Temporal } from "@js-temporal/polyfill";
+
 /**
  * Форматирует время для меток абсциссы (относительно начала графика)
  * @param tick - абсолютное время в десятых долях секунды
@@ -9,13 +11,29 @@
  * @param interval - интервал сетки в десятых долях секунды
  * @returns отформатированная строка времени
  */
+export interface TimeLabelOptions {
+  absoluteDates: boolean;
+  appStartInstant: Temporal.Instant;
+}
+
 export function formatTimeLabel(
   tick: number,
-  minTime: number,
   interval: number,
+  options: TimeLabelOptions,
 ): string {
-  const relativeTenthsOfSecond = tick - minTime;
-  const seconds = Math.floor(relativeTenthsOfSecond / 10);
+  if (options.absoluteDates) {
+    const date = new Date(options.appStartInstant.epochMilliseconds + tick * 100);
+    const hh = String(date.getHours()).padStart(2, "0");
+    const mm = String(date.getMinutes()).padStart(2, "0");
+    if (interval < 60 * 10) {
+      const ss = String(date.getSeconds()).padStart(2, "0");
+      return `${hh}:${mm}:${ss}`;
+    }
+    return `${hh}:${mm}`;
+  }
+
+  const relativeZehntel = tick;
+  const seconds = Math.floor(relativeZehntel / 10);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
 

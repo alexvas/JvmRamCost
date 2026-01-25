@@ -29,7 +29,7 @@ import {
     MAX_HORIZONTAL_GRID_LINES,
 } from './constants';
 
-import { formatTimeLabel, formatBytesLabel } from './formatters';
+import { formatTimeLabel, formatBytesLabel, type TimeLabelOptions } from './formatters';
 
 /**
  * Рендерер графиков в SVG
@@ -42,6 +42,7 @@ export class GraphRenderer {
     private cachedVerticalMinTime: number | null = null;
     private cachedVerticalMaxTime: number | null = null;
     private cachedVerticalInterval: number | null = null;
+    private cachedVerticalAbsoluteDates: boolean | null = null;
 
     // Кэш для горизонтальных линий
     private cachedHorizontalLines: GridLine[] = [];
@@ -139,10 +140,10 @@ export class GraphRenderer {
      * @param minMax - границы видимой области
      * @param globalMinMoment - глобальное начало данных (для выравнивания сетки и подписей)
      */
-    getVerticalGridLines(minMax: ProcessMinMax, globalMinMoment?: number): GridLine[] {
+    getVerticalGridLines(minMax: ProcessMinMax, timeLabelOptions: TimeLabelOptions): GridLine[] {
         const { minMoment, maxMoment } = minMax;
         const timeRange = maxMoment - minMoment;
-        const alignTo = globalMinMoment ?? minMoment;
+        const absoluteDates = timeLabelOptions.absoluteDates;
 
         // Выбираем интервал
         let selectedInterval = GRID_INTERVALS_TENTH_OF_SECOND[GRID_INTERVALS_TENTH_OF_SECOND.length - 1];
@@ -159,6 +160,7 @@ export class GraphRenderer {
             this.cachedVerticalMinTime === minMoment &&
             this.cachedVerticalMaxTime === maxMoment &&
             this.cachedVerticalInterval === selectedInterval &&
+            this.cachedVerticalAbsoluteDates === absoluteDates &&
             this.cachedVerticalLines.length > 0
         ) {
             return this.cachedVerticalLines;
@@ -166,16 +168,16 @@ export class GraphRenderer {
 
         // Генерируем линии, выровненные по глобальной сетке
         // Находим первый tick, кратный интервалу от alignTo, который >= minMoment
-        const offsetFromAlign = minMoment - alignTo;
+        const offsetFromAlign = minMoment;
         const ticksFromAlign = Math.ceil(offsetFromAlign / selectedInterval);
-        const firstTick = alignTo + ticksFromAlign * selectedInterval;
+        const firstTick = ticksFromAlign * selectedInterval;
         
         const lines: GridLine[] = [];
 
         for (let tick = firstTick; tick < maxMoment; tick += selectedInterval) {
             const positionInDataUnits = tick - minMoment;
             // Подпись относительно глобального начала
-            const label = formatTimeLabel(tick, alignTo, selectedInterval);
+            const label = formatTimeLabel(tick, selectedInterval, timeLabelOptions);
             lines.push({ positionInDataUnits, label });
         }
 
@@ -184,6 +186,7 @@ export class GraphRenderer {
         this.cachedVerticalMinTime = minMoment;
         this.cachedVerticalMaxTime = maxMoment;
         this.cachedVerticalInterval = selectedInterval;
+        this.cachedVerticalAbsoluteDates = absoluteDates;
 
         return lines;
     }
@@ -525,14 +528,21 @@ export class GraphRenderer {
      * @param actionMarks - отметки действий
      * @param mode - режим рендеринга: 'embedded' (растягивается по контейнеру) или 'standalone' (сохраняет пропорции)
      * @param globalMinMoment - глобальное начало данных (для выравнивания сетки)
+     * @param timeLabelOptions - параметры форматирования подписей времени
      */
-    renderToString(minMax: ProcessMinMax, graphs: GraphData[], actionMarks: ActionMark[], mode: SvgRenderMode = 'embedded', globalMinMoment?: number): string {
+    renderToString(
+        minMax: ProcessMinMax,
+        graphs: GraphData[],
+        actionMarks: ActionMark[],
+        mode: SvgRenderMode = 'embedded',
+        timeLabelOptions: TimeLabelOptions
+    ): string {
         const { containerWidth, containerHeight } = this.config;
         const viewBox = `0 0 ${containerWidth} ${containerHeight}`;
         const preserveAspectRatio = mode === 'standalone' ? 'xMidYMid meet' : 'none';
 
         const transform = this.getTransform(minMax);
-        const verticalLines = this.getVerticalGridLines(minMax, globalMinMoment);
+        const verticalLines = this.getVerticalGridLines(minMax, timeLabelOptions);
         const horizontalLines = this.getHorizontalGridLines(minMax);
         const fixedActionMarks = actionMarks.map((actionMark) => {
             const zehntel = actionMark.zehntel - minMax.minMoment;
@@ -589,6 +599,7 @@ export class GraphRenderer {
         this.cachedVerticalMinTime = null;
         this.cachedVerticalMaxTime = null;
         this.cachedVerticalInterval = null;
+        this.cachedVerticalAbsoluteDates = null;
         this.cachedHorizontalLines = [];
         this.cachedHorizontalMaxKb = null;
         this.cachedHorizontalInterval = null;

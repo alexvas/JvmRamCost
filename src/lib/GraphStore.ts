@@ -64,6 +64,10 @@ export class GraphStore {
 
   private appStart = Temporal.Now.instant();
 
+  getAppStartInstant(): Temporal.Instant {
+    return this.appStart;
+  }
+
   hasGraphDataForProcess(pid: number): boolean {
     return (this.prosessData.get(pid)?.timestamps?.size ?? 0) > 0;
   }

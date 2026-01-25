@@ -21,12 +21,14 @@
     hiddenMetrics,
     viewportRange,
     followDataUpdate = true,
+    absoluteDates = true,
   }: {
     process: ProcInfo;
     notice: (message: string) => void;
     hiddenMetrics?: Set<MetricType>;
     viewportRange?: ViewportRange | null;
     followDataUpdate?: boolean;
+    absoluteDates?: boolean;
   } = $props();
   let pid = $derived(process.pid);
   let containerElement: HTMLDivElement | null = $state(null);
@@ -85,13 +87,14 @@
   interface GraphCache {
     svg: string;
     viewportRange: ViewportRange | null;
+    absoluteDates: boolean;
   }
   let graphCache: GraphCache | null = null;
 
   // Реактивный рендеринг SVG
   let svgContent = $derived.by(() => {
     const graphVersion = getGraphVersion(); // для реактивности
-    
+
     // Ждём реальных размеров контейнера
     if (containerWidth <= 1 || containerHeight <= 1) {
       return EMPTY_SVG;
@@ -118,6 +121,7 @@
     if (
       !followDataUpdate &&
       graphCache &&
+      graphCache.absoluteDates === absoluteDates &&
       graphCache.viewportRange?.min === effectiveViewport?.min &&
       graphCache.viewportRange?.max === effectiveViewport?.max
     ) {
@@ -140,12 +144,16 @@
 
     if (effectiveViewport) {
       // Фильтруем точки графиков по viewport
-      effectiveGraphs = filteredGraphs.map((graph) => ({
-        ...graph,
-        points: graph.points.filter(
-          (p) => p.moment >= effectiveViewport.min && p.moment <= effectiveViewport.max
-        ),
-      })).filter((g) => g.points.length > 0);
+      effectiveGraphs = filteredGraphs
+        .map((graph) => ({
+          ...graph,
+          points: graph.points.filter(
+            (p) =>
+              p.moment >= effectiveViewport.min &&
+              p.moment <= effectiveViewport.max,
+          ),
+        }))
+        .filter((g) => g.points.length > 0);
 
       // Пересчитываем minMax для viewport
       let maxKbInViewport = 0;
@@ -165,17 +173,27 @@
 
       // Фильтруем action marks
       effectiveActionMarks = actionMarks.filter(
-        (m) => m.zehntel >= effectiveViewport.min && m.zehntel <= effectiveViewport.max
+        (m) =>
+          m.zehntel >= effectiveViewport.min &&
+          m.zehntel <= effectiveViewport.max,
       );
     }
 
-    // Передаём globalMinMax.minMoment для выравнивания сетки по глобальному началу данных
-    const content = renderer.renderToString(effectiveMinMax, effectiveGraphs, effectiveActionMarks, 'embedded', globalMinMax.minMoment);
+    // Выравниваем сетку/подписи по глобальному старту (0 от app_start)
+    const appStartInstant = graphStore.getAppStartInstant();
+    const content = renderer.renderToString(
+      effectiveMinMax,
+      effectiveGraphs,
+      effectiveActionMarks,
+      "embedded",
+      { absoluteDates, appStartInstant },
+    );
 
     // Обновляем кэш
     graphCache = {
       svg: content,
       viewportRange: effectiveViewport ? { ...effectiveViewport } : null,
+      absoluteDates,
     };
 
     let now = Temporal.Instant.fromEpochMilliseconds(Date.now());

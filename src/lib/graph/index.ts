@@ -20,7 +20,7 @@
  */
 
 export { GraphRenderer } from './GraphRenderer';
-export { renderGraphSvg, renderGraphSvgOrEmpty, EMPTY_SVG } from './renderGraphSvg';
+export { renderGraphSvg, EMPTY_SVG } from './renderGraphSvg';
 export type {
   GraphConfig,
   GraphConfigResolved,

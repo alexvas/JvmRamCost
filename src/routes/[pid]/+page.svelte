@@ -21,10 +21,23 @@
     <p>Process is not alive</p>
   {/if}
   {#if hasGraph}
-    <GraphPlot {process} {notice} {hiddenMetrics} {viewportRange} {followDataUpdate} />
+    <GraphPlot
+      {process}
+      {notice}
+      {hiddenMetrics}
+      {viewportRange}
+      {followDataUpdate}
+      {absoluteDates}
+    />
     <GraphNavigator pid={pid!} bind:viewportRange {hiddenMetrics} bind:followDataUpdate />
   {/if}
-  <ControlToolbar {pid} {notice} bind:hiddenMetrics bind:followDataUpdate />
+  <ControlToolbar
+    {pid}
+    {notice}
+    bind:hiddenMetrics
+    bind:followDataUpdate
+    bind:absoluteDates
+  />
 {/if}
 
 <script lang="ts">
@@ -55,6 +68,8 @@
   let viewportRange = $state<ViewportRange | null>(null);
   // Режим следования за обновлениями данных
   let followDataUpdate = $state(true);
+  // Режим подписей по абсолютному времени (app_start + offset)
+  let absoluteDates = $state(true);
   let headerEl = $state<HTMLHeadingElement | null>(null);
   type NoticeHandle = { show: (message: string) => void | Promise<void> };
   let noticePopup = $state<NoticeHandle | null>(null);
