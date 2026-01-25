@@ -32,18 +32,43 @@ export function formatTimeLabel(
     return `${hh}:${mm}`;
   }
 
-  const relativeZehntel = tick;
-  const seconds = Math.floor(relativeZehntel / 10);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
+  let seconds = Math.floor(tick / 10);
+  let minutes = Math.floor(seconds / 60);
+  let hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
 
-  if (interval < 60 * 10) {
-    return `${seconds}s`;
-  } else if (interval < 60 * 60 * 10) {
-    return `${minutes}m`;
+  hours = hours % 24;
+  minutes = minutes % 60;
+  seconds = seconds % 60;
+
+  if (days > 0) {
+    if (interval < 60 * 10) {
+      return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    } else if (interval < 60 * 60 * 10) {
+      return `${days}d ${hours}h ${minutes}m`;
+    } else if (interval < 24 * 60 * 60 * 10) {
+      return `${days}d ${hours}h`;
+    } else {
+      return `${days}d`;
+    }
+  } else if (hours > 0) {
+    if (interval < 60 * 10) {
+      return `${hours}h ${minutes}m ${seconds}s`;
+    } else if (interval < 60 * 60 * 10) {
+      return `${hours}h ${minutes}m`;
+    } else {
+      return `${hours}h`;
+    }
+  } else if (minutes > 0) {
+    if (interval < 60 * 10) {
+      return `${minutes}m ${seconds}s`;
+    } else {
+      return `${minutes}m`;
+    }
   } else {
-    return `${hours}h`;
+    return `${seconds}s`;
   }
+
 }
 
 
@@ -54,7 +79,7 @@ function fixedPrecision(value: number, precision: number): string {
     return value.toFixed(Math.max(0, precision - 1));
   } else if (value < 1000) {
     return value.toFixed(Math.max(0, precision - 2));
-  } else { 
+  } else {
     return value.toFixed(Math.max(0, precision - 3));
   }
 }
