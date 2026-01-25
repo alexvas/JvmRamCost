@@ -1,15 +1,3 @@
-<!-- Чекбокс следования за данными -->
-<div class="navigator-controls">
-  <label class="follow-checkbox">
-    <input
-      type="checkbox"
-      checked={followDataUpdate}
-      onchange={handleFollowChange}
-    />
-    Follow data update
-  </label>
-</div>
-
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
   class="navigator-container"
@@ -558,22 +546,6 @@
     followDataUpdate = true; // Двойной клик сбрасывает — включаем следование
   }
 
-  function handleFollowChange(e: Event) {
-    const target = e.target as HTMLInputElement;
-    followDataUpdate = target.checked;
-
-    if (followDataUpdate && globalMinMax) {
-      // При включении следования — сдвигаем viewport к правому краю
-      if (viewportRange) {
-        const width = viewportRange.max - viewportRange.min;
-        viewportRange = {
-          min: globalMinMax.maxMoment - width,
-          max: globalMinMax.maxMoment,
-        };
-      }
-    }
-  }
-
   // Отключает режим следования при взаимодействии пользователя
   function disableFollow() {
     if (followDataUpdate) {
@@ -583,27 +555,6 @@
 </script>
 
 <style>
-  .navigator-controls {
-    display: flex;
-    align-items: center;
-    margin-bottom: 4px;
-  }
-
-  .follow-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: #444;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .follow-checkbox input {
-    margin: 0;
-    cursor: pointer;
-  }
-
   .navigator-container {
     width: 100%;
     height: 80px;
@@ -673,10 +624,6 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    .follow-checkbox {
-      color: #ccc;
-    }
-
     .navigator-bg {
       fill: #2d2d2d;
     }

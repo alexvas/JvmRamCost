@@ -39,6 +39,18 @@
         {/each}
       </div>
     </details>
+
+    <label class="follow-checkbox" title="Следовать за обновлением данных">
+      <input
+        type="checkbox"
+        checked={followDataUpdate}
+        onchange={(e) => {
+          const target = e.target as HTMLInputElement;
+          followDataUpdate = target.checked;
+        }}
+      />
+      Follow data update
+    </label>
   {/if}
 </div>
 
@@ -53,10 +65,16 @@
     pid: number | null;
     notice: (message: string) => void;
     hiddenMetrics: Set<MetricType>;
+    followDataUpdate: boolean;
   };
 
   // Внешнее состояние: чтобы родитель мог передать фильтр в GraphPlot/экспорт
-  let { pid, notice, hiddenMetrics = $bindable() }: Props = $props();
+  let {
+    pid,
+    notice,
+    hiddenMetrics = $bindable(),
+    followDataUpdate = $bindable(),
+  }: Props = $props();
 
   // Comment входит в название создаваемого файла
   let comment = $state("");
@@ -206,6 +224,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .follow-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #444;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .follow-checkbox input {
+    margin: 0;
+    cursor: pointer;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .follow-checkbox {
+      color: #ccc;
+    }
   }
 
   .metrics-filter {

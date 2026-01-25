@@ -24,7 +24,7 @@
     <GraphPlot {process} {notice} {hiddenMetrics} {viewportRange} {followDataUpdate} />
     <GraphNavigator pid={pid!} bind:viewportRange {hiddenMetrics} bind:followDataUpdate />
   {/if}
-  <ControlToolbar {pid} {notice} bind:hiddenMetrics />
+  <ControlToolbar {pid} {notice} bind:hiddenMetrics bind:followDataUpdate />
 {/if}
 
 <script lang="ts">
