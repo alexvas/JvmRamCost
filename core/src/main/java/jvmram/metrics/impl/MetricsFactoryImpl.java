@@ -1,5 +1,6 @@
 package jvmram.metrics.impl;
 
+import jakarta.inject.Inject;
 import jvmram.metrics.MetricsFactory;
 import jvmram.metrics.RamMetric;
 import jvmram.model.metrics.MetricType;
@@ -20,9 +21,11 @@ public class MetricsFactoryImpl implements MetricsFactory {
 
     private final Map<Integer, Map<MetricType, RamMetric>> metrics = new ConcurrentHashMap<>();
 
-    private final HardwareDataSuppliersFactory suppliersFactory = HardwareDataSuppliersFactory.getInstance();
+    private final HardwareDataSuppliersFactory suppliersFactory;
 
-    private MetricsFactoryImpl() {
+    @Inject
+    MetricsFactoryImpl(HardwareDataSuppliersFactory suppliersFactory) {
+        this.suppliersFactory = suppliersFactory;
     }
 
     @Override
@@ -61,6 +64,4 @@ public class MetricsFactoryImpl implements MetricsFactory {
         HardwareDataSupplier<T> supplier = suppliersFactory.getOrCreateSupplier(pid, type);
         return new BaseMetric<>(supplier, DEV_POLL_INTERVALS.get(type), converter);
     }
-
-    public static final MetricsFactoryImpl INSTANCE = new MetricsFactoryImpl();
 }

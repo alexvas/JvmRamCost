@@ -1,24 +1,27 @@
 package jvmram.suppliers;
 
+import jakarta.inject.Inject;
 import jvmram.jmx.JmxBeanFactory;
 import jvmram.jmx.MxDatum;
 import jvmram.suppliers.data.JmxData;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.dimension.di.Assisted;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.management.BufferPoolMXBean;
 
-class JmxSupplier extends AbstractDataSupplier<JmxData> {
+public class JmxSupplier extends AbstractDataSupplier<JmxData> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final MxDatum mxDatum;
-    
-    JmxSupplier(int pid) {
+
+    @Inject
+    JmxSupplier(@Assisted int pid, JmxBeanFactory jmxBeanFactory) {
         super(pid);
-        this.mxDatum = JmxBeanFactory.getInstance().getMxDatum(pid);
+        this.mxDatum = jmxBeanFactory.getMxDatum(pid);
         if (this.mxDatum != null) {
             setInitialized();
         } else {

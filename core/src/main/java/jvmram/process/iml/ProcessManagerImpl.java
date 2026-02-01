@@ -2,6 +2,7 @@ package jvmram.process.iml;
 
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
+import jakarta.inject.Inject;
 import jvmram.process.JvmProcessInfo;
 import jvmram.process.ProcessManager;
 import org.slf4j.Logger;
@@ -15,7 +16,8 @@ public class ProcessManagerImpl implements ProcessManager {
 
     private final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private ProcessManagerImpl() {
+    @Inject
+    ProcessManagerImpl() {
     }
 
     private int getPid(VirtualMachineDescriptor vmd) {
@@ -62,6 +64,4 @@ public class ProcessManagerImpl implements ProcessManager {
         );
         return output;
     }
-
-    public static final ProcessManager INSTANCE = new ProcessManagerImpl();
 }

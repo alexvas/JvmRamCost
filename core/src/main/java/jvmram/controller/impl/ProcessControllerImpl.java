@@ -1,5 +1,6 @@
 package jvmram.controller.impl;
 
+import jakarta.inject.Inject;
 import jvmram.controller.ProcessController;
 import jvmram.model.util.RwGuarded;
 import jvmram.process.JvmProcessInfo;
@@ -20,9 +21,14 @@ public class ProcessControllerImpl implements ProcessController {
     private final Collection<Integer> explicitlyFollowingPids = new TreeSet<>();
     private final Map<Integer, Collection<Integer>> descendantPids = new HashMap<>();
 
-    private final ProcessManager processManager = ProcessManager.getInstance();
+    private final ProcessManager processManager;
 
     private final List<Consumer<Collection<JvmProcessInfo>>> onProcessInfoChangedListeners = new ArrayList<>();
+
+    @Inject
+    ProcessControllerImpl(ProcessManager processManager) {
+        this.processManager = processManager;
+    }
 
     @Override
     public boolean areChildrenProcessesIncluded() {
@@ -114,9 +120,4 @@ public class ProcessControllerImpl implements ProcessController {
     public void addAvailableJvmProcessesListener(Consumer<Collection<JvmProcessInfo>> onProcessInfoChanged) {
         guarded.write(() -> onProcessInfoChangedListeners.add(onProcessInfoChanged));
     }
-
-    private ProcessControllerImpl() {
-    }
-
-    public static final ProcessControllerImpl INSTANCE = new ProcessControllerImpl();
 }

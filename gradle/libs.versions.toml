@@ -14,5 +14,7 @@ jspecify = "org.jspecify:jspecify:1.0.0"
 
 grpc-bom = { module = "io.grpc:grpc-bom", version.ref = "grpc" }
 
+dimension = "com.github.alexvas:dimension-di:26.1.11"
+
 [plugins]
 protobuf = "com.google.protobuf:0.9.6"

@@ -1,5 +1,6 @@
 package jvmram.model.graph.impl;
 
+import jakarta.inject.Inject;
 import jvmram.model.graph.GraphKey;
 import jvmram.model.graph.GraphPoint;
 import jvmram.model.graph.GraphPointQueuesWritable;
@@ -23,7 +24,8 @@ public class GraphPointQueuesImpl implements GraphPointQueuesWritable {
 
     private final Instant applicationStart = Instant.now();
 
-    private GraphPointQueuesImpl() {
+    @Inject
+    GraphPointQueuesImpl() {
     }
 
     @Override
@@ -82,6 +84,4 @@ public class GraphPointQueuesImpl implements GraphPointQueuesWritable {
     public Instant getApplicationStart() {
         return applicationStart;
     }
-
-    public static final GraphPointQueuesImpl INSTANCE = new GraphPointQueuesImpl();
 }

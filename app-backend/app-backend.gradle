@@ -14,6 +14,8 @@ dependencies {
     runtimeOnly libs.slf4j.simple
     compileOnly libs.jspecify
 
+    implementation libs.dimension
+
     implementation platform(libs.grpc.bom)
     implementation "io.grpc:grpc-protobuf"
     implementation "io.grpc:grpc-services"

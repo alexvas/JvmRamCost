@@ -1,6 +1,5 @@
 package jvmram.controller;
 
-import jvmram.controller.impl.ProcessControllerImpl;
 import jvmram.process.JvmProcessInfo;
 
 import java.util.Collection;
@@ -40,10 +39,6 @@ public interface ProcessController {
     void addAvailableJvmProcessesListener(Consumer<Collection<JvmProcessInfo>> onProcessInfoChanged);
 
     void setCurrentlySelectedPids(Collection<Integer> pids);
-
-    static ProcessController getInstance() {
-        return ProcessControllerImpl.INSTANCE;
-    }
 
     boolean areChildrenProcessesIncluded();
 }

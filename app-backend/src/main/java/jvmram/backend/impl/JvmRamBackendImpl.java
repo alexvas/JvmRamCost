@@ -1,14 +1,16 @@
-package jvmram.backend;
+package jvmram.backend.impl;
 
 import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
+import jakarta.inject.Inject;
 import jvmram.conf.Config;
 import jvmram.controller.GraphController;
 import jvmram.controller.JmxService;
 import jvmram.controller.ProcessController;
 import jvmram.model.graph.GraphKey;
 import jvmram.model.graph.GraphPointQueues;
+import jvmram.model.graph.GraphPointQueuesWritable;
 import jvmram.model.metrics.MetricType;
 import jvmram.proto.*;
 import jvmram.visibility.MetricVisibility;
@@ -19,9 +21,9 @@ import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 
 import static java.util.stream.Collectors.groupingBy;
-import static jvmram.backend.Converter.convert2Grpc;
+import static jvmram.backend.impl.Converter.convert2Grpc;
 
-class JvmRamBackendImpl extends AppBackendGrpc.AppBackendImplBase {
+public class JvmRamBackendImpl extends AppBackendGrpc.AppBackendImplBase {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final Empty EMPTY = Empty.newBuilder().build();
@@ -32,10 +34,11 @@ class JvmRamBackendImpl extends AppBackendGrpc.AppBackendImplBase {
     private final JmxService jmxService;
     private final MetricVisibility metricVisibility;
 
+    @Inject
     public JvmRamBackendImpl(
             ProcessController processController,
             GraphController graphController,
-            GraphPointQueues queues,
+            GraphPointQueuesWritable queues,
             JmxService jmxService,
             MetricVisibility metricVisibility
     ) {

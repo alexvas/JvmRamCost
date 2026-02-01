@@ -1,8 +1,12 @@
 package jvmram.dist;
 
-import jvmram.backend.JvmRunCost;
+import jvmram.backend.JvmRunCostStarter;
+import jvmram.di.CoreDiConfig;
+import jvmram.model.di.ModelDiConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.dimension.di.DimensionDI;
+import ru.dimension.di.ServiceLocator;
 
 import java.lang.invoke.MethodHandles;
 
@@ -14,7 +18,15 @@ public class JvmRamCost {
     public static void main(String[] args) {
         Thread.setDefaultUncaughtExceptionHandler((ignored, e) -> LOG.error("Unexpected exception: ", e));
 
-        var main = new JvmRunCost();
+        var builder = DimensionDI.builder();
+        ModelDiConfig.config(builder);
+        CoreDiConfig.config(builder);
+
+        builder
+                .scanPackages("jvmram")
+                .buildAndInit();
+
+        var main = ServiceLocator.get(JvmRunCostStarter.class);
         main.setup(DEFAULT_PORT);
         main.blockUntilShutdown();
     }

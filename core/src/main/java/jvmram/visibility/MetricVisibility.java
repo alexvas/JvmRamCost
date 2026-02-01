@@ -11,8 +11,4 @@ public interface MetricVisibility {
     void setInvisible(MetricType type);
 
     void setVisible(MetricType type);
-
-    static MetricVisibility getInstance() {
-        return MetricVisibilityImpl.INSTANCE;
-    }
 }

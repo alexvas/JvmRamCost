@@ -21,8 +21,4 @@ public interface GraphPointQueuesWritable extends GraphPointQueues {
     List<GraphPoint> add(int pid, MetricType metricType, GraphPoint graphPoint);
 
     void handleExceed(Collection<GraphPoint> exceeds);
-
-    static GraphPointQueuesWritable getInstance() {
-        return GraphPointQueuesImpl.INSTANCE;
-    }
 }

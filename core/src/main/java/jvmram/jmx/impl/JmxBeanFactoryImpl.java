@@ -1,7 +1,10 @@
-package jvmram.jmx;
+package jvmram.jmx.impl;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
 import com.sun.tools.attach.VirtualMachine;
+import jakarta.inject.Inject;
+import jvmram.jmx.JmxBeanFactory;
+import jvmram.jmx.MxDatum;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +21,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import static java.lang.management.ManagementFactory.getPlatformMXBeans;
 import static java.lang.management.ManagementFactory.newPlatformMXBeanProxy;
 
-class JmxBeanFactoryImpl implements JmxBeanFactory {
+public class JmxBeanFactoryImpl implements JmxBeanFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final Map<Integer, MxDatum> mxData = new ConcurrentHashMap<>();
 
-    private JmxBeanFactoryImpl() {
+    @Inject
+    JmxBeanFactoryImpl() {
     }
 
     @Override
@@ -129,6 +133,4 @@ class JmxBeanFactoryImpl implements JmxBeanFactory {
             // Игнорируем ошибки закрытия
         }
     }
-
-    static final JmxBeanFactoryImpl INSTANCE = new JmxBeanFactoryImpl();
 }

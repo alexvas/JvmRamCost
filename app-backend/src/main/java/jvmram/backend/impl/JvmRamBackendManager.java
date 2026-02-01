@@ -1,4 +1,4 @@
-package jvmram.backend;
+package jvmram.backend.impl;
 
 import io.grpc.BindableService;
 import io.grpc.Grpc;
@@ -16,14 +16,14 @@ import java.util.concurrent.TimeUnit;
 /**
  * Сервер, который управляет стартом и остановом сервера BackendImpl
  */
-class JvmRamBackendManager {
+public class JvmRamBackendManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int WORKER_THREADS_COUNT = 2;
 
     private volatile Server server;
 
-    void start(@SuppressWarnings("SameParameterValue") int port, BindableService service) {
+    public void start(@SuppressWarnings("SameParameterValue") int port, BindableService service) {
 
         /*
          * По умолчанию gRPC использует глобальный разделяемый Executor.newCachedThreadPool(),
@@ -76,7 +76,7 @@ class JvmRamBackendManager {
      * Ждём окончания работы в главном (main) потоке, поскольку библиотека grpc
      * использует потоки-демоны.
      */
-    void blockUntilShutdown() {
+    public void blockUntilShutdown() {
         if (server != null) {
             try {
                 server.awaitTermination();

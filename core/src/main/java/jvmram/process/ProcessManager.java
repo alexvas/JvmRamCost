@@ -1,14 +1,8 @@
 package jvmram.process;
 
-import jvmram.process.iml.ProcessManagerImpl;
-
 import java.util.List;
 
 public interface ProcessManager {
-
-    static ProcessManager getInstance() {
-        return ProcessManagerImpl.INSTANCE;
-    }
 
     /**
      * Получить список запущенных локально Java-процессов.

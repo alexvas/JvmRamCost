@@ -10,5 +10,8 @@ java {
 
 dependencies {
     implementation libs.slf4j.api
+
+    implementation libs.dimension
+
     compileOnly libs.jspecify
 }

@@ -1,5 +1,6 @@
 package jvmram.suppliers;
 
+import jakarta.inject.Inject;
 import jvmram.model.metrics.MetricType;
 import jvmram.suppliers.data.HardwareData;
 
@@ -7,9 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-class HardwareDataSuppliersFactoryImpl implements HardwareDataSuppliersFactory {
+public class HardwareDataSuppliersFactoryImpl implements HardwareDataSuppliersFactory {
 
-    private HardwareDataSuppliersFactoryImpl() {
+    private final JmxSupplierFactory jmxSupplierFactory;
+
+    @Inject
+    HardwareDataSuppliersFactoryImpl(JmxSupplierFactory jmxSupplierFactory) {
+        this.jmxSupplierFactory = jmxSupplierFactory;
     }
 
     private final Map<Integer, Map<Class<? extends AbstractDataSupplier<?>>, AbstractDataSupplier<?>>> suppliers = new ConcurrentHashMap<>();
@@ -42,9 +47,7 @@ class HardwareDataSuppliersFactoryImpl implements HardwareDataSuppliersFactory {
             case PSS, USS -> new SmapsSupplier(pid);
             case WS, PB -> new WinSupplier(pid);
             case HEAP_COMMITTED, HEAP_USED, OLD_GEN_MAX, OLD_GEN_COMMITTED, OLD_GEN_USED, NMT_USED, NMT_COMMITTED,
-                 BUFFER_TOTAL -> new JmxSupplier(pid);
+                 BUFFER_TOTAL -> jmxSupplierFactory.create(pid);
         };
     }
-
-    static final HardwareDataSuppliersFactoryImpl INSTANCE = new HardwareDataSuppliersFactoryImpl();
 }

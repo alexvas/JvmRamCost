@@ -18,3 +18,11 @@ def configureBuildFile(ProjectDescriptor pd) {
 rootProject.children.forEach {
     configureBuildFile(it)
 }
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}

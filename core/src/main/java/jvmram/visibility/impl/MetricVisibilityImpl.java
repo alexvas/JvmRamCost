@@ -1,5 +1,6 @@
 package jvmram.visibility.impl;
 
+import jakarta.inject.Inject;
 import jvmram.visibility.MetricVisibility;
 import jvmram.model.metrics.MetricType;
 import org.slf4j.Logger;
@@ -16,7 +17,8 @@ public class MetricVisibilityImpl implements MetricVisibility {
 
     private final Set<MetricType> invisibles = Collections.synchronizedSet(EnumSet.noneOf(MetricType.class));
 
-    private MetricVisibilityImpl() {
+    @Inject
+    MetricVisibilityImpl() {
     }
 
     @Override
@@ -37,6 +39,4 @@ public class MetricVisibilityImpl implements MetricVisibility {
         invisibles.remove(type);
         LOG.trace("after setting visible: {}", invisibles);
     }
-
-    public static final MetricVisibilityImpl INSTANCE = new MetricVisibilityImpl();
 }

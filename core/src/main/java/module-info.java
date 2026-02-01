@@ -5,10 +5,12 @@ module jvmram.core {
     requires org.slf4j;
     requires jvmram.model;
     requires jdk.management;
+    requires ru.dimension.di;
 
     exports jvmram.conf;
     exports jvmram.metrics;
     exports jvmram.controller;
     exports jvmram.process;
     exports jvmram.visibility;
+    exports jvmram.di;
 }

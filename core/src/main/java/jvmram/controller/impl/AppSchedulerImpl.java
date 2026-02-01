@@ -1,5 +1,6 @@
 package jvmram.controller.impl;
 
+import jakarta.inject.Inject;
 import jvmram.controller.AppScheduler;
 import jvmram.controller.GraphController;
 import jvmram.controller.ProcessController;
@@ -24,15 +25,18 @@ public class AppSchedulerImpl implements AppScheduler {
             runnable -> new Thread(runnable, "app-backend")
     );
 
-    private AppSchedulerImpl() {
+    private final GraphController graphController;
+    private final ProcessController processController;
+
+    @Inject
+    private AppSchedulerImpl(GraphController graphController, ProcessController processController) {
+        this.graphController = graphController;
+        this.processController = processController;
     }
 
     @Override
     public void start() {
-        var graphController = GraphController.getInstance();
         scheduleAtRate(graphController::update, UPDATE_UI_DELAY);
-
-        var processController = ProcessController.getInstance();
         scheduleWithDelay(processController::refreshAvailableJvmProcesses, JVM_PROCESSES_LOOKUP_DELAY);
     }
 
@@ -56,6 +60,4 @@ public class AppSchedulerImpl implements AppScheduler {
             }
         };
     }
-
-    public static final AppSchedulerImpl INSTANCE = new AppSchedulerImpl();
 }

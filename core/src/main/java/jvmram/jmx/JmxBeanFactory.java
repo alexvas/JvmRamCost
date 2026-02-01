@@ -19,8 +19,4 @@ public interface JmxBeanFactory {
      * @param pid процесса
      */
     void disconnect(int pid);
-
-    static JmxBeanFactory getInstance() {
-        return JmxBeanFactoryImpl.INSTANCE;
-    }
 }

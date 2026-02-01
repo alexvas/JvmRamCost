@@ -1,6 +1,7 @@
 
 package jvmram.controller.impl;
 
+import jakarta.inject.Inject;
 import jvmram.conf.Config;
 import jvmram.controller.GraphController;
 import jvmram.controller.GraphRenderer;
@@ -25,12 +26,25 @@ public class GraphControllerImpl implements GraphController {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final MetricVisibility metricVisibility = MetricVisibility.getInstance();
-    private final MetricsFactory metricsFactory = MetricsFactory.getInstance();
-    private final ProcessController processController = ProcessController.getInstance();
-    private final GraphPointQueuesWritable graphPointQueues = GraphPointQueuesWritable.getInstance();
+    private final MetricVisibility metricVisibility;
+    private final MetricsFactory metricsFactory;
+    private final ProcessController processController;
+    private final GraphPointQueuesWritable graphPointQueues;
 
     private final List<GraphRenderer> renderers = synchronizedList(new ArrayList<>());
+
+    @Inject
+    GraphControllerImpl(
+            MetricVisibility metricVisibility,
+            MetricsFactory metricsFactory,
+            ProcessController processController,
+            GraphPointQueuesWritable graphPointQueues
+    ) {
+        this.metricVisibility = metricVisibility;
+        this.metricsFactory = metricsFactory;
+        this.processController = processController;
+        this.graphPointQueues = graphPointQueues;
+    }
 
     @Override
     public void update() {
@@ -81,9 +95,4 @@ public class GraphControllerImpl implements GraphController {
     public void addRenderer(GraphRenderer renderer) {
         this.renderers.add(renderer);
     }
-
-    private GraphControllerImpl() {
-    }
-
-    public static final GraphControllerImpl INSTANCE = new GraphControllerImpl();
 }

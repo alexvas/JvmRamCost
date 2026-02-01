@@ -1,5 +1,6 @@
 package jvmram.controller.impl;
 
+import jakarta.inject.Inject;
 import jvmram.controller.JmxService;
 import jvmram.jmx.JmxBeanFactory;
 import jvmram.jmx.MxDatum;
@@ -14,7 +15,11 @@ public class JmxServiceImpl implements JmxService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private JmxServiceImpl() {
+    private final JmxBeanFactory jmxBeanFactory;
+
+    @Inject
+    private JmxServiceImpl(JmxBeanFactory jmxBeanFactory) {
+        this.jmxBeanFactory = jmxBeanFactory;
     }
 
     @Override
@@ -59,14 +64,12 @@ public class JmxServiceImpl implements JmxService {
         }
     }
 
-    private static MxDatum getMxDatum(int pid) {
-        var datum = JmxBeanFactory.getInstance().getMxDatum(pid);
+    private MxDatum getMxDatum(int pid) {
+        var datum = jmxBeanFactory.getMxDatum(pid);
         if (datum == null) {
             LOG.info("No JMX datum for process {}, the one might be already closed", pid);
             return null;
         }
         return datum;
     }
-
-    public static final JmxServiceImpl INSTANCE = new JmxServiceImpl();
 }

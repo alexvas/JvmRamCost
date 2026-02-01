@@ -1,7 +1,5 @@
 package jvmram.controller;
 
-import jvmram.controller.impl.JmxServiceImpl;
-
 public interface JmxService {
 
     /**
@@ -14,8 +12,4 @@ public interface JmxService {
     void createHeapDump(int pid, String outputHprofFilePath);
 
     void createThreadDump(int pid, String outputThreadDumpPath);
-
-    static JmxService getInstance() {
-        return JmxServiceImpl.INSTANCE;
-    }
 }

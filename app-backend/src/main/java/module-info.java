@@ -10,6 +10,7 @@ module jvmram.backend {
     requires jvmram.model;
     requires jvmram.core;
     requires io.grpc.protobuf;
+    requires ru.dimension.di;
 
     exports jvmram.backend;
 }
