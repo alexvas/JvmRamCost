@@ -11,4 +11,5 @@ module jvmram.db {
     exports jvmram.db.datasource;
     exports jvmram.db.boot;
     exports jvmram.db.pid;
+    exports jvmram.db.config;
 }
