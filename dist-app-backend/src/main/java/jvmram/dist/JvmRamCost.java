@@ -2,7 +2,6 @@ package jvmram.dist;
 
 import jvmram.backend.JvmRunCostStarter;
 import jvmram.di.CoreDiConfig;
-import jvmram.model.di.ModelDiConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.dimension.di.DimensionDI;
@@ -19,7 +18,6 @@ public class JvmRamCost {
         Thread.setDefaultUncaughtExceptionHandler((ignored, e) -> LOG.error("Unexpected exception: ", e));
 
         var builder = DimensionDI.builder();
-        ModelDiConfig.config(builder);
         CoreDiConfig.config(builder);
 
         builder
