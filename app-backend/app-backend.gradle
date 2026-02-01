@@ -24,6 +24,7 @@ dependencies {
 
     implementation(project(':model'))
     implementation project(':core')
+    implementation project(':db')
 }
 
 protobuf {

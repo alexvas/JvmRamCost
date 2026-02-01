@@ -9,6 +9,7 @@ module jvmram.backend {
 
     requires jvmram.model;
     requires jvmram.core;
+    requires jvmram.db;
     requires io.grpc.protobuf;
     requires ru.dimension.di;
     requires jakarta.inject;

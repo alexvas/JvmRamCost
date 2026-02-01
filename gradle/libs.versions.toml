@@ -16,5 +16,10 @@ grpc-bom = { module = "io.grpc:grpc-bom", version.ref = "grpc" }
 
 dimension = "com.github.alexvas:dimension-di:26.1.11"
 
+h2 = "com.h2database:h2:2.4.240"
+hikaricp = "com.zaxxer:HikariCP:7.0.2"
+
+caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.3"
+
 [plugins]
 protobuf = "com.google.protobuf:0.9.6"

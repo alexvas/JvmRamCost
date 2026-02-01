@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(libs.versions.jdk.get())
+    }
+}
+
+dependencies {
+    implementation libs.slf4j.api
+    implementation libs.hikaricp
+    implementation libs.caffeine
+    implementation libs.dimension
+
+    runtimeOnly libs.h2
+    compileOnly libs.jspecify
+}
