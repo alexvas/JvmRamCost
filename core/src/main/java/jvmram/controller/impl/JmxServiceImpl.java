@@ -1,6 +1,7 @@
 package jvmram.controller.impl;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.controller.JmxService;
 import jvmram.jmx.JmxBeanFactory;
 import jvmram.jmx.MxDatum;
@@ -11,6 +12,7 @@ import java.lang.invoke.MethodHandles;
 
 import static com.sun.management.HotSpotDiagnosticMXBean.ThreadDumpFormat.TEXT_PLAIN;
 
+@Singleton
 public class JmxServiceImpl implements JmxService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

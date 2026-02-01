@@ -1,6 +1,7 @@
 package jvmram.backend;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.backend.impl.JvmRamBackendImpl;
 import jvmram.backend.impl.JvmRamBackendManager;
 import jvmram.controller.AppScheduler;
@@ -10,6 +11,7 @@ import jvmram.controller.ProcessController;
 import jvmram.model.graph.GraphPointQueuesWritable;
 import jvmram.visibility.MetricVisibility;
 
+@Singleton
 public class JvmRunCostStarter {
     private final JvmRamBackendManager backendManager;
     private final AppScheduler appScheduler;

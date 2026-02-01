@@ -1,6 +1,7 @@
 package jvmram.controller.impl;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.controller.ProcessController;
 import jvmram.model.util.RwGuarded;
 import jvmram.process.JvmProcessInfo;
@@ -12,6 +13,7 @@ import java.util.function.Consumer;
 import static java.util.stream.Collectors.toSet;
 import static jvmram.controller.impl.Utils.callActionOrGetRidOfListener;
 
+@Singleton
 public class ProcessControllerImpl implements ProcessController {
 
     private final RwGuarded guarded = RwGuarded.create();

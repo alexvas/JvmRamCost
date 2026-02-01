@@ -1,6 +1,7 @@
 package jvmram.suppliers;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.model.metrics.MetricType;
 import jvmram.suppliers.data.HardwareData;
 
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Singleton
 public class HardwareDataSuppliersFactoryImpl implements HardwareDataSuppliersFactory {
 
     private final JmxSupplierFactory jmxSupplierFactory;

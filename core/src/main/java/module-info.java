@@ -6,6 +6,7 @@ module jvmram.core {
     requires jvmram.model;
     requires jdk.management;
     requires ru.dimension.di;
+    requires jakarta.inject;
 
     exports jvmram.conf;
     exports jvmram.metrics;

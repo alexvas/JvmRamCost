@@ -11,6 +11,7 @@ module jvmram.backend {
     requires jvmram.core;
     requires io.grpc.protobuf;
     requires ru.dimension.di;
+    requires jakarta.inject;
 
     exports jvmram.backend;
 }

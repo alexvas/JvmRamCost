@@ -4,6 +4,7 @@ import com.google.protobuf.Empty;
 import com.google.protobuf.Timestamp;
 import io.grpc.stub.StreamObserver;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.conf.Config;
 import jvmram.controller.GraphController;
 import jvmram.controller.JmxService;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import static java.util.stream.Collectors.groupingBy;
 import static jvmram.backend.impl.Converter.convert2Grpc;
 
+@Singleton
 public class JvmRamBackendImpl extends AppBackendGrpc.AppBackendImplBase {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

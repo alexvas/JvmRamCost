@@ -1,6 +1,7 @@
 package jvmram.metrics.impl;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.metrics.MetricsFactory;
 import jvmram.metrics.RamMetric;
 import jvmram.model.metrics.MetricType;
@@ -17,6 +18,7 @@ import java.util.function.Function;
 import static jvmram.conf.Config.DEV_POLL_INTERVALS;
 import static jvmram.model.metrics.MetricType.*;
 
+@Singleton
 public class MetricsFactoryImpl implements MetricsFactory {
 
     private final Map<Integer, Map<MetricType, RamMetric>> metrics = new ConcurrentHashMap<>();

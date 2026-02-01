@@ -3,6 +3,7 @@ package jvmram.jmx.impl;
 import com.sun.management.HotSpotDiagnosticMXBean;
 import com.sun.tools.attach.VirtualMachine;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.jmx.JmxBeanFactory;
 import jvmram.jmx.MxDatum;
 import org.jspecify.annotations.Nullable;
@@ -21,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static java.lang.management.ManagementFactory.getPlatformMXBeans;
 import static java.lang.management.ManagementFactory.newPlatformMXBeanProxy;
 
+@Singleton
 public class JmxBeanFactoryImpl implements JmxBeanFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

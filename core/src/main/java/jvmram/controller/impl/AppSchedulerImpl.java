@@ -1,6 +1,7 @@
 package jvmram.controller.impl;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.controller.AppScheduler;
 import jvmram.controller.GraphController;
 import jvmram.controller.ProcessController;
@@ -14,6 +15,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
+@Singleton
 public class AppSchedulerImpl implements AppScheduler {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

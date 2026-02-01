@@ -1,6 +1,7 @@
 package jvmram.visibility.impl;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.visibility.MetricVisibility;
 import jvmram.model.metrics.MetricType;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
+@Singleton
 public class MetricVisibilityImpl implements MetricVisibility {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

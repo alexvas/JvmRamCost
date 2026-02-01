@@ -3,6 +3,7 @@ package jvmram.process.iml;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.process.JvmProcessInfo;
 import jvmram.process.ProcessManager;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class ProcessManagerImpl implements ProcessManager {
 
     private final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

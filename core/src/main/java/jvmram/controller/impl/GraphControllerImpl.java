@@ -2,6 +2,7 @@
 package jvmram.controller.impl;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.conf.Config;
 import jvmram.controller.GraphController;
 import jvmram.controller.GraphRenderer;
@@ -22,6 +23,7 @@ import java.util.List;
 import static java.util.Collections.synchronizedList;
 import static jvmram.controller.impl.Utils.callActionOrGetRidOfListener;
 
+@Singleton
 public class GraphControllerImpl implements GraphController {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

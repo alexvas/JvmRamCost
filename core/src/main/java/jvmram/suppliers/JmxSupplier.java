@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import ru.dimension.di.Assisted;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.management.BufferPoolMXBean;
 
 public class JmxSupplier extends AbstractDataSupplier<JmxData> {
 

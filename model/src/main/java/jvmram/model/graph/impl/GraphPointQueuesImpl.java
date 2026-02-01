@@ -1,6 +1,7 @@
 package jvmram.model.graph.impl;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.model.graph.GraphKey;
 import jvmram.model.graph.GraphPoint;
 import jvmram.model.graph.GraphPointQueuesWritable;
@@ -14,6 +15,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingDeque;
 
+@Singleton
 public class GraphPointQueuesImpl implements GraphPointQueuesWritable {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
