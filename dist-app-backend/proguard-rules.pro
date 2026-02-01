@@ -4,6 +4,10 @@
 # Disable optimization (only shrinking is needed)
 -dontoptimize
 
+# Keep directory entries in JAR (required for classpath scanning by DI framework)
+-keepdirectories jvmram
+-keepdirectories jvmram/**
+
 -dontwarn javax.lang.model.element.Modifier
 
 # Note: We intentionally don't add the flags we'd need to make Enums work.
@@ -103,6 +107,17 @@
 -keep class jvmram.dist.JvmRamCost {
     public static void main(java.lang.String[]);
 }
+
+# DI framework
+-keep class ru.dimension.di.** { *; }
+-keep interface ru.dimension.di.** { *; }
+-keep class jakarta.inject.** { *; }
+-keep interface jakarta.inject.** { *; }
+
+# Keep all application classes (interfaces and implementations needed for DI)
+# DI framework uses reflection to bind interfaces to implementations
+-keep class jvmram.** { *; }
+-keep interface jvmram.** { *; }
 
 # Foreign Function & Memory API (Project Panama) - required for WinSupplier
 -keep class java.lang.foreign.** { *; }
