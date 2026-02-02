@@ -2,6 +2,8 @@ package jvmram.db.datasource.impl;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.db.boot.Os;
 import jvmram.db.datasource.DataSourceFacade;
 import org.jspecify.annotations.Nullable;
@@ -21,6 +23,7 @@ import java.util.concurrent.locks.LockSupport;
 import static java.nio.file.Files.createDirectories;
 import static jvmram.db.utils.Utils.readResource;
 
+@Singleton
 public class DataSourceFacadeImpl implements DataSourceFacade {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -32,6 +35,10 @@ public class DataSourceFacadeImpl implements DataSourceFacade {
     private final javax.sql.DataSource ds = new HikariDataSource(createConfig());
 
     private final AtomicReference<State> state = new AtomicReference<>(State.INITIAL);
+
+    @Inject
+    DataSourceFacadeImpl() {
+    }
 
     @Override
     public @Nullable Connection getConnection() {
@@ -182,8 +189,5 @@ public class DataSourceFacadeImpl implements DataSourceFacade {
         INITIALIZING,
         READY,
         BROKEN
-    }
-
-    DataSourceFacadeImpl() {
     }
 }

@@ -3,6 +3,7 @@ package jvmram.db.pid.impl;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.db.boot.BootSessionInfo;
 import jvmram.db.datasource.DataSourceFacade;
 import jvmram.db.pid.ProcessInfo;
@@ -22,6 +23,7 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.util.function.Supplier;
 
+@Singleton
 public class ProcessInfoFacadeImpl implements ProcessInfoFacade {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

@@ -1,6 +1,7 @@
 package jvmram.db.boot.impl;
 
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.db.boot.BootSessionFacade;
 import jvmram.db.boot.BootSessionInfo;
 import jvmram.db.boot.Os;
@@ -23,6 +24,7 @@ import java.util.UUID;
 import static jvmram.db.utils.Utils.invokeExact;
 import static jvmram.db.utils.Utils.readContent;
 
+@Singleton
 public class BootSessionFacadeImpl implements BootSessionFacade {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

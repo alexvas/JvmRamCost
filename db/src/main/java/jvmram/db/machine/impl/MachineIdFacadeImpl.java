@@ -1,5 +1,7 @@
 package jvmram.db.machine.impl;
 
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jvmram.db.boot.Os;
 import jvmram.db.machine.MachineIdFacade;
 
@@ -10,7 +12,12 @@ import java.util.UUID;
 import static jvmram.db.utils.Utils.invokeExact;
 import static jvmram.db.utils.Utils.readContent;
 
+@Singleton
 public class MachineIdFacadeImpl implements MachineIdFacade {
+
+    @Inject
+    MachineIdFacadeImpl() {
+    }
 
     @Override
     public UUID getMachineId(Os os) {
@@ -132,8 +139,5 @@ public class MachineIdFacadeImpl implements MachineIdFacade {
                 invokeExact(regCloseKey, hKey);
             }
         }
-    }
-
-    MachineIdFacadeImpl() {
     }
 }
