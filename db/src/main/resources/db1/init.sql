@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS jvm_ram_cost_process_info (
     gc_type VARCHAR(30),
     container_id TEXT,
     max_direct_memory_kib BIGINT,
-    metaspace_max_kib BIGINT,
+    nmt_max_kib BIGINT,
     xmx_kib BIGINT NOT NULL,
     xms_kib BIGINT NOT NULL,
     CONSTRAINT chk_state CHECK (

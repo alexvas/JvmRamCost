@@ -15,6 +15,7 @@ dependencies {
     implementation libs.dimension
 
     implementation project(":model-data")
+    implementation project(":core")
 
     runtimeOnly libs.h2
     compileOnly libs.jspecify

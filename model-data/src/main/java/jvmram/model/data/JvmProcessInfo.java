@@ -5,9 +5,9 @@ import org.jspecify.annotations.Nullable;
 import java.nio.file.Path;
 import java.time.Instant;
 
-public record ProcessInfoInput(
+public record JvmProcessInfo(
         int pid,
-        String processName,
+        @Nullable String processName,
         Instant start,
         Path homeDirectory,
         int jvmMajorVersion,
@@ -15,7 +15,11 @@ public record ProcessInfoInput(
         String gcType,
         @Nullable String containerId,
         long maxDirectMemoryKib,
-        long metaspaceMaxKib,
+
+        /**
+         * Metaspace, Code Cache, Compressed Class Space
+         */
+        long nmtMaxKib,
         long xmxKib,
         long xmsKib
 ) {

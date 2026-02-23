@@ -1,28 +1,5 @@
 package jvmram.db.pid;
 
-/*
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    boot_session_id INT NOT NULL REFERENCES jvm_ram_cost_boot_session(id) ON DELETE CASCADE,
-    pid INT NOT NULL,
-    process_name TEXT NOT NULL,
-    comment TEXT,
-    process_state VARCHAR(20) NOT NULL,
-    process_start_time TIMESTAMP NOT NULL,
-    process_home_directory TEXT NOT NULL,
-    jvm_major_version INT NOT NULL,
-    jvm_version TEXT NOT NULL,
-    gc_type VARCHAR(30),
-    container_id TEXT,
-    max_direct_memory_kib BIGINT,
-    metaspace_max_kib BIGINT,
-    xmx_kib BIGINT NOT NULL,
-    xms_kib BIGINT NOT NULL,
-    CONSTRAINT chk_state CHECK (
-        process_state IN ('running', 'stopped', 'zombie')
-    )
-
- */
-
 import jvmram.db.boot.BootSessionInfo;
 import org.jspecify.annotations.Nullable;
 
@@ -40,10 +17,10 @@ public record ProcessInfo(
         Path homeDirectory,
         int jvmMajorVersion,
         String jvmVersion,
-        String gcType,
+        @Nullable String gcType,
         @Nullable String containerId,
         long maxDirectMemoryKib,
-        long metaspaceMaxKib,
+        long nmtMaxKib,
         long xmxKib,
         long xmsKib
 ) {

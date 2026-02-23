@@ -8,9 +8,9 @@ module jvmram.db {
     requires ru.dimension.di;
     requires jakarta.inject;
     requires jvmram.model.data;
+    requires jvmram.core;
 
     exports jvmram.db.datasource;
     exports jvmram.db.boot;
     exports jvmram.db.pid;
-    exports jvmram.db.config;
 }

@@ -8,8 +8,9 @@ import jvmram.db.boot.BootSessionInfo;
 import jvmram.db.datasource.DataSourceFacade;
 import jvmram.db.pid.ProcessInfo;
 import jvmram.db.pid.ProcessInfoFacade;
-import jvmram.model.data.ProcessInfoInput;
 import jvmram.db.pid.ProcessState;
+import jvmram.jmx.JvmProcessInfoProvider;
+import jvmram.model.data.JvmProcessInfo;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -21,7 +22,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.util.function.Supplier;
 
 @Singleton
 public class ProcessInfoFacadeImpl implements ProcessInfoFacade {
@@ -33,28 +33,28 @@ public class ProcessInfoFacadeImpl implements ProcessInfoFacade {
             .build();
 
     private final DataSourceFacade dataSourceFacade;
+    private final JvmProcessInfoProvider jvmProcessInfoProvider;
 
     @Inject
-    ProcessInfoFacadeImpl(DataSourceFacade dataSourceFacade) {
+    ProcessInfoFacadeImpl(DataSourceFacade dataSourceFacade, JvmProcessInfoProvider jvmProcessInfoProvider) {
         this.dataSourceFacade = dataSourceFacade;
+        this.jvmProcessInfoProvider = jvmProcessInfoProvider;
     }
 
     @Override
     public ProcessInfo getProcessInfo(
             BootSessionInfo bootSessionInfo,
-            int pid,
-            Supplier<@Nullable ProcessInfoInput> inputSupplier
+            int pid
     ) {
         long key = (((long) bootSessionInfo.id()) << 32) | pid;
-        return infos.get(key, _ -> createProcessInfo(bootSessionInfo, pid, inputSupplier));
+        return infos.get(key, _ -> createProcessInfo(bootSessionInfo, pid));
     }
 
     private @Nullable ProcessInfo createProcessInfo(
             BootSessionInfo bootSessionInfo,
-            int pid,
-            Supplier<@Nullable ProcessInfoInput> inputSupplier
+            int pid
     ) {
-        var input = inputSupplier.get();
+        var input = jvmProcessInfoProvider.provideProcessInfo(pid);
         if (input == null) {
             return null;
         }
@@ -76,13 +76,13 @@ public class ProcessInfoFacadeImpl implements ProcessInfoFacade {
                 input.gcType(),
                 input.containerId(),
                 input.maxDirectMemoryKib(),
-                input.metaspaceMaxKib(),
+                input.nmtMaxKib(),
                 input.xmxKib(),
                 input.xmsKib()
         );
     }
 
-    private int saveProcessInfo(BootSessionInfo bootSessionInfo, int pid, ProcessInfoInput input) {
+    private int saveProcessInfo(BootSessionInfo bootSessionInfo, int pid, JvmProcessInfo input) {
         try (var c = dataSourceFacade.getConnection()) {
             if (c == null) {
                 throw new IllegalStateException(
@@ -104,7 +104,7 @@ public class ProcessInfoFacadeImpl implements ProcessInfoFacade {
             Connection c,
             BootSessionInfo bootSessionInfo,
             int pid,
-            ProcessInfoInput input
+            JvmProcessInfo input
     ) throws SQLException {
         // Сначала проверяем, есть ли уже запись с такой парой boot_session_id и pid
         try (var selectStmt = c.prepareStatement(
@@ -122,10 +122,24 @@ public class ProcessInfoFacadeImpl implements ProcessInfoFacade {
         // Не нашли — вставляем новую запись
         try (var insertStmt = c.prepareStatement(
                 // language=SQL
-                "INSERT INTO jvm_ram_cost_process_info (boot_session_id, pid, process_name, comment, process_state, " +
-                        "process_start_time, process_home_directory, jvm_major_version, jvm_version, gc_type, container_id, " +
-                        "max_direct_memory_kib, metaspace_max_kib, xmx_kib, xms_kib) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                """
+                        INSERT INTO jvm_ram_cost_process_info (
+                          boot_session_id,
+                          pid,
+                          process_name,
+                          comment,
+                          process_state,
+                          process_start_time,
+                          process_home_directory,
+                          jvm_major_version,
+                          jvm_version,
+                          gc_type,
+                          container_id,
+                          max_direct_memory_kib,
+                          nmt_max_kib,
+                          xmx_kib,
+                          xms_kib)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 Statement.RETURN_GENERATED_KEYS)) {
             insertStmt.setInt(1, bootSessionInfo.id());
             insertStmt.setInt(2, pid);
@@ -139,7 +153,7 @@ public class ProcessInfoFacadeImpl implements ProcessInfoFacade {
             insertStmt.setString(10, input.gcType());
             insertStmt.setString(11, input.containerId());
             insertStmt.setLong(12, input.maxDirectMemoryKib());
-            insertStmt.setLong(13, input.metaspaceMaxKib());
+            insertStmt.setLong(13, input.nmtMaxKib());
             insertStmt.setLong(14, input.xmxKib());
             insertStmt.setLong(15, input.xmsKib());
             insertStmt.executeUpdate();

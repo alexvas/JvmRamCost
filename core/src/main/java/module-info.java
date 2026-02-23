@@ -15,4 +15,5 @@ module jvmram.core {
     exports jvmram.process;
     exports jvmram.visibility;
     exports jvmram.di;
+    exports jvmram.jmx;
 }
