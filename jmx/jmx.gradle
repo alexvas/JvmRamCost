@@ -10,13 +10,8 @@ java {
 
 dependencies {
     implementation libs.slf4j.api
-    implementation libs.hikaricp
-    implementation libs.caffeine
-    implementation libs.dimension
-
-    implementation project(":model-data")
-    implementation project(":jmx")
-
-    runtimeOnly libs.h2
+    implementation libs.jakarta.inject
     compileOnly libs.jspecify
+
+    implementation project(':model-data')
 }

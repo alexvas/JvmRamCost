@@ -20,6 +20,7 @@ h2 = "com.h2database:h2:2.4.240"
 hikaricp = "com.zaxxer:HikariCP:7.0.2"
 
 caffeine = "com.github.ben-manes.caffeine:caffeine:3.2.3"
+jakarta-inject = "jakarta.inject:jakarta.inject-api:2.0.1"
 
 [plugins]
 protobuf = "com.google.protobuf:0.9.6"

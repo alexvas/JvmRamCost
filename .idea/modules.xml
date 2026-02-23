@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/JvmRamCost.iml" filepath="$PROJECT_DIR$/.idea/modules/JvmRamCost.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/db/JvmRamCost.db.main.iml" filepath="$PROJECT_DIR$/.idea/modules/db/JvmRamCost.db.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/dist-app-backend/JvmRamCost.dist-app-backend.main.iml" filepath="$PROJECT_DIR$/.idea/modules/dist-app-backend/JvmRamCost.dist-app-backend.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jmx/JvmRamCost.jmx.main.iml" filepath="$PROJECT_DIR$/.idea/modules/jmx/JvmRamCost.jmx.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/model-data/JvmRamCost.model-data.main.iml" filepath="$PROJECT_DIR$/.idea/modules/model-data/JvmRamCost.model-data.main.iml" />
     </modules>
   </component>

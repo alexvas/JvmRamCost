@@ -16,4 +16,5 @@ dependencies {
 
     implementation project(':model-ui')
     implementation project(':model-data')
+    implementation project(':jmx')
 }

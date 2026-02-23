@@ -1,13 +1,13 @@
 module jvmram.core {
-    requires java.management;
-    requires jdk.attach;
     requires static org.jspecify;
     requires org.slf4j;
     requires jvmram.model.ui;
-    requires jdk.management;
     requires ru.dimension.di;
     requires jakarta.inject;
     requires jvmram.model.data;
+    requires jvmram.jmx;
+    requires jdk.management;
+    requires jdk.attach;
 
     exports jvmram.conf;
     exports jvmram.metrics;
@@ -15,5 +15,4 @@ module jvmram.core {
     exports jvmram.process;
     exports jvmram.visibility;
     exports jvmram.di;
-    exports jvmram.jmx;
 }

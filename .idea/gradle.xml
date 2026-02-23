@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/db" />
             <option value="$PROJECT_DIR$/dist-app-backend" />
+            <option value="$PROJECT_DIR$/jmx" />
             <option value="$PROJECT_DIR$/model-data" />
             <option value="$PROJECT_DIR$/model-ui" />
           </set>
