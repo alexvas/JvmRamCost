@@ -3,7 +3,7 @@ package jvmram.controller.impl;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jvmram.controller.ProcessController;
-import jvmram.model.util.RwGuarded;
+import jvmram.model.ui.util.RwGuarded;
 import jvmram.process.JvmProcessInfo;
 import jvmram.process.ProcessManager;
 

@@ -1,6 +1,6 @@
 package jvmram.suppliers;
 
-import jvmram.model.metrics.MetricType;
+import jvmram.model.ui.metrics.MetricType;
 import jvmram.suppliers.data.HardwareData;
 
 public interface HardwareDataSuppliersFactory {

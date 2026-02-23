@@ -1,8 +1,7 @@
 package jvmram.metrics;
 
-import jvmram.metrics.impl.MetricsFactoryImpl;
-import jvmram.model.metrics.MetricType;
-import jvmram.model.metrics.Os;
+import jvmram.model.data.Os;
+import jvmram.model.ui.metrics.MetricType;
 
 import java.util.Map;
 

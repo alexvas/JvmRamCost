@@ -8,7 +8,7 @@ import jvmram.controller.AppScheduler;
 import jvmram.controller.GraphController;
 import jvmram.controller.JmxService;
 import jvmram.controller.ProcessController;
-import jvmram.model.graph.GraphPointQueuesWritable;
+import jvmram.model.ui.graph.GraphPointQueuesWritable;
 import jvmram.visibility.MetricVisibility;
 
 @Singleton

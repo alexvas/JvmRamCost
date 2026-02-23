@@ -14,6 +14,8 @@ dependencies {
     implementation libs.caffeine
     implementation libs.dimension
 
+    implementation project(":model-data")
+
     runtimeOnly libs.h2
     compileOnly libs.jspecify
 }

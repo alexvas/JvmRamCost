@@ -7,7 +7,8 @@ module jvmram.backend {
     requires io.grpc;
     requires io.grpc.stub;
 
-    requires jvmram.model;
+    requires jvmram.model.ui;
+    requires jvmram.model.data;
     requires jvmram.core;
     requires jvmram.db;
     requires io.grpc.protobuf;

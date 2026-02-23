@@ -1,7 +1,7 @@
 package jvmram.conf;
 
-import jvmram.model.metrics.MetricType;
-import jvmram.model.metrics.Os;
+import jvmram.model.data.Os;
+import jvmram.model.ui.metrics.MetricType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 
-import static jvmram.model.metrics.Os.LINUX;
-import static jvmram.model.metrics.Os.WINDOWS;
+import static jvmram.model.data.Os.LINUX;
+import static jvmram.model.data.Os.WINDOWS;
 
 public final class Config {
 

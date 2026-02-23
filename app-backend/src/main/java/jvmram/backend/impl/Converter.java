@@ -1,7 +1,7 @@
 package jvmram.backend.impl;
 
-import jvmram.model.graph.GraphKey;
-import jvmram.model.graph.GraphPoint;
+import jvmram.model.ui.graph.GraphKey;
+import jvmram.model.ui.graph.GraphPoint;
 import jvmram.process.JvmProcessInfo;
 import jvmram.proto.*;
 import org.jspecify.annotations.Nullable;
@@ -13,7 +13,7 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Objects;
 
-import static jvmram.model.metrics.MetricType.*;
+import static jvmram.model.ui.metrics.MetricType.*;
 
 class Converter {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -73,7 +73,7 @@ class Converter {
         return Pid.newBuilder().setPid(input).build();
     }
 
-    static MetricType convert2Grpc(jvmram.model.metrics.MetricType input) {
+    static MetricType convert2Grpc(jvmram.model.ui.metrics.MetricType input) {
         return switch (input) {
             case RSS -> MetricType.RSS;
             case PSS -> MetricType.PSS;
@@ -91,7 +91,7 @@ class Converter {
         };
     }
 
-    static jvmram.model.metrics.@Nullable MetricType fromGrpc(MetricType input) {
+    static jvmram.model.ui.metrics.@Nullable MetricType fromGrpc(MetricType input) {
         return switch (input) {
             case RSS -> RSS;
             case PSS -> PSS;

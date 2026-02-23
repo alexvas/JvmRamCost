@@ -1,11 +1,11 @@
-package jvmram.model.graph.impl;
+package jvmram.model.ui.graph.impl;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import jvmram.model.graph.GraphKey;
-import jvmram.model.graph.GraphPoint;
-import jvmram.model.graph.GraphPointQueuesWritable;
-import jvmram.model.metrics.MetricType;
+import jvmram.model.ui.graph.GraphKey;
+import jvmram.model.ui.graph.GraphPoint;
+import jvmram.model.ui.graph.GraphPointQueuesWritable;
+import jvmram.model.ui.metrics.MetricType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

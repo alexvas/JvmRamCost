@@ -1,7 +1,6 @@
 package jvmram.visibility;
 
-import jvmram.visibility.impl.MetricVisibilityImpl;
-import jvmram.model.metrics.MetricType;
+import jvmram.model.ui.metrics.MetricType;
 
 
 public interface MetricVisibility {

@@ -4,9 +4,9 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jvmram.db.boot.BootSessionFacade;
 import jvmram.db.boot.BootSessionInfo;
-import jvmram.db.boot.Os;
 import jvmram.db.datasource.DataSourceFacade;
 import jvmram.db.machine.MachineIdFacade;
+import jvmram.model.data.Os;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

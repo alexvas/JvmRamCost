@@ -2,8 +2,8 @@ package jvmram.db.machine.impl;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import jvmram.db.boot.Os;
 import jvmram.db.machine.MachineIdFacade;
+import jvmram.model.data.Os;
 
 import java.lang.foreign.*;
 import java.nio.file.Path;

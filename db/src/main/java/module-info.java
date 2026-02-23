@@ -7,6 +7,7 @@ module jvmram.db {
     requires com.github.benmanes.caffeine;
     requires ru.dimension.di;
     requires jakarta.inject;
+    requires jvmram.model.data;
 
     exports jvmram.db.datasource;
     exports jvmram.db.boot;

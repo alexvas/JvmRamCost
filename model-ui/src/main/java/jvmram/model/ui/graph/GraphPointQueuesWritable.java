@@ -1,13 +1,9 @@
-package jvmram.model.graph;
+package jvmram.model.ui.graph;
 
-import jvmram.model.graph.impl.GraphPointQueuesImpl;
-import jvmram.model.metrics.MetricType;
+import jvmram.model.ui.metrics.MetricType;
 
-import javax.swing.*;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public interface GraphPointQueuesWritable extends GraphPointQueues {
 

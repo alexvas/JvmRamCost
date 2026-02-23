@@ -1,6 +1,6 @@
 package jvmram.db.machine;
 
-import jvmram.db.boot.Os;
+import jvmram.model.data.Os;
 
 import java.util.UUID;
 

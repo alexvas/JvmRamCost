@@ -1,7 +1,7 @@
 package jvmram.metrics.impl;
 
 import jvmram.metrics.RamMetric;
-import jvmram.model.graph.GraphPoint;
+import jvmram.model.ui.graph.GraphPoint;
 import jvmram.suppliers.HardwareDataSupplier;
 import jvmram.suppliers.data.HardwareData;
 
@@ -10,8 +10,8 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.function.Function;
 
-import static jvmram.model.graph.GraphPoint.NO_DATA;
-import static jvmram.model.graph.GraphPoint.SAME_DATA;
+import static jvmram.model.ui.graph.GraphPoint.NO_DATA;
+import static jvmram.model.ui.graph.GraphPoint.SAME_DATA;
 
 class BaseMetric<T extends HardwareData> implements RamMetric {
     private final HardwareDataSupplier<T> supplier;

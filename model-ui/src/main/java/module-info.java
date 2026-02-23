@@ -1,10 +1,10 @@
-module jvmram.model {
+module jvmram.model.ui {
     requires org.slf4j;
-    requires java.desktop;
     requires ru.dimension.di;
     requires jakarta.inject;
+    requires jvmram.model.data;
 
-    exports jvmram.model.metrics;
-    exports jvmram.model.graph;
-    exports jvmram.model.util;
+    exports jvmram.model.ui.metrics;
+    exports jvmram.model.ui.graph;
+    exports jvmram.model.ui.util;
 }

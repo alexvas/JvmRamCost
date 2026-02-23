@@ -1,4 +1,4 @@
-package jvmram.model.graph;
+package jvmram.model.ui.graph;
 
 import java.time.Instant;
 

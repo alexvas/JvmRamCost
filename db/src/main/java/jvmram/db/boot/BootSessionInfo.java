@@ -1,5 +1,7 @@
 package jvmram.db.boot;
 
+import jvmram.model.data.Os;
+
 import java.util.UUID;
 
 public record BootSessionInfo(

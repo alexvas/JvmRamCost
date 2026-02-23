@@ -8,7 +8,7 @@ import jvmram.db.boot.BootSessionInfo;
 import jvmram.db.datasource.DataSourceFacade;
 import jvmram.db.pid.ProcessInfo;
 import jvmram.db.pid.ProcessInfoFacade;
-import jvmram.db.pid.ProcessInfoInput;
+import jvmram.model.data.ProcessInfoInput;
 import jvmram.db.pid.ProcessState;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;

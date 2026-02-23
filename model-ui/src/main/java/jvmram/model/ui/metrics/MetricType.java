@@ -1,9 +1,11 @@
-package jvmram.model.metrics;
+package jvmram.model.ui.metrics;
+
+import jvmram.model.data.Os;
 
 import java.util.EnumSet;
 
-import static jvmram.model.metrics.Os.LINUX;
-import static jvmram.model.metrics.Os.WINDOWS;
+import static jvmram.model.data.Os.LINUX;
+import static jvmram.model.data.Os.WINDOWS;
 
 public enum MetricType {
     RSS(EnumSet.of(LINUX)),
@@ -20,7 +22,7 @@ public enum MetricType {
     NMT_COMMITTED(EnumSet.allOf(Os.class)),
     BUFFER_TOTAL(EnumSet.allOf(Os.class)),
     ;
-    
+
     private final EnumSet<Os> applicable;
 
     MetricType(EnumSet<Os> applicable) {

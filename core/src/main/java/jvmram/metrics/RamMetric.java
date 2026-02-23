@@ -1,6 +1,6 @@
 package jvmram.metrics;
 
-import jvmram.model.graph.GraphPoint;
+import jvmram.model.ui.graph.GraphPoint;
 
 import java.time.Duration;
 

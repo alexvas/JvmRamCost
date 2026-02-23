@@ -23,6 +23,7 @@ dependencies {
     protobuf files('../proto')
 
     implementation(project(':model-ui'))
+    implementation(project(':model-data'))
     implementation project(':core')
     implementation project(':db')
 }

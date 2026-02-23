@@ -1,4 +1,4 @@
-package jvmram.db.boot;
+package jvmram.model.data;
 
 import java.util.Locale;
 

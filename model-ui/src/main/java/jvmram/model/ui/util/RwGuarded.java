@@ -1,4 +1,4 @@
-package jvmram.model.util;
+package jvmram.model.ui.util;
 
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;

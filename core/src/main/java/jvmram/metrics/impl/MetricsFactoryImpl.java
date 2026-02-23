@@ -4,8 +4,8 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jvmram.metrics.MetricsFactory;
 import jvmram.metrics.RamMetric;
-import jvmram.model.metrics.MetricType;
-import jvmram.model.metrics.Os;
+import jvmram.model.data.Os;
+import jvmram.model.ui.metrics.MetricType;
 import jvmram.suppliers.HardwareDataSupplier;
 import jvmram.suppliers.HardwareDataSuppliersFactory;
 import jvmram.suppliers.data.*;
@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import static jvmram.conf.Config.DEV_POLL_INTERVALS;
-import static jvmram.model.metrics.MetricType.*;
+import static jvmram.model.ui.metrics.MetricType.*;
 
 @Singleton
 public class MetricsFactoryImpl implements MetricsFactory {

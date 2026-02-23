@@ -1,6 +1,7 @@
 package jvmram.db.pid;
 
 import jvmram.db.boot.BootSessionInfo;
+import jvmram.model.data.ProcessInfoInput;
 
 import java.util.function.Supplier;
 

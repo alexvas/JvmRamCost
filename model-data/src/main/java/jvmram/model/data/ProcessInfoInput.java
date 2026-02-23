@@ -1,4 +1,4 @@
-package jvmram.db.pid;
+package jvmram.model.data;
 
 import org.jspecify.annotations.Nullable;
 

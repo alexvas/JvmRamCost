@@ -3,7 +3,7 @@ package jvmram.visibility.impl;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jvmram.visibility.MetricVisibility;
-import jvmram.model.metrics.MetricType;
+import jvmram.model.ui.metrics.MetricType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

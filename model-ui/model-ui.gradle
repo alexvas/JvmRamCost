@@ -10,8 +10,8 @@ java {
 
 dependencies {
     implementation libs.slf4j.api
-
     implementation libs.dimension
+    implementation project(":model-data")
 
     compileOnly libs.jspecify
 }
