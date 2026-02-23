@@ -22,7 +22,7 @@ dependencies {
     runtimeOnly "io.grpc:grpc-netty-shaded"
     protobuf files('../proto')
 
-    implementation(project(':model'))
+    implementation(project(':model-ui'))
     implementation project(':core')
     implementation project(':db')
 }

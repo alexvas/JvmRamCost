@@ -28,7 +28,7 @@ dependencies {
 
     implementation libs.dimension
 
-    implementation project(':model')
+    implementation project(':model-ui')
     implementation project(':core')
     implementation project(':app-backend')
 }

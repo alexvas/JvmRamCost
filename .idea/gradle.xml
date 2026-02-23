@@ -12,7 +12,7 @@
             <option value="$PROJECT_DIR$/core" />
             <option value="$PROJECT_DIR$/db" />
             <option value="$PROJECT_DIR$/dist-app-backend" />
-            <option value="$PROJECT_DIR$/model" />
+            <option value="$PROJECT_DIR$/model-ui" />
           </set>
         </option>
       </GradleProjectSettings>

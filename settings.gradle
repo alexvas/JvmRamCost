@@ -1,5 +1,5 @@
 rootProject.name = 'JvmRamCost'
-include('model', 'db', 'core', 'app-backend', 'dist-app-backend')
+include('model-ui', 'db', 'core', 'app-backend', 'dist-app-backend')
 
 // назначаем сборочным скриптам понятные имена:
 // core -> core.gradle

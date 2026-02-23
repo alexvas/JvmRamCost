@@ -14,5 +14,5 @@ dependencies {
 
     implementation libs.dimension
 
-    implementation project(':model')
+    implementation project(':model-ui')
 }

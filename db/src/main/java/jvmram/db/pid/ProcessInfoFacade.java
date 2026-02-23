@@ -6,5 +6,9 @@ import java.util.function.Supplier;
 
 public interface ProcessInfoFacade {
 
-    ProcessInfo getProcessInfo(BootSessionInfo bootSessionInfo, int pid, Supplier<ProcessInfoInput> inputSupplier);
+    ProcessInfo getProcessInfo(
+            BootSessionInfo bootSessionInfo,
+            int pid,
+            Supplier<ProcessInfoInput> inputSupplier
+    );
 }
