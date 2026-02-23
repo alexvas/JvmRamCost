@@ -14,7 +14,7 @@ public class JvmRamCost {
 
     private static final int DEFAULT_PORT = 53535;
 
-    public static void main(String[] args) {
+    static void main() {
         Thread.setDefaultUncaughtExceptionHandler((ignored, e) -> LOG.error("Unexpected exception: ", e));
 
         var builder = DimensionDI.builder();
